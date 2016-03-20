@@ -15,12 +15,39 @@ import kiss.constants
 import aprs
 import aprs.util
 import threading
+import configparser
+
+port_map = {}
+config = configparser.ConfigParser()
+config.read('apex.cfg')
+for section in config.sections():
+    if section.startswith("TNC "):
+        tnc_name = section.split(" ")[1]
+        kiss_tnc = aprs.AprsKiss(com_port=config.get(section, 'com_port'), baud=config.get(section, 'baud'))
+        if config.get(section,'kiss_init') is 'MODE_INIT_W8DED':
+            kiss_tnc.start(kiss.constants.MODE_INIT_W8DED)
+        if config.get(section,'kiss_init') is 'MODE_INIT_KENWOOD_D710':
+            kiss_tnc.start(kiss.constants.MODE_INIT_KENWOOD_D710)
+        for port in range(1, 1+int(config.get(section, 'port_count'))):
+            port_name = tnc_name + '-' + str(port)
+            port_section = 'PORT ' + port_name
+            port_callsign = config.get(port_section, 'callsign')
+            port_net = config.get(port_section, 'net')
+            tnc_port = config.get(port_section, 'tnc_port')
+            port_map[port_name] = {'callsign':port_callsign, 'net':port_net, 'tnc':kiss_tnc, 'tnc_port':tnc_port}
+print("port map: " + str(port_map))
+aprsis_callsign = config.get('APRS-IS', 'callsign')
+aprsis_password = config.get('APRS-IS', 'password')
+aprsis_server = config.get('APRS-IS', 'server')
+aprsis_server_port = config.get('APRS-IS', 'server_port')
+aprsis = aprs.AprsInternetService(aprsis_callsign, aprsis_password)
+print("aprsis: " + aprsis_server + " : " + aprsis_server_port)
+aprsis.connect(aprsis_server, aprsis_server_port)
 
 kenwood = aprs.AprsKiss(com_port="/dev/ttyUSB1", baud=9600)
 kenwood.start(kiss.constants.MODE_INIT_KENWOOD_D710)
 rpr = aprs.AprsKiss(com_port="/dev/ttyUSB0", baud=38400)
 rpr.start(kiss.constants.MODE_INIT_W8DED)
-aprsis = aprs.APRS('WI2ARD', '12345')
 
 def sigint_handler(signal, frame):
     kenwood.close()
@@ -62,8 +89,7 @@ status_frame_hf = {
 }
 
 #a = aprs.APRS('WI2ARD', '12345')
-#a.connect("noam.aprs2.net".encode('ascii'), "14580".encode('ascii'))
-#a.send('WI2ARD>APRS:>Hello World!')
+#aprsis.send('WI2ARD>APRS:>Hello World!')
 
 def digipeat(frame, is_rpr):
     # can't digipeat things we already digipeated.
@@ -85,39 +111,46 @@ def digipeat(frame, is_rpr):
             if node is 'WI2ARD' and ssid is 0:
                 frame['path'][hop_index] = 'WI2ARD*'
                 rpr.write(frame)
+                aprsis.send(frame)
                 print("R>> " + aprs.util.format_aprs_frame(frame))
                 return
             elif node is 'WI2ARD' and ssid is 1:
                 frame['path'][hop_index] = 'WI2ARD-1*'
                 kenwood.write(frame)
+                aprsis.send(frame)
                 print("K>> " + aprs.util.format_aprs_frame(frame))
                 return
             elif node.startswith('WIDE') and ssid > 1:
                 if is_rpr:
                     frame['path'] = frame['path'][:hop_index-1] + ['WI2ARD*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
                     rpr.write(frame)
+                    aprsis.send(frame)
                     print("R>> " + aprs.util.format_aprs_frame(frame))
                     return
                 else:
                     frame['path'] = frame['path'][:hop_index-1] + ['WI2ARD-1*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
                     kenwood.write(frame)
+                    aprsis.send(frame)
                     print("K>> " + aprs.util.format_aprs_frame(frame))
                     return
             elif node.startswith('WIDE') and ssid is 1:
                 if is_rpr:
                     frame['path'] = frame['path'][:hop_index-1] + ['WI2ARD*'] + [node + "*"] + frame['path'][hop_index+1:]
                     rpr.write(frame)
+                    aprsis.send(frame)
                     print("R>> " + aprs.util.format_aprs_frame(frame))
                     return
                 else:
                     frame['path'] = frame['path'][:hop_index-1] + ['WI2ARD-1*'] + [node + "*"] + frame['path'][hop_index+1:]
                     kenwood.write(frame)
+                    aprsis.send(frame)
                     print("K>> " + aprs.util.format_aprs_frame(frame))
                     return
             elif node.startswith('WIDE') and ssid is 0:
                 frame['path'][hop_index] = node + "*"
                 # no return
-
+    #If we didnt digipeat it then we didn't modify the frame, send it to aprsis as-is
+    aprsis.send(frame)
 
 def kiss_reader_thread():
     print("Begining kiss reader thread...")
@@ -139,7 +172,6 @@ def kiss_reader_thread():
 
         if something_read is False:
             time.sleep(1)
-
 
 threading.Thread(target=kiss_reader_thread, args=()).start()
 while 1 :

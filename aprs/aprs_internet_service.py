@@ -57,7 +57,7 @@ class AprsInternetService(object):
         self.logger.debug('Sending full_auth=%s', full_auth)
         self.aprsis_sock.sendall((full_auth + '\n\r').encode('ascii'))
 
-    def send(self, message, headers=None, protocol='TCP'):
+    def send(self, frame, headers=None, protocol='TCP'):
         """
         Sends message to APRS-IS.
 
@@ -71,19 +71,22 @@ class AprsInternetService(object):
         :rtype: bool
         """
         self.logger.debug(
-            'message=%s headers=%s protocol=%s', message, headers, protocol)
+            'message=%s headers=%s protocol=%s', str(frame), headers, protocol)
 
         if 'TCP' in protocol:
-            self.logger.debug('sending message=%s', message)
-            self.aprsis_sock.sendall((message + '\n\r').encode('ascii'))
+            self.logger.debug('sending message=%s', str(frame))
+            # message = frame['source'].encode('ascii') + b">" + frame['destination'].encode('ascii') + aprs.util.format_path(frame['path']).encode('ascii') + b":" + frame['text'] + b'\n\r'
+            # TODO: simplify this
+            message = aprs.util.format_aprs_frame(frame).encode('ascii')
+            self.aprsis_sock.sendall(message)
             return True
         elif 'HTTP' in protocol:
-            content = "\n".join([self._auth, message])
+            content = "\n".join([self._auth, aprs.util.format_aprs_frame(frame)])
             headers = headers or aprs.constants.APRSIS_HTTP_HEADERS
             result = requests.post(self._url, data=content, headers=headers)
             return 204 in result.status_code
         elif 'UDP' in protocol:
-            content = "\n".join([self._auth, message])
+            content = "\n".join([self._auth, aprs.util.format_aprs_frame(frame)])
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.sendto(
                 content,
