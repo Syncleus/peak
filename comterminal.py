@@ -34,10 +34,10 @@ for section in config.sections():
         for port in range(1, 1+int(config.get(section, 'port_count'))):
             port_name = tnc_name + '-' + str(port)
             port_section = 'PORT ' + port_name
-            port_callsign = config.get(port_section, 'callsign')
+            port_identifier = config.get(port_section, 'identifier')
             port_net = config.get(port_section, 'net')
             tnc_port = config.get(port_section, 'tnc_port')
-            port_map[port_name] = {'callsign':port_callsign, 'net':port_net, 'tnc':kiss_tnc, 'tnc_port':tnc_port}
+            port_map[port_name] = {'identifier':port_identifier, 'net':port_net, 'tnc':kiss_tnc, 'tnc_port':tnc_port}
 aprsis_callsign = config.get('APRS-IS', 'callsign')
 aprsis_password = config.get('APRS-IS', 'password')
 aprsis_server = config.get('APRS-IS', 'server')
@@ -84,10 +84,7 @@ status_frame_hf = {
     'text': list(b'>Robust Packet Radio http://JeffreyFreeman.me')
 }
 
-rpr = port_map['RPR-1']['tnc']
-kenwood = port_map['KENWOOD-1']['tnc']
-
-def digipeat(frame, is_rpr):
+def digipeat(frame, recv_port, recv_port_name):
     # can't digipeat things we already digipeated.
     for hop in frame['path']:
         if hop.startswith('WI2ARD') and hop.endswith('*'):
@@ -98,50 +95,42 @@ def digipeat(frame, is_rpr):
         if hop[-1] is not '*':
             split_hop = hop.split('-')
             node = split_hop[0].upper()
-
             if len(split_hop) >= 2 and split_hop[1]:
                 ssid = int(split_hop[1])
             else:
                 ssid = 0
 
-            if node is 'WI2ARD' and ssid is 0:
-                frame['path'][hop_index] = 'WI2ARD*'
-                rpr.write(frame)
-                aprsis.send(frame)
-                print("R>> " + aprs.util.format_aprs_frame(frame))
-                return
-            elif node is 'WI2ARD' and ssid is 1:
-                frame['path'][hop_index] = 'WI2ARD-1*'
-                kenwood.write(frame)
-                aprsis.send(frame)
-                print("K>> " + aprs.util.format_aprs_frame(frame))
-                return
-            elif node.startswith('WIDE') and ssid > 1:
-                if is_rpr:
-                    frame['path'] = frame['path'][:hop_index-1] + ['WI2ARD*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
-                    rpr.write(frame)
-                    aprsis.send(frame)
-                    print("R>> " + aprs.util.format_aprs_frame(frame))
-                    return
+            for port_name in port_map.keys():
+                port = port_map[port_name]
+                split_port_identifier = port['identifier'].split('-')
+                port_callsign = split_port_identifier[0].upper()
+                if len(split_port_identifier) >= 2 and split_port_identifier[1]:
+                    port_ssid = int(split_hop[1])
                 else:
-                    frame['path'] = frame['path'][:hop_index-1] + ['WI2ARD-1*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
-                    kenwood.write(frame)
+                    port_ssid = 0
+
+                if node == port_callsign and ssid == port_ssid:
+                    if ssid is 0:
+                        frame['path'][hop_index] = port_callsign + '*'
+                    else:
+                        frame['path'][hop_index] = port['identifier'] + '*'
+                    port['tnc'].write(frame)
                     aprsis.send(frame)
-                    print("K>> " + aprs.util.format_aprs_frame(frame))
+                    print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
                     return
+
+            if node.startswith('WIDE') and ssid > 1:
+                frame['path'] = frame['path'][:hop_index-1] + [recv_port['identifier'] + '*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
+                recv_port['tnc'].write(frame)
+                aprsis.send(frame)
+                print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                return
             elif node.startswith('WIDE') and ssid is 1:
-                if is_rpr:
-                    frame['path'] = frame['path'][:hop_index-1] + ['WI2ARD*'] + [node + "*"] + frame['path'][hop_index+1:]
-                    rpr.write(frame)
-                    aprsis.send(frame)
-                    print("R>> " + aprs.util.format_aprs_frame(frame))
-                    return
-                else:
-                    frame['path'] = frame['path'][:hop_index-1] + ['WI2ARD-1*'] + [node + "*"] + frame['path'][hop_index+1:]
-                    kenwood.write(frame)
-                    aprsis.send(frame)
-                    print("K>> " + aprs.util.format_aprs_frame(frame))
-                    return
+                frame['path'] = frame['path'][:hop_index-1] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
+                recv_port['tnc'].write(frame)
+                aprsis.send(frame)
+                print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                return
             elif node.startswith('WIDE') and ssid is 0:
                 frame['path'][hop_index] = node + "*"
                 # no return
@@ -152,23 +141,20 @@ def kiss_reader_thread():
     print("Begining kiss reader thread...")
     while 1:
         something_read = False
-        frame = kenwood.read()
-        if frame is not None and len(frame):
-            something_read = True
-            digipeat(frame, False)
-            formatted_aprs = aprs.util.format_aprs_frame(frame)
-            print("K<< " + formatted_aprs)
-
-        frame = rpr.read()
-        if frame is not None and len(frame):
-            something_read = True
-            digipeat(frame, True)
-            formatted_aprs = aprs.util.format_aprs_frame(frame)
-            print("R<< " + formatted_aprs)
+        for port_name in port_map.keys():
+            port = port_map[port_name]
+            frame = port['tnc'].read()
+            if frame:
+                something_read = True
+                digipeat(frame, port, port_name)
+                formatted_aprs = aprs.util.format_aprs_frame(frame)
+                print(port_name + " << " + formatted_aprs)
 
         if something_read is False:
             time.sleep(1)
 
+rpr = port_map['RPR-1']['tnc']
+kenwood = port_map['KENWOOD-1']['tnc']
 threading.Thread(target=kiss_reader_thread, args=()).start()
 while 1 :
     # let's wait one second before reading output (let's give device time to answer)
