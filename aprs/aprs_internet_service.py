@@ -77,7 +77,9 @@ class AprsInternetService(object):
             self.logger.debug('sending message=%s', str(frame))
             # message = frame['source'].encode('ascii') + b">" + frame['destination'].encode('ascii') + aprs.util.format_path(frame['path']).encode('ascii') + b":" + frame['text'] + b'\n\r'
             # TODO: simplify this
-            message = aprs.util.format_aprs_frame(frame).encode('ascii')
+            message = bytearray()
+            for frame_chr in aprs.util.format_aprs_frame(frame):
+                message.append(ord(frame_chr))
             self.aprsis_sock.sendall(message)
             return True
         elif 'HTTP' in protocol:

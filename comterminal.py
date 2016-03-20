@@ -24,10 +24,13 @@ for section in config.sections():
     if section.startswith("TNC "):
         tnc_name = section.split(" ")[1]
         kiss_tnc = aprs.AprsKiss(com_port=config.get(section, 'com_port'), baud=config.get(section, 'baud'))
-        if config.get(section,'kiss_init') is 'MODE_INIT_W8DED':
+        kiss_init_string = config.get(section,'kiss_init')
+        if kiss_init_string == 'MODE_INIT_W8DED':
             kiss_tnc.start(kiss.constants.MODE_INIT_W8DED)
-        if config.get(section,'kiss_init') is 'MODE_INIT_KENWOOD_D710':
+        elif kiss_init_string == 'MODE_INIT_KENWOOD_D710':
             kiss_tnc.start(kiss.constants.MODE_INIT_KENWOOD_D710)
+        else:
+            raise Exception("KISS init mode not specified")
         for port in range(1, 1+int(config.get(section, 'port_count'))):
             port_name = tnc_name + '-' + str(port)
             port_section = 'PORT ' + port_name
@@ -35,23 +38,16 @@ for section in config.sections():
             port_net = config.get(port_section, 'net')
             tnc_port = config.get(port_section, 'tnc_port')
             port_map[port_name] = {'callsign':port_callsign, 'net':port_net, 'tnc':kiss_tnc, 'tnc_port':tnc_port}
-print("port map: " + str(port_map))
 aprsis_callsign = config.get('APRS-IS', 'callsign')
 aprsis_password = config.get('APRS-IS', 'password')
 aprsis_server = config.get('APRS-IS', 'server')
 aprsis_server_port = config.get('APRS-IS', 'server_port')
 aprsis = aprs.AprsInternetService(aprsis_callsign, aprsis_password)
-print("aprsis: " + aprsis_server + " : " + aprsis_server_port)
 aprsis.connect(aprsis_server, aprsis_server_port)
 
-kenwood = aprs.AprsKiss(com_port="/dev/ttyUSB1", baud=9600)
-kenwood.start(kiss.constants.MODE_INIT_KENWOOD_D710)
-rpr = aprs.AprsKiss(com_port="/dev/ttyUSB0", baud=38400)
-rpr.start(kiss.constants.MODE_INIT_W8DED)
-
 def sigint_handler(signal, frame):
-    kenwood.close()
-    rpr.close()
+    for port in port_map:
+        port['tnc'].close()
     sys.exit(0)
 
 signal.signal(signal.SIGINT, sigint_handler)
@@ -88,8 +84,8 @@ status_frame_hf = {
     'text': list(b'>Robust Packet Radio http://JeffreyFreeman.me')
 }
 
-#a = aprs.APRS('WI2ARD', '12345')
-#aprsis.send('WI2ARD>APRS:>Hello World!')
+rpr = port_map['RPR-1']['tnc']
+kenwood = port_map['KENWOOD-1']['tnc']
 
 def digipeat(frame, is_rpr):
     # can't digipeat things we already digipeated.
