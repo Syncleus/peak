@@ -16,6 +16,7 @@ import aprs
 import aprs.util
 import threading
 import configparser
+import cachetools
 
 port_map = {}
 config = configparser.ConfigParser()
@@ -48,6 +49,7 @@ aprsis_server = config.get('APRS-IS', 'server')
 aprsis_server_port = config.get('APRS-IS', 'server_port')
 aprsis = aprs.AprsInternetService(aprsis_callsign, aprsis_password)
 aprsis.connect(aprsis_server, aprsis_server_port)
+packet_cache = cachetools.TTLCache(10000, 5)
 
 def sigint_handler(signal, frame):
     for port in port_map:
@@ -93,22 +95,31 @@ def digipeat(frame, recv_port, recv_port_name):
                         frame['path'][hop_index] = port_callsign + '*'
                     else:
                         frame['path'][hop_index] = port['identifier'] + '*'
-                    port['tnc'].write(frame, port['tnc_port'])
-                    aprsis.send(frame)
-                    print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                    frame_hash = aprs.util.hash_frame(frame)
+                    if not frame_hash in packet_cache.values():
+                        packet_cache[str(frame_hash)] = frame_hash
+                        port['tnc'].write(frame, port['tnc_port'])
+                        aprsis.send(frame)
+                        print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
                     return
 
             if node.startswith('WIDE') and ssid > 1:
                 frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
-                recv_port['tnc'].write(frame, port['tnc_port'])
-                aprsis.send(frame)
-                print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                frame_hash = aprs.util.hash_frame(frame)
+                if not frame_hash in packet_cache.values():
+                    packet_cache[str(frame_hash)] = frame_hash
+                    recv_port['tnc'].write(frame, port['tnc_port'])
+                    aprsis.send(frame)
+                    print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
                 return
             elif node.startswith('WIDE') and ssid is 1:
                 frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
-                recv_port['tnc'].write(frame, port['tnc_port'])
-                aprsis.send(frame)
-                print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                frame_hash = aprs.util.hash_frame(frame)
+                if not frame_hash in packet_cache.values():
+                    packet_cache[str(frame_hash)] = frame_hash
+                    recv_port['tnc'].write(frame, port['tnc_port'])
+                    aprsis.send(frame)
+                    print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
                 return
             elif node.startswith('WIDE') and ssid is 0:
                 frame['path'][hop_index] = node + "*"
@@ -132,7 +143,7 @@ def kiss_reader_thread():
         except Exception as ex:
             # We want to keep this thread alive so long as the application runs.
             print("caught exception while reading packet: " + str(ex))
-
+            
         if something_read is False:
             time.sleep(1)
 
@@ -142,11 +153,18 @@ while 1 :
         port = port_map[port_name]
 
         beacon_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['beacon_path'].split(','), 'text': list(port['beacon_text'].encode('ascii'))}
-        port['tnc'].write(beacon_frame, port['tnc_port'])
-        print(port_name + " >> " + aprs.util.format_aprs_frame(beacon_frame))
+        frame_hash = aprs.util.hash_frame(beacon_frame)
+        if not frame_hash in packet_cache.values():
+            packet_cache[str(frame_hash)] = frame_hash
+            port['tnc'].write(beacon_frame, port['tnc_port'])
+            print(port_name + " >> " + aprs.util.format_aprs_frame(beacon_frame))
+
 
         status_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['status_path'].split(','), 'text': list(port['status_text'].encode('ascii'))}
-        port['tnc'].write(status_frame, port['tnc_port'])
-        print(port_name + " >> " + aprs.util.format_aprs_frame(status_frame))
+        frame_hash = aprs.util.hash_frame(status_frame)
+        if not frame_hash in packet_cache.values():
+            packet_cache[str(frame_hash)] = frame_hash
+            port['tnc'].write(status_frame, port['tnc_port'])
+            print(port_name + " >> " + aprs.util.format_aprs_frame(status_frame))
     time.sleep(600)
 
