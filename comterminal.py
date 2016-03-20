@@ -126,9 +126,9 @@ def kiss_reader_thread():
                 frame = port['tnc'].read()
                 if frame:
                     something_read = True
-                    digipeat(frame, port, port_name)
                     formatted_aprs = aprs.util.format_aprs_frame(frame)
                     print(port_name + " << " + formatted_aprs)
+                    digipeat(frame, port, port_name)
         except Exception as ex:
             # We want to keep this thread alive so long as the application runs.
             print("caught exception while reading packet: " + str(ex))
