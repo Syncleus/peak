@@ -36,7 +36,7 @@ for section in config.sections():
             port_section = 'PORT ' + port_name
             port_identifier = config.get(port_section, 'identifier')
             port_net = config.get(port_section, 'net')
-            tnc_port = config.get(port_section, 'tnc_port')
+            tnc_port = int(config.get(port_section, 'tnc_port'))
             beacon_path = config.get(port_section, 'beacon_path')
             beacon_text = config.get(port_section, 'beacon_text')
             status_path = config.get(port_section, 'status_path')
@@ -88,20 +88,20 @@ def digipeat(frame, recv_port, recv_port_name):
                         frame['path'][hop_index] = port_callsign + '*'
                     else:
                         frame['path'][hop_index] = port['identifier'] + '*'
-                    port['tnc'].write(frame)
+                    port['tnc'].write(frame, port['tnc_port'])
                     aprsis.send(frame)
                     print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
                     return
 
             if node.startswith('WIDE') and ssid > 1:
                 frame['path'] = frame['path'][:hop_index-1] + [recv_port['identifier'] + '*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
-                recv_port['tnc'].write(frame)
+                recv_port['tnc'].write(frame, port['tnc_port'])
                 aprsis.send(frame)
                 print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
                 return
             elif node.startswith('WIDE') and ssid is 1:
                 frame['path'] = frame['path'][:hop_index-1] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
-                recv_port['tnc'].write(frame)
+                recv_port['tnc'].write(frame, port['tnc_port'])
                 aprsis.send(frame)
                 print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
                 return
@@ -135,12 +135,13 @@ threading.Thread(target=kiss_reader_thread, args=()).start()
 while 1 :
     for port_name in port_map.keys():
         port = port_map[port_name]
+
         beacon_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['beacon_path'].split(','), 'text': list(port['beacon_text'].encode('ascii'))}
-        port['tnc'].write(beacon_frame)
+        port['tnc'].write(beacon_frame, port['tnc_port'])
         print(port_name + " >> " + aprs.util.format_aprs_frame(beacon_frame))
 
         status_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['status_path'].split(','), 'text': list(port['status_text'].encode('ascii'))}
-        port['tnc'].write(status_frame)
+        port['tnc'].write(status_frame, port['tnc_port'])
         print(port_name + " >> " + aprs.util.format_aprs_frame(status_frame))
     time.sleep(600)
 
