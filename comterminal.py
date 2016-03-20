@@ -37,7 +37,11 @@ for section in config.sections():
             port_identifier = config.get(port_section, 'identifier')
             port_net = config.get(port_section, 'net')
             tnc_port = config.get(port_section, 'tnc_port')
-            port_map[port_name] = {'identifier':port_identifier, 'net':port_net, 'tnc':kiss_tnc, 'tnc_port':tnc_port}
+            beacon_path = config.get(port_section, 'beacon_path')
+            beacon_text = config.get(port_section, 'beacon_text')
+            status_path = config.get(port_section, 'status_path')
+            status_text = config.get(port_section, 'status_text')
+            port_map[port_name] = {'identifier':port_identifier, 'net':port_net, 'tnc':kiss_tnc, 'tnc_port':tnc_port, 'beacon_path':beacon_path, 'beacon_text':beacon_text, 'status_path':status_path, 'status_text':status_text}
 aprsis_callsign = config.get('APRS-IS', 'callsign')
 aprsis_password = config.get('APRS-IS', 'password')
 aprsis_server = config.get('APRS-IS', 'server')
@@ -53,36 +57,6 @@ def sigint_handler(signal, frame):
 signal.signal(signal.SIGINT, sigint_handler)
 
 print("Press ctrl + c at any time to exit")
-
-#After 5 seconds send out a test package.
-time.sleep(1)
-beacon_frame_vhf = {
-    'source': 'WI2ARD-1',
-    'destination': 'APRS',
-    'path': ['WIDE1-1', 'WIDE2-2'],
-    'text': list(b'!/:=i@;N.G& --G/D R-I-R H24')
-}
-
-beacon_frame_hf = {
-    'source': 'WI2ARD',
-    'destination': 'APRS',
-    'path': ['WIDE1-1'],
-    'text': list(b'!/:=i@;N.G& --G/D R-I-R H24')
-}
-
-status_frame_vhf = {
-    'source': 'WI2ARD-1',
-    'destination': 'APRS',
-    'path':['WIDE1-1', 'WIDE2-2'],
-    'text': list(b'>Listening on 146.52Mhz http://JeffreyFreeman.me')
-}
-
-status_frame_hf = {
-    'source': 'WI2ARD',
-    'destination': 'APRS',
-    'path': ['WIDE1-1'],
-    'text': list(b'>Robust Packet Radio http://JeffreyFreeman.me')
-}
 
 def digipeat(frame, recv_port, recv_port_name):
     # can't digipeat things we already digipeated.
@@ -105,7 +79,7 @@ def digipeat(frame, recv_port, recv_port_name):
                 split_port_identifier = port['identifier'].split('-')
                 port_callsign = split_port_identifier[0].upper()
                 if len(split_port_identifier) >= 2 and split_port_identifier[1]:
-                    port_ssid = int(split_hop[1])
+                    port_ssid = int(split_port_identifier[1])
                 else:
                     port_ssid = 0
 
@@ -153,19 +127,16 @@ def kiss_reader_thread():
         if something_read is False:
             time.sleep(1)
 
-rpr = port_map['RPR-1']['tnc']
-kenwood = port_map['KENWOOD-1']['tnc']
 threading.Thread(target=kiss_reader_thread, args=()).start()
 while 1 :
-    # let's wait one second before reading output (let's give device time to answer)
-    kenwood.write(beacon_frame_vhf)
-    print("K>> " + aprs.util.format_aprs_frame(beacon_frame_vhf))
-    kenwood.write(status_frame_vhf)
-    print("K>> " + aprs.util.format_aprs_frame(status_frame_vhf))
+    for port_name in port_map.keys():
+        port = port_map[port_name]
+        beacon_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['beacon_path'].split(','), 'text': list(port['beacon_text'].encode('ascii'))}
+        port['tnc'].write(beacon_frame)
+        print(port_name + " >> " + aprs.util.format_aprs_frame(beacon_frame))
 
-    rpr.write(beacon_frame_hf)
-    print("R>> " + aprs.util.format_aprs_frame(beacon_frame_hf))
-    rpr.write(status_frame_hf)
-    print("R>> " + aprs.util.format_aprs_frame(status_frame_hf))
+        status_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['status_path'].split(','), 'text': list(port['status_text'].encode('ascii'))}
+        port['tnc'].write(status_frame)
+        print(port_name + " >> " + aprs.util.format_aprs_frame(status_frame))
     time.sleep(600)
 
