@@ -60,6 +60,24 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 print("Press ctrl + c at any time to exit")
 
+def hash_frame(frame):
+    """
+    Produces an integr value that acts as a hash for the frame
+    :param frame: A frame packet
+    :type frame: dict
+    :return: an integer representing the hash
+    """
+    hash = 0
+    index = 0
+    frame_string_prefix = frame['source'] + ">" + frame['destination'] + ":"
+    for frame_chr in frame_string_prefix:
+        hash = ord(frame_chr)<<(8*(index%4)) ^ hash
+        index += 1
+    for byte in frame['text']:
+        hash = byte<<(8*(index%4)) ^ hash
+        index += 1
+    return hash
+
 def digipeat(frame, recv_port, recv_port_name):
     # Can't digipeat anything when you are the source
     for port in port_map.values():
@@ -95,7 +113,7 @@ def digipeat(frame, recv_port, recv_port_name):
                         frame['path'][hop_index] = port_callsign + '*'
                     else:
                         frame['path'][hop_index] = port['identifier'] + '*'
-                    frame_hash = aprs.util.hash_frame(frame)
+                    frame_hash = hash_frame(frame)
                     if not frame_hash in packet_cache.values():
                         packet_cache[str(frame_hash)] = frame_hash
                         port['tnc'].write(frame, port['tnc_port'])
@@ -105,19 +123,19 @@ def digipeat(frame, recv_port, recv_port_name):
 
             if node.startswith('WIDE') and ssid > 1:
                 frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
-                frame_hash = aprs.util.hash_frame(frame)
+                frame_hash = hash_frame(frame)
                 if not frame_hash in packet_cache.values():
                     packet_cache[str(frame_hash)] = frame_hash
-                    recv_port['tnc'].write(frame, port['tnc_port'])
+                    recv_port['tnc'].write(frame, recv_port['tnc_port'])
                     aprsis.send(frame)
                     print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
                 return
             elif node.startswith('WIDE') and ssid is 1:
                 frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
-                frame_hash = aprs.util.hash_frame(frame)
+                frame_hash = hash_frame(frame)
                 if not frame_hash in packet_cache.values():
                     packet_cache[str(frame_hash)] = frame_hash
-                    recv_port['tnc'].write(frame, port['tnc_port'])
+                    recv_port['tnc'].write(frame, recv_port['tnc_port'])
                     aprsis.send(frame)
                     print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
                 return
@@ -143,7 +161,7 @@ def kiss_reader_thread():
         except Exception as ex:
             # We want to keep this thread alive so long as the application runs.
             print("caught exception while reading packet: " + str(ex))
-            
+
         if something_read is False:
             time.sleep(1)
 
@@ -153,7 +171,7 @@ while 1 :
         port = port_map[port_name]
 
         beacon_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['beacon_path'].split(','), 'text': list(port['beacon_text'].encode('ascii'))}
-        frame_hash = aprs.util.hash_frame(beacon_frame)
+        frame_hash = hash_frame(beacon_frame)
         if not frame_hash in packet_cache.values():
             packet_cache[str(frame_hash)] = frame_hash
             port['tnc'].write(beacon_frame, port['tnc_port'])
@@ -161,7 +179,7 @@ while 1 :
 
 
         status_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['status_path'].split(','), 'text': list(port['status_text'].encode('ascii'))}
-        frame_hash = aprs.util.hash_frame(status_frame)
+        frame_hash = hash_frame(status_frame)
         if not frame_hash in packet_cache.values():
             packet_cache[str(frame_hash)] = frame_hash
             port['tnc'].write(status_frame, port['tnc_port'])

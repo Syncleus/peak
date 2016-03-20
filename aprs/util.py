@@ -124,20 +124,6 @@ def format_aprs_frame(frame):
         formatted_frame += chr(frame_byte)
     return formatted_frame
 
-def hash_frame(frame):
-    """
-    Produces an integr value that acts as a hash for the frame
-    :param frame: A frame packet
-    :type frame: dict
-    :return: an integer representing the hash
-    """
-    hash = 0
-    index = 0
-    for frame_chr in format_aprs_frame(frame):
-        hash = ord(frame_chr)<<(8*(index%4)) ^ hash
-        index += 1
-    return hash
-
 def valid_callsign(callsign):
     """
     Validates callsign.
