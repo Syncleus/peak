@@ -6,8 +6,6 @@ the prerequsites manually. The following is a list of the preequsites that need 
     pynmea2 >= 1.4.2
     pyserial >= 2.7
     requests >= 2.7.0
-    MySQLdb >= 1.2.5
-    mysql >= 2.1.3
 
 The application is written for python 3 specifically, it may not work with python 2. Once installed copy the
 apex.cfg.example file over to apex.cfg in the same directory, then edit the file and replace it with your details. Next
