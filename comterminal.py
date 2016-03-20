@@ -99,13 +99,13 @@ def digipeat(frame, recv_port, recv_port_name):
                     return
 
             if node.startswith('WIDE') and ssid > 1:
-                frame['path'] = frame['path'][:hop_index-1] + [recv_port['identifier'] + '*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
+                frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
                 recv_port['tnc'].write(frame, port['tnc_port'])
                 aprsis.send(frame)
                 print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
                 return
             elif node.startswith('WIDE') and ssid is 1:
-                frame['path'] = frame['path'][:hop_index-1] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
+                frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
                 recv_port['tnc'].write(frame, port['tnc_port'])
                 aprsis.send(frame)
                 print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
