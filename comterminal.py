@@ -59,6 +59,11 @@ signal.signal(signal.SIGINT, sigint_handler)
 print("Press ctrl + c at any time to exit")
 
 def digipeat(frame, recv_port, recv_port_name):
+    # Can't digipeat anything when you are the source
+    for port in port_map.values():
+        if frame and frame['source'] is port['identifier']:
+            return
+
     # can't digipeat things we already digipeated.
     for hop in frame['path']:
         if hop.startswith('WI2ARD') and hop.endswith('*'):
@@ -126,7 +131,7 @@ def kiss_reader_thread():
                     print(port_name + " << " + formatted_aprs)
         except Exception as ex:
             # We want to keep this thread alive so long as the application runs.
-            print("caught exception while reading packet: " + ex)
+            print("caught exception while reading packet: " + str(ex))
 
         if something_read is False:
             time.sleep(1)
