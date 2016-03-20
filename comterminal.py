@@ -121,7 +121,15 @@ def digipeat(frame, recv_port, recv_port_name):
                         aprsis.send(frame)
                         print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
                     return
-
+                elif node == "GATE" and port['net'].startswith("2M"):
+                    frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
+                    frame_hash = hash_frame(frame)
+                    if not frame_hash in packet_cache.values():
+                        packet_cache[str(frame_hash)] = frame_hash
+                        port['tnc'].write(frame, port['tnc_port'])
+                        aprsis.send(frame)
+                        print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                    return
             if node.startswith('WIDE') and ssid > 1:
                 frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
                 frame_hash = hash_frame(frame)
