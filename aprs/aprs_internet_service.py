@@ -9,10 +9,9 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 
 import logging
 import socket
-
 import requests
-
 import aprs.constants
+import time
 
 
 class AprsInternetService(object):
@@ -49,13 +48,15 @@ class AprsInternetService(object):
         port = port or aprs.constants.APRSIS_FILTER_PORT
         aprs_filter = aprs_filter or '/'.join(['p', self.user])
 
-        full_auth = ' '.join([self._auth, 'filter', aprs_filter])
+        self.full_auth = ' '.join([self._auth, 'filter', aprs_filter])
 
+        self.server = server
+        self.port = port
         self.aprsis_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.aprsis_sock.connect((server, int(port)))
+        self.aprsis_sock.connect((server, port))
         self.logger.info('Connected to server=%s port=%s', server, port)
-        self.logger.debug('Sending full_auth=%s', full_auth)
-        self.aprsis_sock.sendall((full_auth + '\n\r').encode('ascii'))
+        self.logger.debug('Sending full_auth=%s', self.full_auth)
+        self.aprsis_sock.sendall((self.full_auth + '\n\r').encode('ascii'))
 
     def send(self, frame, headers=None, protocol='TCP'):
         """
@@ -80,7 +81,17 @@ class AprsInternetService(object):
             message = bytearray()
             for frame_chr in aprs.util.format_aprs_frame(frame):
                 message.append(ord(frame_chr))
-            self.aprsis_sock.sendall(message)
+            message_sent = False
+            while not message_sent:
+                try:
+                    self.aprsis_sock.sendall(message)
+                    message_sent = True
+                except (ConnectionResetError, BrokenPipeError) as ex:
+                    #connection reset wait a second then try again
+                    time.sleep(1)
+                    self.aprsis_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    self.aprsis_sock.connect((self.server, self.port))
+                    self.aprsis_sock.sendall((self.full_auth + '\n\r').encode('ascii'))
             return True
         elif 'HTTP' in protocol:
             content = "\n".join([self._auth, aprs.util.format_aprs_frame(frame)])

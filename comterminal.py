@@ -17,6 +17,7 @@ import aprs.util
 import threading
 import configparser
 import cachetools
+import traceback
 
 port_map = {}
 config = configparser.ConfigParser()
@@ -48,7 +49,7 @@ aprsis_password = config.get('APRS-IS', 'password')
 aprsis_server = config.get('APRS-IS', 'server')
 aprsis_server_port = config.get('APRS-IS', 'server_port')
 aprsis = aprs.AprsInternetService(aprsis_callsign, aprsis_password)
-aprsis.connect(aprsis_server, aprsis_server_port)
+aprsis.connect(aprsis_server, int(aprsis_server_port))
 packet_cache = cachetools.TTLCache(10000, 5)
 
 def sigint_handler(signal, frame):
@@ -160,6 +161,7 @@ def kiss_reader_thread():
                     digipeat(frame, port, port_name)
         except Exception as ex:
             # We want to keep this thread alive so long as the application runs.
+            traceback.print_exc(file=sys.stdout)
             print("caught exception while reading packet: " + str(ex))
 
         if something_read is False:
