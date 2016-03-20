@@ -43,7 +43,9 @@ for section in config.sections():
             beacon_text = config.get(port_section, 'beacon_text')
             status_path = config.get(port_section, 'status_path')
             status_text = config.get(port_section, 'status_text')
-            port_map[port_name] = {'identifier':port_identifier, 'net':port_net, 'tnc':kiss_tnc, 'tnc_port':tnc_port, 'beacon_path':beacon_path, 'beacon_text':beacon_text, 'status_path':status_path, 'status_text':status_text}
+            id_text = config.get(port_section, 'id_text')
+            id_path = config.get(port_section, 'id_path')
+            port_map[port_name] = {'identifier':port_identifier, 'net':port_net, 'tnc':kiss_tnc, 'tnc_port':tnc_port, 'beacon_path':beacon_path, 'beacon_text':beacon_text, 'status_path':status_path, 'status_text':status_text, 'id_text':id_text, 'id_path':id_path}
 aprsis_callsign = config.get('APRS-IS', 'callsign')
 aprsis_password = config.get('APRS-IS', 'password')
 aprsis_server = config.get('APRS-IS', 'server')
@@ -189,6 +191,13 @@ while 1 :
 
 
         status_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['status_path'].split(','), 'text': list(port['status_text'].encode('ascii'))}
+        frame_hash = hash_frame(status_frame)
+        if not frame_hash in packet_cache.values():
+            packet_cache[str(frame_hash)] = frame_hash
+            port['tnc'].write(status_frame, port['tnc_port'])
+            print(port_name + " >> " + aprs.util.format_aprs_frame(status_frame))
+
+        status_frame = {'source':port['identifier'], 'destination': 'ID', 'path':port['id_path'].split(','), 'text': list(port['id_text'].encode('ascii'))}
         frame_hash = hash_frame(status_frame)
         if not frame_hash in packet_cache.values():
             packet_cache[str(frame_hash)] = frame_hash
