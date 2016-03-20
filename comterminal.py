@@ -61,7 +61,7 @@ print("Press ctrl + c at any time to exit")
 def digipeat(frame, recv_port, recv_port_name):
     # Can't digipeat anything when you are the source
     for port in port_map.values():
-        if frame and frame['source'] is port['identifier']:
+        if frame['source'] == port['identifier']:
             return
 
     # can't digipeat things we already digipeated.
