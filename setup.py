@@ -43,7 +43,7 @@ setup(
     packages=['apex'],
     package_data={'': ['LICENSE']},
     license=open('LICENSE').read(),
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
     url='https://github.com/syncleus/apex',
     setup_requires=[
       'coverage >= 3.7.1',
