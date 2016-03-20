@@ -55,7 +55,7 @@ setup(
         'pyserial >= 2.7',
         'requests >= 2.7.0',
         'MySQLdb >= 1.2.5',
-        'mysql >= 2.1.3'
+        'mysql >= 2.1.3',
         'cachetools >= 1.1.5'
     ],
     package_dir={'apex': 'apex'},
