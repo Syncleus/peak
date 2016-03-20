@@ -115,14 +115,18 @@ def kiss_reader_thread():
     print("Begining kiss reader thread...")
     while 1:
         something_read = False
-        for port_name in port_map.keys():
-            port = port_map[port_name]
-            frame = port['tnc'].read()
-            if frame:
-                something_read = True
-                digipeat(frame, port, port_name)
-                formatted_aprs = aprs.util.format_aprs_frame(frame)
-                print(port_name + " << " + formatted_aprs)
+        try:
+            for port_name in port_map.keys():
+                port = port_map[port_name]
+                frame = port['tnc'].read()
+                if frame:
+                    something_read = True
+                    digipeat(frame, port, port_name)
+                    formatted_aprs = aprs.util.format_aprs_frame(frame)
+                    print(port_name + " << " + formatted_aprs)
+        except Exception as ex:
+            # We want to keep this thread alive so long as the application runs.
+            print("caught exception while reading packet: " + ex)
 
         if something_read is False:
             time.sleep(1)
