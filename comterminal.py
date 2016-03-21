@@ -298,14 +298,20 @@ def preemptive_digipeat(frame, recv_port, recv_port_name):
         return
 
     #now lets digipeat this packet
-    for hop_index in range(0, selected_hop['index']):
+    new_path=[]
+    for hop_index in range(0, len(frame['path'])):
         hop = frame['path'][hop_index]
         if hop[-1] != '*':
-            frame['path'][hop_index] = hop + '*'
-    if selected_hop['band_path'] is None:
-        frame['path'] = frame['path'][:hop_index] + [selected_hop['hop'] + "*"] + frame['path'][hop_index+1:]
-    else:
-        frame['path'] = frame['path'][:hop_index+1] + [selected_hop['port']['identifier'] + "*"] + [selected_hop['hop'] + "*"] + frame['path'][hop_index+2:]
+            if hop_index == selected_hop['index']:
+                if selected_hop['band_path'] is None:
+                    new_path += [hop + "*"]
+                else:
+                    new_path += [selected_hop['port']['identifier'] + "*"] + [hop + "*"]
+            elif hop_index > selected_hop['index']:
+                new_path += [hop]
+        else:
+            new_path += [hop]
+    frame['path'] = new_path
     frame_hash = hash_frame(frame)
     packet_cache[str(frame_hash)] = frame_hash
     selected_hop['port']['tnc'].write(frame, selected_hop['port']['tnc_port'])
