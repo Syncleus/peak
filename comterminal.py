@@ -18,6 +18,7 @@ import threading
 import configparser
 import cachetools
 import traceback
+import re
 
 port_map = {}
 config = configparser.ConfigParser()
@@ -110,6 +111,11 @@ def digipeat(frame, recv_port, recv_port_name):
                     port_ssid = int(split_port_identifier[1])
                 else:
                     port_ssid = 0
+
+                band_regex = re.compile('([0-9]*)]M([a-zA-Z0-9]*)')
+                band_match = band_regex.fullmatch(node)
+                if band_match is not None:
+                    print("band match groups:" + str(band_regex.groups()))
 
                 if node == port_callsign and ssid == port_ssid:
                     if ssid is 0:
