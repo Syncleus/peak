@@ -3,16 +3,20 @@ import time
 
 plugin = None
 
-def start(port_map, packet_cache):
+def start(port_map, packet_cache, aprsis):
     global plugin
-    plugin = BeaconPlugin(port_map, packet_cache)
+    plugin = IdPlugin(port_map, packet_cache, aprsis)
     plugin.run()
 
-class BeaconPlugin( object ):
+def handle_packet(frame, recv_port, recv_port_name):
+    return
 
-    def __init__(self, port_map, packet_cache):
+class IdPlugin(object):
+
+    def __init__(self, port_map, packet_cache, aprsis):
         self.port_map = port_map
         self.packet_cache = packet_cache
+        self.aprsis = aprsis
 
     def run(self):
         while 1 :
