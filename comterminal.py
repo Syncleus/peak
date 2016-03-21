@@ -71,7 +71,7 @@ for plugin_loader in plugin_loaders:
     loaded_plugin=pluginloader.loadPlugin(plugin_loader)
     plugins.append(loaded_plugin)
     #loaded_plugin.start(port_map, packet_cache)
-    threading.Thread(target=loaded_plugin.start, args=(port_map, packet_cache)).start()
+    threading.Thread(target=loaded_plugin.start, args=(port_map, packet_cache, aprsis)).start()
 
 print("Begining kiss reader thread...")
 while 1:
