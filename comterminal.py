@@ -66,25 +66,6 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 print("Press ctrl + c at any time to exit")
 
-def hash_frame(frame):
-    """
-    Produces an integr value that acts as a hash for the frame
-    :param frame: A frame packet
-    :type frame: dict
-    :return: an integer representing the hash
-    """
-    hash = 0
-    index = 0
-    frame_string_prefix = frame['source'] + ">" + frame['destination'] + ":"
-    for frame_chr in frame_string_prefix:
-        hash = ord(frame_chr)<<(8*(index%4)) ^ hash
-        index += 1
-    for byte in frame['text']:
-        hash = byte<<(8*(index%4)) ^ hash
-        index += 1
-    return hash
-
-
 BAND_PATH_REGEX = re.compile(r'(\d{1,4})M(\d{0,3})')
 
 def digipeat(frame, recv_port, recv_port_name):
@@ -132,7 +113,7 @@ def passive_digipeat(frame, recv_port, recv_port_name):
                     if band_path_net:
                         if node == port['net']:
                             frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [hop + "*"] + frame['path'][hop_index+1:]
-                            frame_hash = hash_frame(frame)
+                            frame_hash = aprs.util.hash_frame(frame)
                             if not frame_hash in packet_cache.values():
                                 packet_cache[str(frame_hash)] = frame_hash
                                 port['tnc'].write(frame, port['tnc_port'])
@@ -142,7 +123,7 @@ def passive_digipeat(frame, recv_port, recv_port_name):
                     else:
                         if port['net'].startswith(node):
                             frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [hop + "*"] + frame['path'][hop_index+1:]
-                            frame_hash = hash_frame(frame)
+                            frame_hash = aprs.util.hash_frame(frame)
                             if not frame_hash in packet_cache.values():
                                 packet_cache[str(frame_hash)] = frame_hash
                                 port['tnc'].write(frame, port['tnc_port'])
@@ -154,7 +135,7 @@ def passive_digipeat(frame, recv_port, recv_port_name):
                         frame['path'][hop_index] = port_callsign + '*'
                     else:
                         frame['path'][hop_index] = port['identifier'] + '*'
-                    frame_hash = hash_frame(frame)
+                    frame_hash = aprs.util.hash_frame(frame)
                     if not frame_hash in packet_cache.values():
                         packet_cache[str(frame_hash)] = frame_hash
                         port['tnc'].write(frame, port['tnc_port'])
@@ -163,7 +144,7 @@ def passive_digipeat(frame, recv_port, recv_port_name):
                     return
                 elif node == "GATE" and port['net'].startswith("2M"):
                     frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
-                    frame_hash = hash_frame(frame)
+                    frame_hash = aprs.util.hash_frame(frame)
                     if not frame_hash in packet_cache.values():
                         packet_cache[str(frame_hash)] = frame_hash
                         port['tnc'].write(frame, port['tnc_port'])
@@ -172,7 +153,7 @@ def passive_digipeat(frame, recv_port, recv_port_name):
                     return
             if node.startswith('WIDE') and ssid > 1:
                 frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
-                frame_hash = hash_frame(frame)
+                frame_hash = aprs.util.hash_frame(frame)
                 if not frame_hash in packet_cache.values():
                     packet_cache[str(frame_hash)] = frame_hash
                     recv_port['tnc'].write(frame, recv_port['tnc_port'])
@@ -181,7 +162,7 @@ def passive_digipeat(frame, recv_port, recv_port_name):
                 return
             elif node.startswith('WIDE') and ssid is 1:
                 frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
-                frame_hash = hash_frame(frame)
+                frame_hash = aprs.util.hash_frame(frame)
                 if not frame_hash in packet_cache.values():
                     packet_cache[str(frame_hash)] = frame_hash
                     recv_port['tnc'].write(frame, recv_port['tnc_port'])
@@ -313,7 +294,7 @@ def preemptive_digipeat(frame, recv_port, recv_port_name):
         else:
             new_path += [hop]
     frame['path'] = new_path
-    frame_hash = hash_frame(frame)
+    frame_hash = aprs.util.hash_frame(frame)
     packet_cache[str(frame_hash)] = frame_hash
     selected_hop['port']['tnc'].write(frame, selected_hop['port']['tnc_port'])
     aprsis.send(frame)
@@ -342,32 +323,17 @@ def kiss_reader_thread():
         if something_read is False:
             time.sleep(1)
 
-print("plugins: " + str(pluginloader.getPlugins()))
+#start reading thread
 threading.Thread(target=kiss_reader_thread, args=()).start()
+
+#start the plugins
+plugin_loaders=pluginloader.getPlugins()
+for plugin_loader in plugin_loaders:
+    loaded_plugin=pluginloader.loadPlugin(plugin_loader)
+    #loaded_plugin.start(port_map, packet_cache)
+    threading.Thread(target=loaded_plugin.start, args=(port_map, packet_cache)).start()
+
+#Keep the main loop going for now, fix this later
 while 1 :
-    for port_name in port_map.keys():
-        port = port_map[port_name]
-
-        beacon_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['beacon_path'].split(','), 'text': list(port['beacon_text'].encode('ascii'))}
-        frame_hash = hash_frame(beacon_frame)
-        if not frame_hash in packet_cache.values():
-            packet_cache[str(frame_hash)] = frame_hash
-            port['tnc'].write(beacon_frame, port['tnc_port'])
-            print(port_name + " >> " + aprs.util.format_aprs_frame(beacon_frame))
-
-
-        status_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['status_path'].split(','), 'text': list(port['status_text'].encode('ascii'))}
-        frame_hash = hash_frame(status_frame)
-        if not frame_hash in packet_cache.values():
-            packet_cache[str(frame_hash)] = frame_hash
-            port['tnc'].write(status_frame, port['tnc_port'])
-            print(port_name + " >> " + aprs.util.format_aprs_frame(status_frame))
-
-        status_frame = {'source':port['identifier'], 'destination': 'ID', 'path':port['id_path'].split(','), 'text': list(port['id_text'].encode('ascii'))}
-        frame_hash = hash_frame(status_frame)
-        if not frame_hash in packet_cache.values():
-            packet_cache[str(frame_hash)] = frame_hash
-            port['tnc'].write(status_frame, port['tnc_port'])
-            print(port_name + " >> " + aprs.util.format_aprs_frame(status_frame))
-    time.sleep(600)
+    time.sleep(1)
 

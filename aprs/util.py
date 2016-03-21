@@ -170,5 +170,24 @@ def run_doctest():  # pragma: no cover
     return doctest.testmod(aprs.util)
 
 
+def hash_frame(frame):
+    """
+    Produces an integr value that acts as a hash for the frame
+    :param frame: A frame packet
+    :type frame: dict
+    :return: an integer representing the hash
+    """
+    hash = 0
+    index = 0
+    frame_string_prefix = frame['source'] + ">" + frame['destination'] + ":"
+    for frame_chr in frame_string_prefix:
+        hash = ord(frame_chr)<<(8*(index%4)) ^ hash
+        index += 1
+    for byte in frame['text']:
+        hash = byte<<(8*(index%4)) ^ hash
+        index += 1
+    return hash
+
+
 if __name__ == '__main__':
     run_doctest()  # pragma: no cover
