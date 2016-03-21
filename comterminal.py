@@ -20,6 +20,7 @@ import cachetools
 import traceback
 import re
 import copy
+import pluginloader
 
 port_map = {}
 config = configparser.ConfigParser()
@@ -341,6 +342,7 @@ def kiss_reader_thread():
         if something_read is False:
             time.sleep(1)
 
+print("plugins: " + str(pluginloader.getPlugins()))
 threading.Thread(target=kiss_reader_thread, args=()).start()
 while 1 :
     for port_name in port_map.keys():
