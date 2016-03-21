@@ -82,9 +82,9 @@ while 1:
             if frame:
                 for plugin in plugins:
                     something_read = True
-                    formatted_aprs = aprs.util.format_aprs_frame(frame)
-                    print(port_name + " << " + formatted_aprs)
                     plugin.handle_packet(frame, port, port_name)
+                formatted_aprs = aprs.util.format_aprs_frame(frame)
+                print(port_name + " << " + formatted_aprs)
     except Exception as ex:
         # We want to keep this thread alive so long as the application runs.
         traceback.print_exc(file=sys.stdout)
