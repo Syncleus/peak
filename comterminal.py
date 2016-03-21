@@ -87,8 +87,8 @@ def hash_frame(frame):
 BAND_PATH_REGEX = re.compile(r'(\d{1,4})M(\d{0,3})')
 
 def digipeat(frame, recv_port, recv_port_name):
-    passive_digipeat(copy.deepcopy(frame))
-    preemptive_digipeat(copy.deepcopy(frame))
+    passive_digipeat(copy.deepcopy(frame), recv_port, recv_port_name)
+    preemptive_digipeat(copy.deepcopy(frame), recv_port, recv_port_name)
 
 def passive_digipeat(frame, recv_port, recv_port_name):
     # Can't digipeat anything when you are the source
@@ -305,7 +305,7 @@ def preemptive_digipeat(frame, recv_port, recv_port_name):
     if selected_hop['band_path'] is None:
         frame['path'] = frame['path'][:hop_index] + [selected_hop['hop'] + "*"] + frame['path'][hop_index+1:]
     else:
-        frame['path'] = frame['path'][:hop_index] + [selected_hop['']] + [selected_hop['hop'] + "*"] + frame['path'][hop_index+1:]
+        frame['path'] = frame['path'][:hop_index+1] + [selected_hop['port']['identifier'] + "*"] + [selected_hop['hop'] + "*"] + frame['path'][hop_index+2:]
     frame_hash = hash_frame(frame)
     packet_cache[str(frame_hash)] = frame_hash
     selected_hop['port']['tnc'].write(frame, selected_hop['port']['tnc_port'])
