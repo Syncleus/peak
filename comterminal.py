@@ -56,7 +56,7 @@ aprsis.connect(aprsis_server, int(aprsis_server_port))
 packet_cache = cachetools.TTLCache(10000, 5)
 
 def sigint_handler(signal, frame):
-    for port in port_map:
+    for port in port_map.values():
         port['tnc'].close()
     sys.exit(0)
 
@@ -82,6 +82,9 @@ def hash_frame(frame):
         index += 1
     return hash
 
+
+BAND_PATH_REGEX = re.compile(r'(\d{1,4})M(\d{0,3})')
+
 def digipeat(frame, recv_port, recv_port_name):
     # Can't digipeat anything when you are the source
     for port in port_map.values():
@@ -103,6 +106,13 @@ def digipeat(frame, recv_port, recv_port_name):
             else:
                 ssid = 0
 
+            band_path = None
+            band_path_net = None
+            band_match = BAND_PATH_REGEX.match(node)
+            if band_match is not None:
+                band_path = band_match.group(1)
+                band_path_net = band_match.group(2)
+
             for port_name in port_map.keys():
                 port = port_map[port_name]
                 split_port_identifier = port['identifier'].split('-')
@@ -112,11 +122,27 @@ def digipeat(frame, recv_port, recv_port_name):
                 else:
                     port_ssid = 0
 
-                band_regex = re.compile('([0-9]*)]M([a-zA-Z0-9]*)')
-                band_match = band_regex.fullmatch(node)
-                if band_match is not None:
-                    print("band match groups:" + str(band_regex.groups()))
-
+                if band_path:
+                    if band_path_net:
+                        if node == port['net']:
+                            frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [hop + "*"] + frame['path'][hop_index+1:]
+                            frame_hash = hash_frame(frame)
+                            if not frame_hash in packet_cache.values():
+                                packet_cache[str(frame_hash)] = frame_hash
+                                port['tnc'].write(frame, port['tnc_port'])
+                                aprsis.send(frame)
+                                print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                            return
+                    else:
+                        if port['net'].startswith(node):
+                            frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [hop + "*"] + frame['path'][hop_index+1:]
+                            frame_hash = hash_frame(frame)
+                            if not frame_hash in packet_cache.values():
+                                packet_cache[str(frame_hash)] = frame_hash
+                                port['tnc'].write(frame, port['tnc_port'])
+                                aprsis.send(frame)
+                                print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                            return
                 if node == port_callsign and ssid == port_ssid:
                     if ssid is 0:
                         frame['path'][hop_index] = port_callsign + '*'
