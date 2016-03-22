@@ -4,9 +4,9 @@ import re
 
 plugin = None
 
-def start(port_map, packet_cache, aprsis):
+def start(config, port_map, packet_cache, aprsis):
     global plugin
-    plugin = ApexParadigmPlugin(port_map, packet_cache, aprsis)
+    plugin = ApexParadigmPlugin(config, port_map, packet_cache, aprsis)
     plugin.run()
 
 def handle_packet(frame, recv_port, recv_port_name):
@@ -17,7 +17,7 @@ class ApexParadigmPlugin(object):
 
     BAND_PATH_REGEX = re.compile(r'(\d{1,4})M(\d{0,3})')
 
-    def __init__(self, port_map, packet_cache, aprsis):
+    def __init__(self, config, port_map, packet_cache, aprsis):
         self.port_map = port_map
         self.packet_cache = packet_cache
         self.aprsis = aprsis

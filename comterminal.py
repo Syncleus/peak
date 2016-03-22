@@ -73,7 +73,7 @@ for plugin_loader in plugin_loaders:
     loaded_plugin=pluginloader.loadPlugin(plugin_loader)
     plugins.append(loaded_plugin)
     #loaded_plugin.start(port_map, packet_cache)
-    threading.Thread(target=loaded_plugin.start, args=(port_map, packet_cache, aprsis)).start()
+    threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
 
 while 1:
     something_read = False

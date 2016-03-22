@@ -3,9 +3,9 @@ import time
 
 plugin = None
 
-def start(port_map, packet_cache, aprsis):
+def start(config, port_map, packet_cache, aprsis):
     global plugin
-    plugin = StatusPlugin(port_map, packet_cache, aprsis)
+    plugin = StatusPlugin(config, port_map, packet_cache, aprsis)
     plugin.run()
 
 def handle_packet(frame, recv_port, recv_port_name):
@@ -13,7 +13,7 @@ def handle_packet(frame, recv_port, recv_port_name):
 
 class StatusPlugin(object):
 
-    def __init__(self, port_map, packet_cache, aprsis):
+    def __init__(self, config, port_map, packet_cache, aprsis):
         self.port_map = port_map
         self.packet_cache = packet_cache
         self.aprsis = aprsis
