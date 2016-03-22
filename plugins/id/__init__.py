@@ -18,6 +18,16 @@ class IdPlugin(object):
         self.packet_cache = packet_cache
         self.aprsis = aprsis
 
+        for section in config.sections():
+            if section.startswith("TNC "):
+                tnc_name = section.split(" ")[1]
+                for port_id in range(1, 1+int(config.get(section, 'port_count'))):
+                    port_name = tnc_name + '-' + str(port_id)
+                    port = port_map[port_name]
+                    port_section = 'PORT ' + port_name
+                    port['id_text'] = config.get(port_section, 'id_text')
+                    port['id_path'] = config.get(port_section, 'id_path')
+
     def run(self):
         while 1 :
             for port_name in self.port_map.keys():

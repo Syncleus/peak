@@ -18,6 +18,16 @@ class BeaconPlugin( object ):
         self.packet_cache = packet_cache
         self.aprsis = aprsis
 
+        for section in config.sections():
+            if section.startswith("TNC "):
+                tnc_name = section.split(" ")[1]
+                for port_id in range(1, 1+int(config.get(section, 'port_count'))):
+                    port_name = tnc_name + '-' + str(port_id)
+                    port = port_map[port_name]
+                    port_section = 'PORT ' + port_name
+                    port['beacon_text'] = config.get(port_section, 'beacon_text')
+                    port['beacon_path'] = config.get(port_section, 'beacon_path')
+
     def run(self):
         while 1 :
             for port_name in self.port_map.keys():

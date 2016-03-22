@@ -42,13 +42,7 @@ for section in config.sections():
             port_identifier = config.get(port_section, 'identifier')
             port_net = config.get(port_section, 'net')
             tnc_port = int(config.get(port_section, 'tnc_port'))
-            beacon_path = config.get(port_section, 'beacon_path')
-            beacon_text = config.get(port_section, 'beacon_text')
-            status_path = config.get(port_section, 'status_path')
-            status_text = config.get(port_section, 'status_text')
-            id_text = config.get(port_section, 'id_text')
-            id_path = config.get(port_section, 'id_path')
-            port_map[port_name] = {'identifier':port_identifier, 'net':port_net, 'tnc':kiss_tnc, 'tnc_port':tnc_port, 'beacon_path':beacon_path, 'beacon_text':beacon_text, 'status_path':status_path, 'status_text':status_text, 'id_text':id_text, 'id_path':id_path}
+            port_map[port_name] = {'identifier':port_identifier, 'net':port_net, 'tnc':kiss_tnc, 'tnc_port':tnc_port}
 aprsis_callsign = config.get('APRS-IS', 'callsign')
 aprsis_password = config.get('APRS-IS', 'password')
 aprsis_server = config.get('APRS-IS', 'server')
