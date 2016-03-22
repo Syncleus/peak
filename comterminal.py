@@ -80,11 +80,11 @@ while 1:
             port = port_map[port_name]
             frame = port['tnc'].read()
             if frame:
+                formatted_aprs = aprs.util.format_aprs_frame(frame)
+                print(port_name + " << " + formatted_aprs)
                 for plugin in plugins:
                     something_read = True
                     plugin.handle_packet(frame, port, port_name)
-                formatted_aprs = aprs.util.format_aprs_frame(frame)
-                print(port_name + " << " + formatted_aprs)
     except Exception as ex:
         # We want to keep this thread alive so long as the application runs.
         traceback.print_exc(file=sys.stdout)
