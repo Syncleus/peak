@@ -1,6 +1,4 @@
-import importlib
-import importlib.util
-import importlib.machinery
+import imp
 import os
 
 PluginFolder = "./plugins"
@@ -13,9 +11,9 @@ def getPlugins():
         location = os.path.join(PluginFolder, i)
         if not os.path.isdir(location) or not MainModule + ".py" in os.listdir(location):
             continue
-        info = importlib.util._find_spec_from_path(MainModule, [location])
-        plugins.append({"name": i, "spec": info})
+        info = imp.find_module(MainModule, [location])
+        plugins.append({"name": i, "info": info})
     return plugins
 
 def loadPlugin(plugin):
-    return plugin['spec'].loader.load_module()
+    return imp.load_module(MainModule, *plugin["info"])
