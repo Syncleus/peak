@@ -245,15 +245,16 @@ class ApexParadigmPlugin(object):
                 new_path += [hop]
         frame['path'] = new_path
         frame_hash = aprs.util.hash_frame(frame)
-        self.packet_cache[str(frame_hash)] = frame_hash
-        selected_hop['port']['tnc'].write(frame, selected_hop['port']['tnc_port'])
-        self.aprsis.send(frame)
-        print(selected_hop['port_name'] + " >> " + aprs.util.format_aprs_frame(frame))
+        if not frame_hash in self.packet_cache.values():
+            self.packet_cache[str(frame_hash)] = frame_hash
+            selected_hop['port']['tnc'].write(frame, selected_hop['port']['tnc_port'])
+            self.aprsis.send(frame)
+            print(selected_hop['port_name'] + " >> " + aprs.util.format_aprs_frame(frame))
         return
 
     def run(self):
         return
 
     def handle_packet(self, frame, recv_port, recv_port_name):
-        self.__passive_digipeat(copy.deepcopy(frame), recv_port, recv_port_name)
         self.__preemptive_digipeat(copy.deepcopy(frame), recv_port, recv_port_name)
+        self.__passive_digipeat(copy.deepcopy(frame), recv_port, recv_port_name)
