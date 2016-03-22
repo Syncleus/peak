@@ -32,6 +32,8 @@ for section in config.sections():
             kiss_tnc.start(kiss.constants.MODE_INIT_W8DED)
         elif kiss_init_string == 'MODE_INIT_KENWOOD_D710':
             kiss_tnc.start(kiss.constants.MODE_INIT_KENWOOD_D710)
+        elif kiss_init_string == 'NONE':
+            kiss_tnc.start()
         else:
             raise Exception("KISS init mode not specified")
         for port in range(1, 1+int(config.get(section, 'port_count'))):
