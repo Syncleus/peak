@@ -53,7 +53,10 @@ for section in config.sections():
             tnc_port = int(config.get(port_section, 'tnc_port'))
             port_map[port_name] = {'identifier':port_identifier, 'net':port_net, 'tnc':kiss_tnc, 'tnc_port':tnc_port}
 aprsis_callsign = config.get('APRS-IS', 'callsign')
-aprsis_password = config.get('APRS-IS', 'password')
+if config.has_option('APRS-IS', 'password'):
+    aprsis_password = config.get('APRS-IS', 'password')
+else
+    aprsis_password = -1
 aprsis_server = config.get('APRS-IS', 'server')
 aprsis_server_port = config.get('APRS-IS', 'server_port')
 aprsis = aprs.AprsInternetService(aprsis_callsign, aprsis_password)
