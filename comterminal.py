@@ -26,7 +26,16 @@ config.read('apex.cfg')
 for section in config.sections():
     if section.startswith("TNC "):
         tnc_name = section.split(" ")[1]
-        kiss_tnc = aprs.AprsKiss(com_port=config.get(section, 'com_port'), baud=config.get(section, 'baud'))
+        com_port = config.get(section, 'com_port')
+        baud = config.get(section, 'baud')
+        tcp_host = config.get(section, 'tcp_host')
+        tcp_port = config.get(section, 'tcp_port')
+        if com_port and baud:
+            kiss_tnc = aprs.AprsKiss(com_port=com_port, baud=baud)
+        elif tcp_host and tcp_port:
+            kiss_tnc = aprs.AprsKiss(host=tcp_host, tcp_port=tcp_port)
+        else:
+            raise Exception("Must have either both com_port and baud set or tcp_host and tcp_port set in configuration file")
         kiss_init_string = config.get(section,'kiss_init')
         if kiss_init_string == 'MODE_INIT_W8DED':
             kiss_tnc.start(kiss.constants.MODE_INIT_W8DED)
