@@ -31,6 +31,7 @@ class StatusPlugin(object):
 
 
     def run(self):
+        time.sleep(60)
         while 1 :
             for port_name in self.port_map.keys():
                 port = self.port_map[port_name]

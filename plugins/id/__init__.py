@@ -29,6 +29,7 @@ class IdPlugin(object):
                     port['id_path'] = config.get(port_section, 'id_path')
 
     def run(self):
+        time.sleep(30)
         while 1 :
             for port_name in self.port_map.keys():
                 port = self.port_map[port_name]
