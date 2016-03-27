@@ -55,7 +55,7 @@ for section in config.sections():
 aprsis_callsign = config.get('APRS-IS', 'callsign')
 if config.has_option('APRS-IS', 'password'):
     aprsis_password = config.get('APRS-IS', 'password')
-else
+else:
     aprsis_password = -1
 aprsis_server = config.get('APRS-IS', 'server')
 aprsis_server_port = config.get('APRS-IS', 'server_port')
