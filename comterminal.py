@@ -26,13 +26,13 @@ config.read('apex.cfg')
 for section in config.sections():
     if section.startswith("TNC "):
         tnc_name = section.split(" ")[1]
-        com_port = config.get(section, 'com_port')
-        baud = config.get(section, 'baud')
-        tcp_host = config.get(section, 'tcp_host')
-        tcp_port = config.get(section, 'tcp_port')
-        if com_port and baud:
+        if config.has_option(section, 'com_port') and config.has_option(section, 'baud'):
+            com_port = config.get(section, 'com_port')
+            baud = config.get(section, 'baud')
             kiss_tnc = aprs.AprsKiss(com_port=com_port, baud=baud)
-        elif tcp_host and tcp_port:
+        elif config.has_option(section, 'tcp_host') and config.has_option(section, 'tcp_port'):
+            tcp_host = config.get(section, 'tcp_host')
+            tcp_port = config.get(section, 'tcp_port')
             kiss_tnc = aprs.AprsKiss(host=tcp_host, tcp_port=tcp_port)
         else:
             raise Exception("Must have either both com_port and baud set or tcp_host and tcp_port set in configuration file")
