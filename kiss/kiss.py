@@ -255,17 +255,9 @@ class Kiss(object):
 
         :param frame: Frame to write.
         """
-        interface_handler = None
+        kiss_packet = [kiss.constants.FEND] + [Kiss.__command_byte_combine(port, kiss.constants.DATA_FRAME)] + Kiss.__escape_special_codes(frame_bytes) + [kiss.constants.FEND]
 
         if 'tcp' in self.interface_mode:
-            interface_handler = self.interface.send
+            return self.interface.send(bytearray(kiss_packet))
         elif 'serial' in self.interface_mode:
-            interface_handler = self.interface.write
-
-        if interface_handler is not None:
-            return interface_handler(
-                [kiss.constants.FEND] +
-                [Kiss.__command_byte_combine(port, kiss.constants.DATA_FRAME)] +
-                Kiss.__escape_special_codes(frame_bytes) +
-                [kiss.constants.FEND]
-            )
+            return self.interface.write(kiss_packet)
