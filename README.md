@@ -18,7 +18,7 @@ The application is written for python 3 specifically, it may not work with pytho
 apex.cfg.example file over to apex.cfg in the same directory, then edit the file and replace it with your details. Next
 just run the application with the following command.
 
-    python ./comterminal.py
+    python ./apex.py
 
 There isnt much to the application right now, so thats all you should need to run it. Digipeating will occur
 automatically and respond to the WIDEN-n paradigm as well as your own callsign. Cross-band repeating is enabled right
