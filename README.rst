@@ -24,9 +24,9 @@ Overview
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/syncleus/apex
 
-.. |requires| image:: https://requires.io/github/syncleus/apex/requirements.svg?branch=master
-    :alt: Requirements Status
-    :target: https://requires.io/github/syncleus/apex/requirements/?branch=master
+.. |requires| image:: https://requires.io/github/Syncleus/apex/requirements.svg?branch=master
+     :alt: Requirements Status
+     :target: https://requires.io/github/Syncleus/apex/requirements/?branch=master
 
 .. |coveralls| image:: https://coveralls.io/repos/syncleus/apex/badge.svg?branch=master&service=github
     :alt: Coverage Status
