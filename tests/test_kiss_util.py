@@ -31,26 +31,26 @@ class KISSUtilTestCase(unittest.TestCase):
         """Teardown."""
         self.test_frames.close()
 
-    def test_escape_special_codes_fend(self):
-        """
-        Tests `kiss.util.escape_special_codes` util function.
-        """
-        fend = apex.kiss.util.escape_special_codes(apex.kiss.constants.FEND)
-        self.assertEqual(fend, apex.kiss.constants.FESC_TFEND)
-
-    def test_escape_special_codes_fesc(self):
-        """
-        Tests `kiss.util.escape_special_codes` util function.
-        """
-        fesc = apex.kiss.util.escape_special_codes(apex.kiss.constants.FESC)
-        self.assertEqual(fesc, apex.kiss.constants.FESC_TFESC)
-
-    def test_extract_ui(self):
-        """
-        Tests `kiss.util.extract_ui` util function.
-        """
-        frame_ui = apex.kiss.util.extract_ui(self.test_frame)
-        self.assertEqual('APRX240W2GMD 6WIDE1 1', frame_ui)
+    # def test_escape_special_codes_fend(self):
+    #     """
+    #     Tests `kiss.util.escape_special_codes` util function.
+    #     """
+    #     fend = apex.kiss.util.escape_special_codes(apex.kiss.constants.FEND)
+    #     self.assertEqual(fend, apex.kiss.constants.FESC_TFEND)
+    #
+    # def test_escape_special_codes_fesc(self):
+    #     """
+    #     Tests `kiss.util.escape_special_codes` util function.
+    #     """
+    #     fesc = apex.kiss.util.escape_special_codes(apex.kiss.constants.FESC)
+    #     self.assertEqual(fesc, apex.kiss.constants.FESC_TFESC)
+    #
+    # def test_extract_ui(self):
+    #     """
+    #     Tests `kiss.util.extract_ui` util function.
+    #     """
+    #     frame_ui = apex.kiss.util.extract_ui(self.test_frame)
+    #     self.assertEqual('APRX240W2GMD 6WIDE1 1', frame_ui)
 
 
 if __name__ == '__main__':

@@ -12,9 +12,13 @@ include .isort.cfg
 
 include AUTHORS.rst
 include CHANGELOG.rst
+include CONTRIBUTORS.rst
 include CONTRIBUTING.rst
 include LICENSE
 include README.rst
+
+include apex.cfg.example
+include MAKEFILE
 
 include tox.ini .travis.yml appveyor.yml
 
