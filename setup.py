@@ -31,7 +31,7 @@ setup(
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))
     ),
-    author='Jeffrey Phillips Freeman',
+    author='Jeffrey Phillips Freeman (WI2ARD)',
     author_email='freemo@gmail.com',
     url='https://github.com/syncleus/apex',
     packages=find_packages('src'),
@@ -66,6 +66,10 @@ setup(
     ],
     install_requires=[
         'click',
+        'pynmea2 >= 1.4.2',
+        'pyserial >= 2.7',
+        'requests >= 2.7.0',
+        'cachetools >= 1.1.5'
     ],
     extras_require={
         # eg:
