@@ -29,15 +29,5 @@ clean:
 publish:
 	python setup.py register sdist upload
 
-pep8:
-    python setup.py flake8
-#	flake8 --max-complexity 12 --exit-zero src/apex/**/*.py tests/**/*.py
-
-lint:
-	pylint --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" \
-		-r n src/apex/**/*.py tests/**/*.py || exit 0
-
-tox:
+test:
     tox
-
-test: tox lint pep8 nosetests
