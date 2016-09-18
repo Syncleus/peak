@@ -25,7 +25,7 @@ def read(*names, **kwargs):
 setup(
     name='apex',
     version='0.1.0',
-    license='BSD',
+    license='Apache Software License',
     description='APEX reference implementation',
     long_description='%s\n%s' % (
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
@@ -62,9 +62,6 @@ setup(
     ],
     keywords=[
         # eg: 'keyword1', 'keyword2', 'keyword3',
-    ],
-    setup_requires=[
-        'httpretty >= 0.8.10'
     ],
     install_requires=[
         'click',
