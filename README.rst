@@ -119,7 +119,7 @@ Development
 
 Initial setup::
 
-    pip install -U pyenv tox
+    pip install -U pyenv tox pylint flake8
     pyenv install 2.7 3.3.6 3.4.5 3.5.2 pypy-5.4.1
     pyenv global 2.7 3.3.6 3.4.5 3.5.2 pypy-5.4.1
 
