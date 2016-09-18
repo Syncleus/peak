@@ -11,8 +11,7 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 import logging
 import serial
 import socket
-import kiss.constants
-import kiss.util
+from apex.kiss import constants as kissConstants
 
 
 class Kiss(object):
@@ -20,10 +19,10 @@ class Kiss(object):
     """KISS Object Class."""
 
     logger = logging.getLogger(__name__)
-    logger.setLevel(kiss.constants.LOG_LEVEL)
+    logger.setLevel(kissConstants.LOG_LEVEL)
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(kiss.constants.LOG_LEVEL)
-    formatter = logging.Formatter(kiss.constants.LOG_FORMAT)
+    console_handler.setLevel(kissConstants.LOG_LEVEL)
+    formatter = logging.Formatter(kissConstants.LOG_FORMAT)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
     logger.propagate = False
@@ -67,9 +66,9 @@ class Kiss(object):
 
     def __read_interface(self):
         if 'tcp' in self.interface_mode:
-            return self.interface.recv(kiss.constants.READ_BYTES)
+            return self.interface.recv(kissConstants.READ_BYTES)
         elif 'serial' in self.interface_mode:
-            read_data = self.interface.read(kiss.constants.READ_BYTES)
+            read_data = self.interface.read(kissConstants.READ_BYTES)
             waiting_data = self.interface.inWaiting()
             if waiting_data:
                 read_data += self.interface.read(waiting_data)
@@ -85,7 +84,7 @@ class Kiss(object):
         :returns: APRS/AX.25 frame sans DATA_FRAME start (0x00).
         :rtype: str
         """
-        while frame[0] is kiss.constants.DATA_FRAME:
+        while frame[0] is kissConstants.DATA_FRAME:
             del frame[0]
         while chr(frame[0]).isspace():
             del frame[0]
@@ -105,10 +104,10 @@ class Kiss(object):
         """
         encoded_bytes = []
         for raw_code_byte in raw_code_bytes:
-            if raw_code_byte is kiss.constants.FESC:
-                encoded_bytes += kiss.constants.FESC_TFESC
-            elif raw_code_byte is kiss.constants.FEND:
-                encoded_bytes += kiss.constants.FESC_TFEND
+            if raw_code_byte is kissConstants.FESC:
+                encoded_bytes += kissConstants.FESC_TFESC
+            elif raw_code_byte is kissConstants.FEND:
+                encoded_bytes += kissConstants.FESC_TFEND
             else:
                 encoded_bytes += [raw_code_byte];
         return encoded_bytes
@@ -145,7 +144,7 @@ class Kiss(object):
             self.interface = socket.create_connection(address)
         elif 'serial' in self.interface_mode:
             self.interface = serial.Serial(port=self.com_port, baudrate=self.baud, parity=self.parity, stopbits=self.stop_bits, bytesize=self.byte_size)
-            self.interface.timeout = kiss.constants.SERIAL_TIMEOUT
+            self.interface.timeout = kissConstants.SERIAL_TIMEOUT
             if mode_init is not None:
                 self.interface.write(mode_init)
                 self.exit_kiss = True
@@ -163,7 +162,7 @@ class Kiss(object):
 
     def close(self):
         if self.exit_kiss is True:
-            self.interface.write(kiss.constants.MODE_END)
+            self.interface.write(kissConstants.MODE_END)
 
 
     def write_setting(self, name, value):
@@ -182,10 +181,10 @@ class Kiss(object):
             value = chr(value)
 
         return self.interface.write(
-            kiss.constants.FEND +
-            getattr(kiss.constants, name.upper()) +
+            kissConstants.FEND +
+            getattr(kissConstants, name.upper()) +
             Kiss.__escape_special_codes(value) +
-            kiss.constants.FEND
+            kissConstants.FEND
         )
 
     def fill_buffer(self):
@@ -199,7 +198,7 @@ class Kiss(object):
         while read_data is not None and len(read_data):
             split_data = [[]]
             for read_byte in read_data:
-                if read_byte is kiss.constants.FEND:
+                if read_byte is kissConstants.FEND:
                     #split_data_index += 1
                     split_data.append([])
                 else:
@@ -255,7 +254,7 @@ class Kiss(object):
 
         :param frame: Frame to write.
         """
-        kiss_packet = [kiss.constants.FEND] + [Kiss.__command_byte_combine(port, kiss.constants.DATA_FRAME)] + Kiss.__escape_special_codes(frame_bytes) + [kiss.constants.FEND]
+        kiss_packet = [kissConstants.FEND] + [Kiss.__command_byte_combine(port, kissConstants.DATA_FRAME)] + Kiss.__escape_special_codes(frame_bytes) + [kissConstants.FEND]
 
         if 'tcp' in self.interface_mode:
             return self.interface.send(bytearray(kiss_packet))

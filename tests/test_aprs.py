@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """Tests for Python APRS-IS Bindings."""
-import aprs.aprs_internet_service
+import apex.aprs.aprs_internet_service
 
 __author__ = 'Jeffrey Phillips Freeman WI2ARD <freemo@gmail.com>'
 __license__ = 'Apache License, Version 2.0'
@@ -14,10 +14,7 @@ import unittest
 import logging
 import logging.handlers
 
-import httpretty
-
-from .context import aprs
-
+import apex.aprs.constants
 
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 NUMBERS = '0123456789'
@@ -29,10 +26,10 @@ class APRSTest(unittest.TestCase):  # pylint: disable=R0904
     """Tests for Python APRS-IS Bindings."""
 
     logger = logging.getLogger(__name__)
-    logger.setLevel(aprs.constants.LOG_LEVEL)
+    logger.setLevel(apex.aprs.constants.LOG_LEVEL)
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(aprs.constants.LOG_LEVEL)
-    formatter = logging.Formatter(aprs.constants.LOG_FORMAT)
+    console_handler.setLevel(apex.aprs.constants.LOG_LEVEL)
+    formatter = logging.Formatter(apex.aprs.constants.LOG_FORMAT)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
     logger.propagate = False
@@ -84,7 +81,7 @@ class APRSTest(unittest.TestCase):  # pylint: disable=R0904
             status=204
         )
 
-        aprs_conn = aprs.aprs_internet_service.AprsInternetService(
+        aprs_conn = apex.aprs.aprs_internet_service.AprsInternetService(
             user=self.fake_callsign,
             input_url=self.fake_server
         )
@@ -111,7 +108,7 @@ class APRSTest(unittest.TestCase):  # pylint: disable=R0904
             status=401
         )
 
-        aprs_conn = aprs.aprs_internet_service.AprsInternetService(
+        aprs_conn = apex.aprs.aprs_internet_service.AprsInternetService(
             user=self.fake_callsign,
             input_url=self.fake_server
         )
@@ -132,7 +129,7 @@ class APRSTest(unittest.TestCase):  # pylint: disable=R0904
         """
         Tests APRS-IS binding against a real APRS-IS server.
         """
-        aprs_conn = aprs.aprs_internet_service.AprsInternetService(
+        aprs_conn = apex.aprs.aprs_internet_service.AprsInternetService(
             user=self.real_callsign,
             input_url=self.real_server
         )

@@ -1,4 +1,4 @@
-import aprs.util
+import apex.aprs.util
 import copy
 import re
 
@@ -63,61 +63,61 @@ class ApexParadigmPlugin(object):
                         if band_path_net:
                             if node == port['net']:
                                 frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [hop + "*"] + frame['path'][hop_index+1:]
-                                frame_hash = aprs.util.hash_frame(frame)
+                                frame_hash = apex.aprs.util.hash_frame(frame)
                                 if not frame_hash in self.packet_cache.values():
                                     self.packet_cache[str(frame_hash)] = frame_hash
                                     port['tnc'].write(frame, port['tnc_port'])
                                     self.aprsis.send(frame)
-                                    print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                                    print(port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
                                 return
                         else:
                             if port['net'].startswith(node):
                                 frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [hop + "*"] + frame['path'][hop_index+1:]
-                                frame_hash = aprs.util.hash_frame(frame)
+                                frame_hash = apex.aprs.util.hash_frame(frame)
                                 if not frame_hash in self.packet_cache.values():
                                     self.packet_cache[str(frame_hash)] = frame_hash
                                     port['tnc'].write(frame, port['tnc_port'])
                                     self.aprsis.send(frame)
-                                    print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                                    print(port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
                                 return
                     if node == port_callsign and ssid == port_ssid:
                         if ssid is 0:
                             frame['path'][hop_index] = port_callsign + '*'
                         else:
                             frame['path'][hop_index] = port['identifier'] + '*'
-                        frame_hash = aprs.util.hash_frame(frame)
+                        frame_hash = apex.aprs.util.hash_frame(frame)
                         if not frame_hash in self.packet_cache.values():
                             self.packet_cache[str(frame_hash)] = frame_hash
                             port['tnc'].write(frame, port['tnc_port'])
                             self.aprsis.send(frame)
-                            print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                            print(port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
                         return
                     elif node == "GATE" and port['net'].startswith("2M"):
                         frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
-                        frame_hash = aprs.util.hash_frame(frame)
+                        frame_hash = apex.aprs.util.hash_frame(frame)
                         if not frame_hash in self.packet_cache.values():
                             self.packet_cache[str(frame_hash)] = frame_hash
                             port['tnc'].write(frame, port['tnc_port'])
                             self.aprsis.send(frame)
-                            print(port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                            print(port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
                         return
                 if node.startswith('WIDE') and ssid > 1:
                     frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
-                    frame_hash = aprs.util.hash_frame(frame)
+                    frame_hash = apex.aprs.util.hash_frame(frame)
                     if not frame_hash in self.packet_cache.values():
                         self.packet_cache[str(frame_hash)] = frame_hash
                         recv_port['tnc'].write(frame, recv_port['tnc_port'])
                         self.aprsis.send(frame)
-                        print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                        print(recv_port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
                     return
                 elif node.startswith('WIDE') and ssid is 1:
                     frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
-                    frame_hash = aprs.util.hash_frame(frame)
+                    frame_hash = apex.aprs.util.hash_frame(frame)
                     if not frame_hash in self.packet_cache.values():
                         self.packet_cache[str(frame_hash)] = frame_hash
                         recv_port['tnc'].write(frame, recv_port['tnc_port'])
                         self.aprsis.send(frame)
-                        print(recv_port_name + " >> " + aprs.util.format_aprs_frame(frame))
+                        print(recv_port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
                     return
                 elif node.startswith('WIDE') and ssid is 0:
                     frame['path'][hop_index] = node + "*"
@@ -244,12 +244,12 @@ class ApexParadigmPlugin(object):
             else:
                 new_path += [hop]
         frame['path'] = new_path
-        frame_hash = aprs.util.hash_frame(frame)
+        frame_hash = apex.aprs.util.hash_frame(frame)
         if not frame_hash in self.packet_cache.values():
             self.packet_cache[str(frame_hash)] = frame_hash
             selected_hop['port']['tnc'].write(frame, selected_hop['port']['tnc_port'])
             self.aprsis.send(frame)
-            print(selected_hop['port_name'] + " >> " + aprs.util.format_aprs_frame(frame))
+            print(selected_hop['port_name'] + " >> " + apex.aprs.util.format_aprs_frame(frame))
         return
 
     def run(self):

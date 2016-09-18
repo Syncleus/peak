@@ -13,5 +13,5 @@ import sys
 
 sys.path.insert(0, os.path.abspath('..'))
 
-import aprs  # pylint: disable=W0611
-import kiss
+import apex.aprs
+import apex.kiss

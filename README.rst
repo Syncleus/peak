@@ -79,7 +79,8 @@ APEX is a next generation APRS based protocol. This repository represents the re
 
 For more information on the project please check out [the project's home page](http://apexprotocol.com/).
 
-## Running the app
+Running the app
+===============
 
 Right now the setup.py has a few bugs in it. So you can either try to fix it, wait for us to fix it, or simply install
 the prerequsites manually. The following is a list of the preequsites that need to be installed.
@@ -119,7 +120,7 @@ Development
 
 Initial setup::
 
-    pip install -U pyenv tox pylint flake8
+    pip install -U pyenv tox pylint flake8 httpretty
     pyenv install 2.7 3.3.6 3.4.5 3.5.2 pypy-5.4.1
     pyenv global 2.7 3.3.6 3.4.5 3.5.2 pypy-5.4.1
 

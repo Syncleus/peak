@@ -16,8 +16,8 @@ APRS Python Module.
 """
 
 import logging
-from aprs.aprs_kiss import AprsKiss
-from aprs.aprs_internet_service import AprsInternetService
+from apex.aprs.aprs_kiss import AprsKiss
+from apex.aprs.aprs_internet_service import AprsInternetService
 
 # Set default logging handler to avoid "No handler found" warnings.
 try:  # Python 2.7+

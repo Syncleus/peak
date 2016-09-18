@@ -10,9 +10,9 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 
 import logging
 
-import aprs.constants
-import aprs.decimaldegrees
-import kiss.constants
+import apex.aprs.constants
+import apex.aprs.decimaldegrees
+import apex.kiss.constants
 import math
 
 
@@ -28,7 +28,7 @@ def dec2dm_lat(dec):
         >>> aprs_lat
         '3744.51N'
     """
-    dec_min = aprs.decimaldegrees.decimal2dm(dec)
+    dec_min = apex.aprs.decimaldegrees.decimal2dm(dec)
 
     deg = dec_min[0]
     abs_deg = abs(deg)
@@ -51,7 +51,7 @@ def dec2dm_lng(dec):
         >>> aprs_lng
         '12223.30W'
     """
-    dec_min = aprs.decimaldegrees.decimal2dm(dec)
+    dec_min = apex.aprs.decimaldegrees.decimal2dm(dec)
 
     deg = dec_min[0]
     abs_deg = abs(deg)
@@ -166,8 +166,8 @@ def valid_callsign(callsign):
 def run_doctest():  # pragma: no cover
     """Runs doctests for this module."""
     import doctest
-    import aprs.util  # pylint: disable=W0406,W0621
-    return doctest.testmod(aprs.util)
+    import apex.aprs.util  # pylint: disable=W0406,W0621
+    return doctest.testmod(apex.aprs.util)
 
 
 def hash_frame(frame):

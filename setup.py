@@ -63,6 +63,9 @@ setup(
     keywords=[
         # eg: 'keyword1', 'keyword2', 'keyword3',
     ],
+    setup_requires=[
+        'httpretty >= 0.8.10'
+    ],
     install_requires=[
         'click',
         'pynmea2 >= 1.4.2',

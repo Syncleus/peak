@@ -1,4 +1,4 @@
-import aprs.util
+import apex.aprs.util
 import time
 
 plugin = None
@@ -35,9 +35,9 @@ class IdPlugin(object):
                 port = self.port_map[port_name]
 
                 id_frame = {'source':port['identifier'], 'destination': 'ID', 'path':port['id_path'].split(','), 'text': list(port['id_text'].encode('ascii'))}
-                frame_hash = aprs.util.hash_frame(id_frame)
+                frame_hash = apex.aprs.util.hash_frame(id_frame)
                 if not frame_hash in self.packet_cache.values():
                     self.packet_cache[str(frame_hash)] = frame_hash
                     port['tnc'].write(id_frame, port['tnc_port'])
-                    print(port_name + " >> " + aprs.util.format_aprs_frame(id_frame))
+                    print(port_name + " >> " + apex.aprs.util.format_aprs_frame(id_frame))
             time.sleep(600)

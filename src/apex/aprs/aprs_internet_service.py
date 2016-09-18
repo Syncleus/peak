@@ -10,8 +10,9 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 import logging
 import socket
 import requests
-import aprs.constants
 import time
+
+from apex.aprs import constants as aprsConstants, util as aprsUtil
 
 
 class AprsInternetService(object):
@@ -19,16 +20,16 @@ class AprsInternetService(object):
     """APRS Object."""
 
     logger = logging.getLogger(__name__)
-    logger.setLevel(aprs.constants.LOG_LEVEL)
+    logger.setLevel(aprsConstants.LOG_LEVEL)
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(aprs.constants.LOG_LEVEL)
-    console_handler.setFormatter(aprs.constants.LOG_FORMAT)
+    console_handler.setLevel(aprsConstants.LOG_LEVEL)
+    console_handler.setFormatter(aprsConstants.LOG_FORMAT)
     logger.addHandler(console_handler)
     logger.propagate = False
 
     def __init__(self, user, password='-1', input_url=None):
         self.user = user
-        self._url = input_url or aprs.constants.APRSIS_URL
+        self._url = input_url or aprsConstants.APRSIS_URL
         self._auth = ' '.join(
             ['user', user, 'pass', password, 'vers', 'APRS Python Module'])
         self.aprsis_sock = None
@@ -44,8 +45,8 @@ class AprsInternetService(object):
         :type port: int
         :type filte: str
         """
-        server = server or aprs.constants.APRSIS_SERVER
-        port = port or aprs.constants.APRSIS_FILTER_PORT
+        server = server or aprsConstants.APRSIS_SERVER
+        port = port or aprsConstants.APRSIS_FILTER_PORT
         aprs_filter = aprs_filter or '/'.join(['p', self.user])
 
         self.full_auth = ' '.join([self._auth, 'filter', aprs_filter])
@@ -79,7 +80,7 @@ class AprsInternetService(object):
             # message = frame['source'].encode('ascii') + b">" + frame['destination'].encode('ascii') + aprs.util.format_path(frame['path']).encode('ascii') + b":" + frame['text'] + b'\n\r'
             # TODO: simplify this
             message = bytearray()
-            for frame_chr in aprs.util.format_aprs_frame(frame):
+            for frame_chr in aprsUtil.format_aprs_frame(frame):
                 message.append(ord(frame_chr))
             message_sent = False
             while not message_sent:
@@ -94,16 +95,16 @@ class AprsInternetService(object):
                     self.aprsis_sock.sendall((self.full_auth + '\n\r').encode('ascii'))
             return True
         elif 'HTTP' in protocol:
-            content = "\n".join([self._auth, aprs.util.format_aprs_frame(frame)])
-            headers = headers or aprs.constants.APRSIS_HTTP_HEADERS
+            content = "\n".join([self._auth, aprsUtil.format_aprs_frame(frame)])
+            headers = headers or aprsConstants.APRSIS_HTTP_HEADERS
             result = requests.post(self._url, data=content, headers=headers)
             return 204 in result.status_code
         elif 'UDP' in protocol:
-            content = "\n".join([self._auth, aprs.util.format_aprs_frame(frame)])
+            content = "\n".join([self._auth, aprsUtil.format_aprs_frame(frame)])
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.sendto(
                 content,
-                (aprs.constants.APRSIS_SERVER, aprs.constants.APRSIS_RX_PORT)
+                (aprsConstants.APRSIS_SERVER, aprsConstants.APRSIS_RX_PORT)
             )
             return True
 
@@ -118,7 +119,7 @@ class AprsInternetService(object):
 
         try:
             while 1:
-                recv_data = self.aprsis_sock.recv(aprs.constants.RECV_BUFFER)
+                recv_data = self.aprsis_sock.recv(aprsConstants.RECV_BUFFER)
 
                 if not recv_data:
                     break

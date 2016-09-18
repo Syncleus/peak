@@ -10,10 +10,10 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 import logging
 import math
 
-import kiss
+import apex.kiss
 
 
-class AprsKiss(kiss.Kiss):
+class AprsKiss(apex.kiss.Kiss):
 
     """APRS interface for KISS serial devices."""
 
@@ -114,7 +114,7 @@ class AprsKiss(kiss.Kiss):
         for p in frame['path']:
             enc_frame += AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(p))
 
-        return enc_frame[:-1] + [enc_frame[-1] | 0x01] + [kiss.constants.SLOT_TIME] + [0xf0] + frame['text']
+        return enc_frame[:-1] + [enc_frame[-1] | 0x01] + [apex.kiss.constants.SLOT_TIME] + [0xf0] + frame['text']
 
     @staticmethod
     def __encode_callsign(callsign):
