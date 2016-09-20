@@ -16,32 +16,32 @@ Overview
     * - package
       - |version| |downloads| |wheel| |supported-versions| |supported-implementations|
 
-.. |docs| image:: https://readthedocs.org/projects/apex/badge/?style=flat
-    :target: https://readthedocs.org/projects/apex
+.. |docs| image:: https://readthedocs.org/projects/apex/badge/?version=latest
+    :target: http://apex.readthedocs.io/en/latest/
     :alt: Documentation Status
 
-.. |travis| image:: https://travis-ci.org/syncleus/apex.svg?branch=master
+.. |travis| image:: https://travis-ci.org/Syncleus/apex.svg?branch=master
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/syncleus/apex
+    :target: https://travis-ci.org/Syncleus/apex
 
 .. |requires| image:: https://requires.io/github/Syncleus/apex/requirements.svg?branch=master
      :alt: Requirements Status
      :target: https://requires.io/github/Syncleus/apex/requirements/?branch=master
 
-.. |coveralls| image:: https://coveralls.io/repos/syncleus/apex/badge.svg?branch=master&service=github
+.. |coveralls| image:: https://coveralls.io/repos/Syncleus/apex/badge.svg?branch=master&service=github
     :alt: Coverage Status
-    :target: https://coveralls.io/r/syncleus/apex
+    :target: https://coveralls.io/r/Syncleus/apex
 
-.. |codecov| image:: https://codecov.io/github/syncleus/apex/coverage.svg?branch=master
+.. |codecov| image:: https://codecov.io/github/Syncleus/apex/coverage.svg?branch=master
     :alt: Coverage Status
-    :target: https://codecov.io/github/syncleus/apex
+    :target: https://codecov.io/github/Syncleus/apex
 
-.. |landscape| image:: https://landscape.io/github/syncleus/apex/master/landscape.svg?style=flat
-    :target: https://landscape.io/github/syncleus/apex/master
+.. |landscape| image:: https://landscape.io/github/Syncleus/apex/master/landscape.svg?style=flat
+    :target: https://landscape.io/github/Syncleus/apex/master
     :alt: Code Quality Status
 
-.. |codacy| image:: https://img.shields.io/codacy/REPLACE_WITH_PROJECT_ID.svg?style=flat
-    :target: https://www.codacy.com/app/syncleus/apex
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/4d662dc79744416b950273fb57a64d6e
+    :target: https://www.codacy.com/app/freemo/apex?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Syncleus/apex&amp;utm_campaign=Badge_Grade
     :alt: Codacy Code Quality Status
 
 .. |codeclimate| image:: https://codeclimate.com/github/syncleus/apex/badges/gpa.svg
@@ -68,9 +68,9 @@ Overview
     :alt: Supported implementations
     :target: https://pypi.python.org/pypi/apex
 
-.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/syncleus/apex/master.svg?style=flat
+.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/Syncleus/apex/master.svg?style=flat
     :alt: Scrutinizer Status
-    :target: https://scrutinizer-ci.com/g/syncleus/apex/
+    :target: https://scrutinizer-ci.com/g/Syncleus/apex/
 
 
 .. end-badges
