@@ -3,17 +3,24 @@
 
 """Utilities for the APRS Python Module."""
 
-__author__ = 'Jeffrey Phillips Freeman WI2ARD <freemo@gmail.com>'
-__license__ = 'Apache License, Version 2.0'
-__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
-
+# These imports are for python3 compatability inside python2
+from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, division
 
 import logging
+import unicodedata
+import sys
 
 import apex.aprs.constants
 import apex.aprs.decimaldegrees
 import apex.kiss.constants
-import math
+
+__author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
+__email__ = "jeffrey.freeman@syncleus.com"
+__license__ = 'Apache License, Version 2.0'
+__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
+__credits__ = []
 
 
 def dec2dm_lat(dec):
@@ -38,7 +45,11 @@ def dec2dm_lat(dec):
     else:
         suffix = 'N'
 
-    return ''.join([str(abs_deg), "%.2f" % dec_min[1], suffix])
+    retval = ''.join([str(abs_deg), "%.2f" % dec_min[1], suffix])
+    if sys.version_info < (3, 0):
+        retval = unicodedata.normalize('NFKD', retval).encode('ascii', 'ignore')
+
+    return retval
 
 
 def dec2dm_lng(dec):
@@ -61,7 +72,11 @@ def dec2dm_lng(dec):
     else:
         suffix = 'E'
 
-    return ''.join([str(abs_deg), "%.2f" % dec_min[1], suffix])
+    retval = ''.join([str(abs_deg), "%.2f" % dec_min[1], suffix])
+    if sys.version_info < (3, 0):
+        retval = unicodedata.normalize('NFKD', retval).encode('ascii', 'ignore')
+
+    return retval
 
 
 def decode_aprs_ascii_frame(ascii_frame):

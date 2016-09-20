@@ -14,19 +14,31 @@ Why does this file exist, and why not put this in __main__?
 
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
-__author__ = 'Jeffrey Phillips Freeman WI2ARD <freemo@gmail.com>'
-__license__ = 'Apache License, Version 2.0'
-__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
+# These imports are for python3 compatability inside python2
+from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, division
 
+import sys
 import click
 import time
 import signal
 import sys
 import threading
-import configparser
 import cachetools
 import traceback
 from apex.pluginloader import getPlugins, loadPlugin
+
+if sys.version_info < (3, 0):
+    import ConfigParser
+elif sys.version_info >= (3, 0):
+    import configparser
+
+__author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
+__email__ = "jeffrey.freeman@syncleus.com"
+__license__ = 'Apache License, Version 2.0'
+__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
+__credits__ = []
 
 from apex.kiss import constants as kissConstants
 import apex.aprs
