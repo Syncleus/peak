@@ -55,6 +55,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import decimal as libdecimal
+import sys
 from decimal import Decimal as D
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
@@ -162,8 +163,9 @@ def dm2decimal(degrees, minutes):
 def run_doctest():  # pragma: no cover
     """Runs doctests for this module."""
     import doctest
-    import decimaldegrees  # pylint: disable=W0406
-    return doctest.testmod(decimaldegrees)
+    if sys.version_info < (3, 0):
+        import decimaldegrees  # pylint: disable=W0406,F0401
+        return doctest.testmod(decimaldegrees)
 
 
 if __name__ == '__main__':

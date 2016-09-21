@@ -11,7 +11,6 @@ from __future__ import unicode_literals
 
 import logging
 import socket
-import time
 import requests
 
 from apex.aprs import constants as aprsConstants
@@ -93,15 +92,8 @@ class AprsInternetService(object):
                 message.append(ord(frame_chr))
             message_sent = False
             while not message_sent:
-                try:
-                    self.aprsis_sock.sendall(message)
-                    message_sent = True
-                except (ConnectionResetError, BrokenPipeError) as ex:
-                    # connection reset wait a second then try again
-                    time.sleep(1)
-                    self.aprsis_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    self.aprsis_sock.connect((self.server, self.port))
-                    self.aprsis_sock.sendall((self.full_auth + '\n\r').encode('ascii'))
+                self.aprsis_sock.sendall(message)
+                message_sent = True
             return True
         elif 'HTTP' in protocol:
             content = "\n".join([self._auth, aprsUtil.format_aprs_frame(frame)])

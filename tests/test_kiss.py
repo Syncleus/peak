@@ -37,14 +37,14 @@ class KISSUtilTestCase(unittest.TestCase):
             Tests `kiss.util.escape_special_codes` util function.
             """
             # fend = apex.kiss.util.escape_special_codes(apex.kiss.constants.FEND)
-            fend = apex.kiss.Kiss._Kiss__escape_special_codes([apex.kiss.constants.FEND])
+            fend = apex.kiss.Kiss._Kiss__escape_special_codes([apex.kiss.constants.FEND])  # pylint: disable=E1101
             self.assertEqual(fend, apex.kiss.constants.FESC_TFEND)
 
         def test_escape_special_codes_fesc(self):
             """
             Tests `kiss.util.escape_special_codes` util function.
             """
-            fesc = apex.kiss.Kiss._Kiss__escape_special_codes([apex.kiss.constants.FESC])
+            fesc = apex.kiss.Kiss._Kiss__escape_special_codes([apex.kiss.constants.FESC])  # pylint: disable=E1101
             self.assertEqual(fesc, apex.kiss.constants.FESC_TFESC)
 
 

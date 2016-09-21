@@ -72,7 +72,7 @@ class Kiss(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if 'tcp' in self.interface_mode:
-            self.interface.shutdown()
+            self.interface.shutdown()  # pylint: disable=some-message,another-one
         elif self.interface and self.interface.isOpen():
             self.interface.close()
 

@@ -23,6 +23,9 @@ from __future__ import unicode_literals
 
 import logging
 
+from .aprs_internet_service import AprsInternetService  # noqa: F401
+from .aprs_kiss import AprsKiss  # noqa: F401
+
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
 __email__ = "jeffrey.freeman@syncleus.com"

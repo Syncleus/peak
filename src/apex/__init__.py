@@ -1,3 +1,7 @@
+"""
+Main module for APEX refernce implementation application.
+"""
+
 # These imports are for python3 compatability inside python2
 from __future__ import absolute_import
 from __future__ import division

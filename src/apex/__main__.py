@@ -8,6 +8,7 @@ Why does this file exist, and why __main__? For more info, read:
 - https://docs.python.org/2/using/cmdline.html#cmdoption-m
 - https://docs.python.org/3/using/cmdline.html#cmdoption-m
 """
+
 # These imports are for python3 compatability inside python2
 from __future__ import absolute_import
 from __future__ import division
@@ -24,4 +25,4 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
 
 if __name__ == "__main__":
-    main()
+    main(None)
