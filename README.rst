@@ -44,29 +44,29 @@ Overview
     :target: https://www.codacy.com/app/freemo/apex?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Syncleus/apex&amp;utm_campaign=Badge_Grade
     :alt: Codacy Code Quality Status
 
-.. |codeclimate| image:: https://codeclimate.com/github/syncleus/apex/badges/gpa.svg
-   :target: https://codeclimate.com/github/syncleus/apex
+.. |codeclimate| image:: https://codeclimate.com/github/Syncleus/apex/badges/gpa.svg
+   :target: https://codeclimate.com/github/Syncleus/apex
    :alt: CodeClimate Quality Status
 
-.. |version| image:: https://img.shields.io/pypi/v/apex.svg?style=flat
+.. |version| image:: https://img.shields.io/pypi/v/apex-radio.svg?style=flat
     :alt: PyPI Package latest release
-    :target: https://pypi.python.org/pypi/apex
+    :target: https://pypi.python.org/pypi/apex-radio
 
-.. |downloads| image:: https://img.shields.io/pypi/dm/apex.svg?style=flat
+.. |downloads| image:: https://img.shields.io/pypi/dm/apex-radio.svg?style=flat
     :alt: PyPI Package monthly downloads
-    :target: https://pypi.python.org/pypi/apex
+    :target: https://pypi.python.org/pypi/apex-radio
 
-.. |wheel| image:: https://img.shields.io/pypi/wheel/apex.svg?style=flat
+.. |wheel| image:: https://img.shields.io/pypi/wheel/apex-radio.svg?style=flat
     :alt: PyPI Wheel
-    :target: https://pypi.python.org/pypi/apex
+    :target: https://pypi.python.org/pypi/apex-radio
 
-.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/apex.svg?style=flat
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/apex-radio.svg?style=flat
     :alt: Supported versions
-    :target: https://pypi.python.org/pypi/apex
+    :target: https://pypi.python.org/pypi/apex-radio
 
-.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/apex.svg?style=flat
+.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/apex-radio.svg?style=flat
     :alt: Supported implementations
-    :target: https://pypi.python.org/pypi/apex
+    :target: https://pypi.python.org/pypi/apex-radio
 
 .. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/Syncleus/apex/master.svg?style=flat
     :alt: Scrutinizer Status
@@ -77,7 +77,7 @@ Overview
 
 APEX is a next generation APRS based protocol. This repository represents the reference implementation and is a full features application for digipeating across multiple AX.25 KISS TNC devices using the full APEX stack.
 
-For more information on the project please check out [the project's home page](http://apexprotocol.com/).
+For more information on the project please check out `the project's home page <http://apexprotocol.com/>`_.
 
 Running the app
 ===============
@@ -144,3 +144,47 @@ Note, to combine the coverage data from all the tox environments run:
       - ::
 
             PYTEST_ADDOPTS=--cov-append tox
+
+Releasing
+=========
+
+1. Update CHANGELOG.rst
+
+1. Commit the changes::
+
+    git add CHANGELOG.rst
+    git commit -m "Changelog for upcoming release 0.1.1."
+
+1. Update version number (can also be minor or major)::
+
+    bumpversion patch
+
+1. Install the package again for local development, but with the new version number::
+
+    python setup.py develop
+
+1. Run the tests::
+
+    tox
+
+1. Release on PyPI by uploading both sdist and wheel::
+
+    python setup.py sdist upload
+    python setup.py bdist_wheel upload
+
+1. Test that it pip installs::
+
+    mktmpenv
+    pip install apex-radio
+    <try out my_project>
+    deactivate
+
+1. Push: `git push`
+
+1. Push tags: `git push --tags`
+
+1. Check the PyPI listing page to make sure that the README, release notes, and roadmap display properly. If not, copy
+and paste the RestructuredText into http://rst.ninjs.org/ to find out what broke the formatting.
+
+1. Edit the release on GitHub (e.g. https://github.com/Syncleus/apex/releases). Paste the release notes into the
+release's release page, and come up with a title for the release.
