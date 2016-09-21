@@ -148,43 +148,49 @@ Note, to combine the coverage data from all the tox environments run:
 Releasing
 =========
 
-1. Update CHANGELOG.rst
+* Update CHANGELOG.rst
 
-1. Commit the changes::
+* Commit the changes::
 
     git add CHANGELOG.rst
     git commit -m "Changelog for upcoming release 0.1.1."
 
-1. Update version number (can also be minor or major)::
+
+* Update version number (can also be minor or major)::
 
     bumpversion patch
 
-1. Install the package again for local development, but with the new version number::
+
+* Install the package again for local development, but with the new version number::
 
     python setup.py develop
 
-1. Run the tests::
+
+* Run the tests::
 
     tox
 
-1. Release on PyPI by uploading both sdist and wheel::
+
+* Release on PyPI by uploading both sdist and wheel::
 
     python setup.py sdist upload
     python setup.py bdist_wheel upload
 
-1. Test that it pip installs::
+
+* Test that it pip installs::
 
     mktmpenv
     pip install apex-radio
     <try out my_project>
     deactivate
 
-1. Push: `git push`
 
-1. Push tags: `git push --tags`
+* Push: `git push`
 
-1. Check the PyPI listing page to make sure that the README, release notes, and roadmap display properly. If not, copy
-and paste the RestructuredText into http://rst.ninjs.org/ to find out what broke the formatting.
+* Push tags: `git push --tags`
 
-1. Edit the release on GitHub (e.g. https://github.com/Syncleus/apex/releases). Paste the release notes into the
-release's release page, and come up with a title for the release.
+* Check the PyPI listing page to make sure that the README, release notes, and roadmap display properly. If not, copy
+  and paste the RestructuredText into http://rst.ninjs.org/ to find out what broke the formatting.
+
+* Edit the release on GitHub (e.g. https://github.com/Syncleus/apex/releases). Paste the release notes into the
+  release's release page, and come up with a title for the release.
