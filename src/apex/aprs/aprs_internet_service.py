@@ -99,7 +99,7 @@ class AprsInternetService(object):
             content = "\n".join([self._auth, aprsUtil.format_aprs_frame(frame)])
             headers = headers or aprsConstants.APRSIS_HTTP_HEADERS
             result = requests.post(self._url, data=content, headers=headers)
-            return 204 in result.status_code
+            return 204 == result.status_code
         elif 'UDP' in protocol:
             content = "\n".join([self._auth, aprsUtil.format_aprs_frame(frame)])
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
