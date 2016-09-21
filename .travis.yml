@@ -3,7 +3,6 @@ python: '3.5'
 sudo: false
 env:
   global:
-    - PYTEST_ADDOPTS=--cov-append
     - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
     - SEGFAULT_SIGNALS=all
   matrix:
