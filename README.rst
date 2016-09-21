@@ -158,10 +158,17 @@ Releasing
 * Create or verify your `~/.pypirc` file. It should look like this::
 
     [distutils]
-    index-servers=pypi
+    index-servers =
+      pypi
+      pypitest
 
     [pypi]
-    repository = https://upload.pypi.org/legacy/
+    repository=https://pypi.python.org/pypi
+    username = <username>
+    password = <password>
+
+    [pypitest]
+    repository=https://testpypi.python.org/pypi
     username = <username>
     password = <password>
 
@@ -172,11 +179,6 @@ Releasing
 
     git add CHANGELOG.rst
     git commit -m "Changelog for upcoming release 0.1.1."
-
-
-* Update version number (can also be minor or major)::
-
-    bumpversion patch
 
 
 * Install the package again for local development, but with the new version number::
@@ -191,21 +193,25 @@ Releasing
 
 * Release on PyPI by uploading both sdist and wheel::
 
-    python setup.py sdist upload
-    python setup.py bdist_wheel upload
+    python setup.py sdist upload -r pypi
+    python setup.py sdist upload -r pypitest
 
 
-* If you don't  have virtualenvwrapper installed, install it so you can use the mktmpenv command::
+* Update version number (can also be minor or major)::
 
-    pip install virtualenvwrapper
+    bumpversion patch
+
+
+* Commit the version bump changes::
+
+    git add .
+    git commit -m "Bumping version for release cycle"
 
 
 * Test that it pip installs::
 
-    mktmpenv
     pip install apex-radio
     <try out my_project>
-    deactivate
 
 
 * Push: `git push`
