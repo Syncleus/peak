@@ -86,16 +86,16 @@ def main(names):
                 tnc_port = int(config.get(port_section, 'tnc_port'))
                 port_map[port_name] = {'identifier': port_identifier, 'net': port_net, 'tnc': kiss_tnc,
                                        'tnc_port': tnc_port}
-    aprsis_callsign = config.get('APRS-IS', 'callsign')
-    if config.has_option('APRS-IS', 'password'):
-        aprsis_password = config.get('APRS-IS', 'password')
-    else:
-        aprsis_password = -1
-    aprsis_server = config.get('APRS-IS', 'server')
-    aprsis_server_port = config.get('APRS-IS', 'server_port')
-    aprsis = apex.aprs.AprsInternetService(aprsis_callsign, aprsis_password)
-    aprsis.connect(aprsis_server, int(aprsis_server_port))
-    packet_cache = cachetools.TTLCache(10000, 5)
+    if config.has_section('APRS-IS'):
+        aprsis_callsign = config.get('APRS-IS', 'callsign')
+        if config.has_option('APRS-IS', 'password'):
+            aprsis_password = config.get('APRS-IS', 'password')
+        else:
+            aprsis_password = -1
+        aprsis_server = config.get('APRS-IS', 'server')
+        aprsis_server_port = config.get('APRS-IS', 'server_port')
+        aprsis = apex.aprs.AprsInternetService(aprsis_callsign, aprsis_password)
+        aprsis.connect(aprsis_server, int(aprsis_server_port))
 
     def sigint_handler(signal, frame):
         for port in port_map.values():
@@ -106,13 +106,18 @@ def main(names):
 
     print("Press ctrl + c at any time to exit")
 
+    packet_cache = cachetools.TTLCache(10000, 5)
     # start the plugins
     plugins = []
-    plugin_loaders = getPlugins()
-    for plugin_loader in plugin_loaders:
-        loaded_plugin = loadPlugin(plugin_loader)
-        plugins.append(loaded_plugin)
-        threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
+    try:
+        plugin_loaders = getPlugins()
+        for plugin_loader in plugin_loaders:
+            loaded_plugin = loadPlugin(plugin_loader)
+            plugins.append(loaded_plugin)
+            threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
+    except FileNotFoundError:
+        print("The plugin directory doesnt exist, without plugins this program has nothing to do, so it will exit now.")
+        return
 
     while 1:
         something_read = False

@@ -120,9 +120,14 @@ Development
 
 Initial setup::
 
-    pip install -U pyenv tox flake8 httpretty
+    pip install -U pyenv tox
     pyenv install 2.7 3.3.6 3.4.5 3.5.2 pypy-5.4.1
     pyenv global 2.7 3.3.6 3.4.5 3.5.2 pypy-5.4.1
+
+NOTE: The specific versions mentioned above may be different for each platform. use `pyenv install --list` to view the
+list of available versions. You will need a version of 2.7.x, 3.3.x, 3.4.x, 3.5.x, and pypy. Try to use the latest
+available version for each. Also some flavors of pyenv have different formats for it's arguments. So read the pyenv
+documentation on your platform.
 
 To run the all tests run::
 

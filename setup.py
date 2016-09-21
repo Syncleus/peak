@@ -22,9 +22,9 @@ def read(*names, **kwargs):
 
 setup(
     name='apex-radio',
-    version='0.1.0',
+    version='0.0.1',
     license='Apache Software License',
-    description='APEX reference implementation',
+    description='APEX reference implementation.',
     long_description='%s\n%s' % (
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))
@@ -62,7 +62,7 @@ setup(
         'Topic :: Communications :: Ham Radio',
     ],
     keywords=[
-        # eg: 'keyword1', 'keyword2', 'keyword3',
+        'Ham Radio', 'APEX', 'APRS'
     ],
     install_requires=[
         'click',
