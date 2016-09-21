@@ -22,7 +22,7 @@ def read(*names, **kwargs):
 
 setup(
     name='apex-radio',
-    version='0.0.1',
+    version='0.0.2',
     license='Apache Software License',
     description='APEX reference implementation.',
     long_description='%s\n%s' % (
@@ -32,7 +32,7 @@ setup(
     author='Jeffrey Phillips Freeman (WI2ARD)',
     author_email='jeffrey.freeman@syncleus.com',
     url='https://github.com/Syncleus/apex',
-    download_url='https://github.com/Syncleus/apex/archive/v0.0.1.tar.gz',
+    download_url='https://github.com/Syncleus/apex/archive/v0.0.2.tar.gz',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
