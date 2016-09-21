@@ -1,0 +1,33 @@
+# Makefile for APEX Python Module.
+#
+# Source:: https://github.com/syncleus/apex
+# Author:: Jeffrey Phillips Freeman WI2ARD <freemo@gmail.com>
+# Copyright:: Copyright 2016, Syncleus, Inc.
+# License:: Apache License, Version 2.0
+#
+
+
+.DEFAULT_GOAL := all
+
+
+all: clean develop
+
+develop:
+	python setup.py develop
+
+install:
+	python setup.py install
+
+uninstall:
+	pip uninstall -y apex
+
+clean:
+	@rm -rf *.egg* build dist *.py[oc] */*.py[co] cover doctest_pypi.cfg \
+		nosetests.xml pylint.log output.xml flake8.log tests.log \
+		test-result.xml htmlcov fab.log .coverage
+
+publish:
+	python setup.py register sdist upload
+
+test:
+    tox
