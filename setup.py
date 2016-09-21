@@ -21,7 +21,7 @@ def read(*names, **kwargs):
 
 
 setup(
-    name='apex',
+    name='apex-radio',
     version='0.1.0',
     license='Apache Software License',
     description='APEX reference implementation',
@@ -30,8 +30,8 @@ setup(
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))
     ),
     author='Jeffrey Phillips Freeman (WI2ARD)',
-    author_email='freemo@gmail.com',
-    url='https://github.com/syncleus/apex',
+    author_email='jeffrey.freeman@syncleus.com',
+    url='https://github.com/Syncleus/apex',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
@@ -39,8 +39,8 @@ setup(
     zip_safe=False,
     classifiers=[
         # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: End Users/Desktop',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: Unix',
         'Operating System :: POSIX',
@@ -52,11 +52,14 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: PyPy',
+        'Environment :: Console',
+        'Environment :: No Input/Output (Daemon)',
+        'Natural Language :: English',
         # uncomment if you test on these interpreters:
         # 'Programming Language :: Python :: Implementation :: IronPython',
         # 'Programming Language :: Python :: Implementation :: Jython',
         # 'Programming Language :: Python :: Implementation :: Stackless',
-        'Topic :: Utilities',
+        'Topic :: Communications :: Ham Radio',
     ],
     keywords=[
         # eg: 'keyword1', 'keyword2', 'keyword3',

@@ -148,6 +148,19 @@ Note, to combine the coverage data from all the tox environments run:
 Releasing
 =========
 
+* Ensure you have an account on PyPI, if you do not create one `here <https://pypi.python.org/pypi?%3Aaction=register_form>`_.
+
+* Create or verify your `~/.pypirc` file. It should look like this::
+
+    [distutils]
+    index-servers=pypi
+
+    [pypi]
+    repository = https://upload.pypi.org/legacy/
+    username = <username>
+    password = <password>
+
+
 * Update CHANGELOG.rst
 
 * Commit the changes::
@@ -177,6 +190,11 @@ Releasing
     python setup.py bdist_wheel upload
 
 
+* If you don't  have virtualenvwrapper installed, install it so you can use the mktmpenv command::
+
+    pip install virtualenvwrapper
+
+
 * Test that it pip installs::
 
     mktmpenv
@@ -190,7 +208,7 @@ Releasing
 * Push tags: `git push --tags`
 
 * Check the PyPI listing page to make sure that the README, release notes, and roadmap display properly. If not, copy
-  and paste the RestructuredText into http://rst.ninjs.org/ to find out what broke the formatting.
+  and paste the RestructuredText into `ninjs <http://rst.ninjs.org/>`_ to find out what broke the formatting.
 
-* Edit the release on GitHub (e.g. https://github.com/Syncleus/apex/releases). Paste the release notes into the
+* Edit the release on `GitHub <https://github.com/Syncleus/apex/releases>`_ . Paste the release notes into the
   release's release page, and come up with a title for the release.
