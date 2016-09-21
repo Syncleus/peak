@@ -28,9 +28,9 @@ Overview
      :alt: Requirements Status
      :target: https://requires.io/github/Syncleus/apex/requirements/?branch=master
 
-.. |coveralls| image:: https://coveralls.io/repos/Syncleus/apex/badge.svg?branch=master&service=github
+.. image:: https://coveralls.io/repos/github/Syncleus/apex/badge.svg?branch=master
     :alt: Coverage Status
-    :target: https://coveralls.io/github/Syncleus/apex
+    :target: https://coveralls.io/github/Syncleus/apex?branch=master
 
 .. |codecov| image:: https://codecov.io/github/Syncleus/apex/coverage.svg?branch=master
     :alt: Coverage Status
