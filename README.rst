@@ -191,11 +191,15 @@ Releasing
     tox
 
 
+
 * Release on PyPI by uploading both sdist and wheel::
 
     python setup.py sdist upload -r pypi
     python setup.py sdist upload -r pypitest
+    python setup.py bdist_wheel --universal upload -r pypi
+    python setup.py bdist_wheel --universal upload -r pypitest
 
+  NOTE: Make sure you have Python Wheel installed for your distribution or else the above commands will not work.
 
 * Update version number (can also be minor or major)::
 
