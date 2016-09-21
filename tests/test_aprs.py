@@ -100,10 +100,6 @@ class APRSTest(unittest.TestCase):  # pylint: disable=R0904
             )
             aprs_conn.connect()
 
-            # msg = '>'.join([
-            #     self.fake_callsign,
-            #     'APRS,TCPIP*:=3745.00N/12227.00W-Simulated Location'
-            # ])
             msg = {
                 'source': self.fake_callsign,
                 'destination': 'APRS',
@@ -133,10 +129,6 @@ class APRSTest(unittest.TestCase):  # pylint: disable=R0904
             )
             aprs_conn.connect()
 
-            # msg = '>'.join([
-            #     self.fake_callsign,
-            #     'APRS,TCPIP*:=3745.00N/12227.00W-Simulated Location'
-            # ])
             msg = {
                 'source': self.fake_callsign,
                 'destination': 'APRS',
@@ -160,10 +152,6 @@ class APRSTest(unittest.TestCase):  # pylint: disable=R0904
             )
             aprs_conn.connect()
 
-            # msg = '>'.join([
-            #     self.real_callsign,
-            #     'APRS,TCPIP*:=3745.00N/12227.00W-Simulated Location'
-            # ])
             msg = {
                 'source': self.fake_callsign,
                 'destination': 'APRS',
