@@ -31,7 +31,7 @@ setup(
     ),
     author='Jeffrey Phillips Freeman (WI2ARD)',
     author_email='jeffrey.freeman@syncleus.com',
-    url='https://github.com/Syncleus/apex',
+    url='http://ApexProtocol.com',
     download_url='https://github.com/Syncleus/apex/archive/v0.0.2.tar.gz',
     packages=find_packages('src'),
     package_dir={'': 'src'},
