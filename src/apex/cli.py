@@ -14,20 +14,25 @@ Why does this file exist, and why not put this in __main__?
 
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
-# These imports are for python3 compatability inside python2
-from __future__ import print_function, unicode_literals
-from __future__ import absolute_import, division
 
-import click
-import time
+# These imports are for python3 compatability inside python2
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import signal
 import sys
 import threading
-import cachetools
+import time
 import traceback
-from apex.pluginloader import getPlugins, loadPlugin
-from apex.kiss import constants as kissConstants
+import cachetools
+import click
+
 import apex.aprs
+from apex.kiss import constants as kissConstants
+from apex.pluginloader import getPlugins
+from apex.pluginloader import loadPlugin
 
 if sys.version_info < (3, 0):
     import ConfigParser  # noqa: F401

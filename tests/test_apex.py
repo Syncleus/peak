@@ -1,8 +1,5 @@
-
 from click.testing import CliRunner
-
 from apex.cli import main
-
 
 # def test_main():
 #     runner = CliRunner()

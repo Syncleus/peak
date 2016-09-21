@@ -6,14 +6,13 @@ __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 
 """Tests for Python APRS-IS Bindings."""
-import apex.aprs.aprs_internet_service
-
+import logging
+import logging.handlers
 # import httpretty
 import random
 import unittest
-import logging
-import logging.handlers
 
+import apex.aprs.aprs_internet_service
 import apex.aprs.constants
 
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'

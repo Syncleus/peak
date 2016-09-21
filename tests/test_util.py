@@ -8,16 +8,14 @@ __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 
 
-import sys
-import unittest
 import logging
 import logging.handlers
+import sys
+import unittest
 
-from . import constants
-
-from apex.aprs import constants as aprsConstants
 import apex.aprs.util
-
+from apex.aprs import constants as aprsConstants
+from . import constants
 
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 NUMBERS = '0123456789'

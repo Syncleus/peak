@@ -1,11 +1,13 @@
 # These imports are for python3 compatability inside python2
-from __future__ import print_function, unicode_literals
-from __future__ import absolute_import, division
-
-import apex.aprs.util
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import copy
 import re
+
+import apex.aprs.util
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"

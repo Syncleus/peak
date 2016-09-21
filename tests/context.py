@@ -11,7 +11,7 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('..'))
-
 import apex.aprs
 import apex.kiss
+
+sys.path.insert(0, os.path.abspath('..'))

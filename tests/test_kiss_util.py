@@ -10,11 +10,10 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 import sys
 import unittest
 
-from . import constants
-
 import apex
 import apex.kiss.constants
 import apex.kiss.util
+from . import constants
 
 
 # pylint: disable=R0904,C0103
