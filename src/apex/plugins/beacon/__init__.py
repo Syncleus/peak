@@ -14,15 +14,18 @@ __credits__ = []
 
 plugin = None
 
+
 def start(config, port_map, packet_cache, aprsis):
     global plugin
     plugin = BeaconPlugin(config, port_map, packet_cache, aprsis)
     plugin.run()
 
+
 def handle_packet(frame, recv_port, recv_port_name):
     return
 
-class BeaconPlugin( object ):
+
+class BeaconPlugin(object):
 
     def __init__(self, config, port_map, packet_cache, aprsis):
         self.port_map = port_map
@@ -40,13 +43,14 @@ class BeaconPlugin( object ):
                     port['beacon_path'] = config.get(port_section, 'beacon_path')
 
     def run(self):
-        while 1 :
+        while 1:
             for port_name in self.port_map.keys():
                 port = self.port_map[port_name]
 
-                beacon_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['beacon_path'].split(','), 'text': list(port['beacon_text'].encode('ascii'))}
+                beacon_frame = {'source': port['identifier'], 'destination': 'APRS',
+                                'path': port['beacon_path'].split(','), 'text': list(port['beacon_text'].encode('ascii'))}
                 frame_hash = apex.aprs.util.hash_frame(beacon_frame)
-                if not frame_hash in self.packet_cache.values():
+                if frame_hash not in self.packet_cache.values():
                     self.packet_cache[str(frame_hash)] = frame_hash
                     port['tnc'].write(beacon_frame, port['tnc_port'])
                     print(port_name + " >> " + apex.aprs.util.format_aprs_frame(beacon_frame))

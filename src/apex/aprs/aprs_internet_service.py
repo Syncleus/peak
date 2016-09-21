@@ -11,6 +11,7 @@ import logging
 import socket
 import requests
 import time
+from apex.aprs import constants as aprsConstants, util as aprsUtil
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
@@ -18,8 +19,6 @@ __email__ = "jeffrey.freeman@syncleus.com"
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
-
-from apex.aprs import constants as aprsConstants, util as aprsUtil
 
 
 class AprsInternetService(object):
@@ -84,7 +83,6 @@ class AprsInternetService(object):
 
         if 'TCP' in protocol:
             self.logger.debug('sending message=%s', str(frame))
-            # message = frame['source'].encode('ascii') + b">" + frame['destination'].encode('ascii') + aprs.util.format_path(frame['path']).encode('ascii') + b":" + frame['text'] + b'\n\r'
             # TODO: simplify this
             message = bytearray()
             for frame_chr in aprsUtil.format_aprs_frame(frame):
@@ -95,7 +93,7 @@ class AprsInternetService(object):
                     self.aprsis_sock.sendall(message)
                     message_sent = True
                 except (ConnectionResetError, BrokenPipeError) as ex:
-                    #connection reset wait a second then try again
+                    # connection reset wait a second then try again
                     time.sleep(1)
                     self.aprsis_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     self.aprsis_sock.connect((self.server, self.port))

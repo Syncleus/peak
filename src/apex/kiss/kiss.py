@@ -35,7 +35,14 @@ class Kiss(object):
 
     frame_buffer = []
 
-    def __init__(self, com_port=None, baud=38400, parity=serial.PARITY_NONE, stop_bits=serial.STOPBITS_ONE, byte_size=serial.EIGHTBITS, host=None, tcp_port=8000, strip_df_start=True):
+    def __init__(self, com_port=None,
+                 baud=38400,
+                 parity=serial.PARITY_NONE,
+                 stop_bits=serial.STOPBITS_ONE,
+                 byte_size=serial.EIGHTBITS,
+                 host=None,
+                 tcp_port=8000,
+                 strip_df_start=True):
         self.com_port = com_port
         self.baud = baud
         self.parity = parity
@@ -115,7 +122,7 @@ class Kiss(object):
             elif raw_code_byte is kissConstants.FEND:
                 encoded_bytes += kissConstants.FESC_TFEND
             else:
-                encoded_bytes += [raw_code_byte];
+                encoded_bytes += [raw_code_byte]
         return encoded_bytes
 
     @staticmethod
@@ -132,7 +139,7 @@ class Kiss(object):
             raise Exception("port out of range")
         elif command_code > 127 or command_code < 0:
             raise Exception("command_Code out of range")
-        return (port<<4) & command_code
+        return (port << 4) & command_code
 
     def start(self, mode_init=None, **kwargs):
         """
@@ -149,7 +156,8 @@ class Kiss(object):
             address = (self.host, self.tcp_port)
             self.interface = socket.create_connection(address)
         elif 'serial' in self.interface_mode:
-            self.interface = serial.Serial(port=self.com_port, baudrate=self.baud, parity=self.parity, stopbits=self.stop_bits, bytesize=self.byte_size)
+            self.interface = serial.Serial(port=self.com_port, baudrate=self.baud, parity=self.parity,
+                                           stopbits=self.stop_bits, bytesize=self.byte_size)
             self.interface.timeout = kissConstants.SERIAL_TIMEOUT
             if mode_init is not None:
                 self.interface.write(mode_init)
@@ -163,13 +171,12 @@ class Kiss(object):
 
         # If no settings specified, default to config values similar
         # to those that ship with Xastir.
-        #if not kwargs:
+        # if not kwargs:
         #    kwargs = kiss.constants.DEFAULT_KISS_CONFIG_VALUES
 
     def close(self):
         if self.exit_kiss is True:
             self.interface.write(kissConstants.MODE_END)
-
 
     def write_setting(self, name, value):
         """
@@ -205,7 +212,6 @@ class Kiss(object):
             split_data = [[]]
             for read_byte in read_data:
                 if read_byte is kissConstants.FEND:
-                    #split_data_index += 1
                     split_data.append([])
                 else:
                     split_data[-1].append(read_byte)
@@ -260,7 +266,8 @@ class Kiss(object):
 
         :param frame: Frame to write.
         """
-        kiss_packet = [kissConstants.FEND] + [Kiss.__command_byte_combine(port, kissConstants.DATA_FRAME)] + Kiss.__escape_special_codes(frame_bytes) + [kissConstants.FEND]
+        kiss_packet = [kissConstants.FEND] + [Kiss.__command_byte_combine(port, kissConstants.DATA_FRAME)] +\
+            Kiss.__escape_special_codes(frame_bytes) + [kissConstants.FEND]
 
         if 'tcp' in self.interface_mode:
             return self.interface.send(bytearray(kiss_packet))

@@ -20,8 +20,6 @@ from __future__ import print_function, unicode_literals
 from __future__ import absolute_import, division
 
 import logging
-from apex.aprs.aprs_kiss import AprsKiss
-from apex.aprs.aprs_internet_service import AprsInternetService
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"

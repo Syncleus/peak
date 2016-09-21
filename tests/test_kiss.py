@@ -12,7 +12,7 @@ import unittest
 
 from . import constants
 
-import apex
+import apex.kiss
 import apex.kiss.constants
 import apex.kiss.util
 

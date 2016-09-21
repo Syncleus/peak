@@ -14,13 +14,16 @@ __credits__ = []
 
 plugin = None
 
+
 def start(config, port_map, packet_cache, aprsis):
     global plugin
     plugin = StatusPlugin(config, port_map, packet_cache, aprsis)
     plugin.run()
 
+
 def handle_packet(frame, recv_port, recv_port_name):
     return
+
 
 class StatusPlugin(object):
 
@@ -32,7 +35,6 @@ class StatusPlugin(object):
         for section in config.sections():
             if section.startswith("TNC "):
                 tnc_name = section.split(" ")[1]
-                kiss_tnc = None
                 for port_id in range(1, 1+int(config.get(section, 'port_count'))):
                     port_name = tnc_name + '-' + str(port_id)
                     port = port_map[port_name]
@@ -40,16 +42,19 @@ class StatusPlugin(object):
                     port['status_text'] = config.get(port_section, 'status_text')
                     port['status_path'] = config.get(port_section, 'status_path')
 
-
     def run(self):
         time.sleep(60)
-        while 1 :
+        while 1:
             for port_name in self.port_map.keys():
                 port = self.port_map[port_name]
 
-                status_frame = {'source':port['identifier'], 'destination': 'APRS', 'path':port['status_path'].split(','), 'text': list(port['status_text'].encode('ascii'))}
+                status_frame = {
+                    'source': port['identifier'],
+                    'destination': 'APRS',
+                    'path': port['status_path'].split(','),
+                    'text': list(port['status_text'].encode('ascii'))}
                 frame_hash = apex.aprs.util.hash_frame(status_frame)
-                if not frame_hash in self.packet_cache.values():
+                if frame_hash not in self.packet_cache.values():
                     self.packet_cache[str(frame_hash)] = frame_hash
                     port['tnc'].write(status_frame, port['tnc_port'])
                     print(port_name + " >> " + apex.aprs.util.format_aprs_frame(status_frame))

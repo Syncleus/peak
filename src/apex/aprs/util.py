@@ -108,6 +108,7 @@ def decode_aprs_ascii_frame(ascii_frame):
 
     return decoded_frame
 
+
 def format_path(path_list):
     """
     Formats path from raw APRS KISS frame.
@@ -138,6 +139,7 @@ def format_aprs_frame(frame):
     for frame_byte in frame['text']:
         formatted_frame += chr(frame_byte)
     return formatted_frame
+
 
 def valid_callsign(callsign):
     """
@@ -196,10 +198,10 @@ def hash_frame(frame):
     index = 0
     frame_string_prefix = frame['source'] + ">" + frame['destination'] + ":"
     for frame_chr in frame_string_prefix:
-        hash = ord(frame_chr)<<(8*(index%4)) ^ hash
+        hash = ord(frame_chr) << (8*(index % 4)) ^ hash
         index += 1
     for byte in frame['text']:
-        hash = byte<<(8*(index%4)) ^ hash
+        hash = byte << (8*(index % 4)) ^ hash
         index += 1
     return hash
 

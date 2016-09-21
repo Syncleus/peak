@@ -117,7 +117,8 @@ class AprsKiss(apex.kiss.Kiss):
         :return: KISS-encoded APRS frame.
         :rtype: list
         """
-        enc_frame = AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(frame['destination'])) + AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(frame['source']))
+        enc_frame = AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(frame['destination'])) +\
+            AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(frame['source']))
         for p in frame['path']:
             enc_frame += AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(p))
 

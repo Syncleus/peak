@@ -56,10 +56,10 @@ DEFAULT_KISS_CONFIG_VALUES = {
     'FULL_DUPLEX': 0,
     }
 
-#This command will exit KISS mode
+# This command will exit KISS mode
 MODE_END = [192, 255, 192, 13]
 # This will start kiss on a W8DED or LINK>.<NORD firmware
 MODE_INIT_W8DED = [13, 27, 64, 75, 13]
 MODE_INIT_LINKNORD = MODE_INIT_W8DED
-#This will work for any Kenwood D710
-MODE_INIT_KENWOOD_D710 = [72,66,32,49,50,48,48,13,75,73,83,83,32,79,78,13,82,69,83,84,65,82,84,13]
+# This will work for any Kenwood D710
+MODE_INIT_KENWOOD_D710 = [72, 66, 32, 49, 50, 48, 48, 13, 75, 73, 83, 83, 32, 79, 78, 13, 82, 69, 83, 84, 65, 82, 84, 13]

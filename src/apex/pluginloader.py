@@ -15,6 +15,7 @@ __credits__ = []
 PluginFolder = "./plugins"
 MainModule = "__init__"
 
+
 def getPlugins():
     plugins = []
     possibleplugins = os.listdir(PluginFolder)
@@ -25,6 +26,7 @@ def getPlugins():
 
         plugins.append(i)
     return plugins
+
 
 def loadPlugin(plugin):
     return importlib.import_module("plugins." + plugin)

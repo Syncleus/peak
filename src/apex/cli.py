@@ -18,7 +18,6 @@ Why does this file exist, and why not put this in __main__?
 from __future__ import print_function, unicode_literals
 from __future__ import absolute_import, division
 
-import sys
 import click
 import time
 import signal
@@ -27,9 +26,11 @@ import threading
 import cachetools
 import traceback
 from apex.pluginloader import getPlugins, loadPlugin
+from apex.kiss import constants as kissConstants
+import apex.aprs
 
 if sys.version_info < (3, 0):
-    import ConfigParser
+    import ConfigParser  # noqa: F401
 elif sys.version_info >= (3, 0):
     import configparser
 
@@ -39,9 +40,6 @@ __email__ = "jeffrey.freeman@syncleus.com"
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
-
-from apex.kiss import constants as kissConstants
-import apex.aprs
 
 
 @click.command()
