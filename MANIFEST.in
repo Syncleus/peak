@@ -14,7 +14,7 @@ include CONTRIBUTING.rst
 include LICENSE
 include README.rst
 
-include apex.cfg.example
+include apex.conf.example
 include MAKEFILE
 
 include tox.ini .travis.yml

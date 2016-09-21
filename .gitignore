@@ -64,5 +64,5 @@ docs/_build
 *.bak
 **/__pycache__
 
-apex.cfg
+apex.conf
 

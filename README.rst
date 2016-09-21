@@ -96,7 +96,7 @@ just run the application with the following command.
 
     python ./apex.py
 
-There isnt much to the application right now, so thats all you should need to run it. Digipeating will occur
+There isn't much to the application right now, so thats all you should need to run it. Digipeating will occur
 automatically and respond to the WIDEN-n paradigm as well as your own callsign. Cross-band repeating is enabled right
 now but only by specifying the call sign directly. The application is still pre-release so more features and
 configuration options should be added soon.

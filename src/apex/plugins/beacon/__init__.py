@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import time
+import click
 
 import apex.aprs.util
 
@@ -56,5 +57,5 @@ class BeaconPlugin(object):
                 if frame_hash not in self.packet_cache.values():
                     self.packet_cache[str(frame_hash)] = frame_hash
                     port['tnc'].write(beacon_frame, port['tnc_port'])
-                    print(port_name + " >> " + apex.aprs.util.format_aprs_frame(beacon_frame))
+                    click.echo(port_name + " >> " + apex.aprs.util.format_aprs_frame(beacon_frame))
             time.sleep(600)

@@ -21,6 +21,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
 import signal
 import sys
 import threading
@@ -46,15 +47,39 @@ __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
 
+def find_config(config_paths):
+    config_file = 'apex.conf'
+    rc_file = '.apexrc'
+    cur_path = os.path.join(os.curdir, config_file)
+    home_path = os.path.join(os.path.expanduser("~"), rc_file)
+    etc_path = os.path.join('etc', config_file)
+    if config_paths is None:
+        config_paths = [cur_path, home_path, etc_path]
+    elif isinstance(config_paths, str):
+        config_paths = [config_paths]
+    elif not isinstance(config_paths, list):
+        raise TypeError('config_paths argument was neither a string nor a list')
 
-@click.command()
-@click.argument('names', nargs=-1)
-def main(names):
-    click.echo(repr(names))
+    config = configparser.ConfigParser()
+    for config_path in config_paths:
+        try:
+            if len(config.read(config_path)) > 0:
+                return config
+        except IOError:
+            pass
+
+@click.command(context_settings=dict(auto_envvar_prefix='APEX'))
+@click.option('-c',
+              '--configfile',
+              type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True, resolve_path=True),
+              help='Configuration file for APEX.')
+@click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
+def main(verbose, configfile):
+    click.echo("verbosity: " + repr(verbose))
+    click.echo("configfile: " + repr(configfile))
 
     port_map = {}
-    config = configparser.ConfigParser()
-    config.read('apex.cfg')
+    config = find_config(configfile)
     for section in config.sections():
         if section.startswith("TNC "):
             tnc_name = section.split(" ")[1]
@@ -104,7 +129,7 @@ def main(names):
 
     signal.signal(signal.SIGINT, sigint_handler)
 
-    print("Press ctrl + c at any time to exit")
+    click.echo("Press ctrl + c at any time to exit")
 
     packet_cache = cachetools.TTLCache(10000, 5)
     # start the plugins
@@ -116,7 +141,7 @@ def main(names):
             plugins.append(loaded_plugin)
             threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
     except FileNotFoundError:
-        print("The plugin directory doesnt exist, without plugins this program has nothing to do, so it will exit now.")
+        click.echo("The plugin directory doesnt exist, without plugins this program has nothing to do, so it will exit now.")
         return
 
     while 1:
@@ -134,7 +159,7 @@ def main(names):
         except Exception as ex:
             # We want to keep this thread alive so long as the application runs.
             traceback.print_exc(file=sys.stdout)
-            print("caught exception while reading packet: " + str(ex))
+            click.echo("caught exception while reading packet: " + str(ex))
 
         if something_read is False:
             time.sleep(1)
