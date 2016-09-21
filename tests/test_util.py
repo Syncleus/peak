@@ -10,12 +10,10 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 
 import logging
 import logging.handlers
-import sys
 import unittest
 
 import apex.aprs.util
 from apex.aprs import constants as aprsConstants
-from . import constants
 
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 NUMBERS = '0123456789'

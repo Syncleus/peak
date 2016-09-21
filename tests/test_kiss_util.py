@@ -7,12 +7,8 @@ __author__ = 'Jeffrey Phillips Freeman WI2ARD <freemo@gmail.com>'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 
-import sys
 import unittest
 
-import apex
-import apex.kiss.constants
-import apex.kiss.util
 from . import constants
 
 

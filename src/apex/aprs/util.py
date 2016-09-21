@@ -196,16 +196,16 @@ def hash_frame(frame):
     :type frame: dict
     :return: an integer representing the hash
     """
-    hash = 0
+    hashing = 0
     index = 0
     frame_string_prefix = frame['source'] + ">" + frame['destination'] + ":"
     for frame_chr in frame_string_prefix:
-        hash = ord(frame_chr) << (8*(index % 4)) ^ hash
+        hashing = ord(frame_chr) << (8*(index % 4)) ^ hashing
         index += 1
     for byte in frame['text']:
-        hash = byte << (8*(index % 4)) ^ hash
+        hashing = byte << (8*(index % 4)) ^ hashing
         index += 1
-    return hash
+    return hashing
 
 
 if __name__ == '__main__':

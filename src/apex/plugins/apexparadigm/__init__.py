@@ -26,7 +26,6 @@ def start(config, port_map, packet_cache, aprsis):
 
 
 def handle_packet(frame, recv_port, recv_port_name):
-    global plugin
     plugin.handle_packet(frame, recv_port, recv_port_name)
 
 

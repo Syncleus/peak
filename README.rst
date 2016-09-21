@@ -30,7 +30,7 @@ Overview
 
 .. |coveralls| image:: https://coveralls.io/repos/Syncleus/apex/badge.svg?branch=master&service=github
     :alt: Coverage Status
-    :target: https://coveralls.io/r/Syncleus/apex
+    :target: https://coveralls.io/github/Syncleus/apex
 
 .. |codecov| image:: https://codecov.io/github/Syncleus/apex/coverage.svg?branch=master
     :alt: Coverage Status
