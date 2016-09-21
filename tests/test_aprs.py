@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__ = 'Jeffrey Phillips Freeman WI2ARD <freemo@gmail.com>'
-__license__ = 'Apache License, Version 2.0'
-__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
-
 """Tests for Python APRS-IS Bindings."""
+
+# These imports are for python3 compatability inside python2
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import logging
 import logging.handlers
 # import httpretty
@@ -14,6 +17,13 @@ import unittest
 
 import apex.aprs.aprs_internet_service
 import apex.aprs.constants
+
+__author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
+__email__ = "jeffrey.freeman@syncleus.com"
+__license__ = 'Apache License, Version 2.0'
+__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
+__credits__ = []
 
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 NUMBERS = '0123456789'

@@ -3,12 +3,20 @@
 
 """Context for tests for APRS Python Module."""
 
-__author__ = 'Jeffrey Phillips Freeman WI2ARD <freemo@gmail.com>'
-__license__ = 'Apache License, Version 2.0'
-__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
-
+# These imports are for python3 compatability inside python2
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
 import sys
+
+__author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
+__email__ = "jeffrey.freeman@syncleus.com"
+__license__ = 'Apache License, Version 2.0'
+__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
+__credits__ = []
 
 sys.path.insert(0, os.path.abspath('..'))
