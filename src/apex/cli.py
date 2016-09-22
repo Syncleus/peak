@@ -160,7 +160,7 @@ def main(verbose, configfile):
             loaded_plugin = loadPlugin(plugin_loader)
             plugins.append(loaded_plugin)
             threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
-    except FileNotFoundError:
+    except IOError:
         click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
                    click.style('plugin directory not found, this program has nothing to do.', bold=True))
         return
