@@ -48,7 +48,7 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
 
 
-def find_config(config_paths):
+def find_config(config_paths, verbose):
     config_file = 'apex.conf'
     rc_file = '.apexrc'
     cur_path = os.path.join(os.curdir, config_file)
@@ -61,6 +61,9 @@ def find_config(config_paths):
     elif not isinstance(config_paths, list):
         raise TypeError('config_paths argument was neither a string nor a list')
 
+    if verbose:
+        click.echo('Searching for configuration file in the following locations: %s' % repr(config_paths))
+
     config = configparser.ConfigParser()
     for config_path in config_paths:
         try:
@@ -68,6 +71,8 @@ def find_config(config_paths):
                 return config
         except IOError:
             pass
+
+    return None
 
 
 @click.command(context_settings=dict(auto_envvar_prefix='APEX'))
@@ -77,11 +82,13 @@ def find_config(config_paths):
               help='Configuration file for APEX.')
 @click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
 def main(verbose, configfile):
-    click.echo("verbosity: " + repr(verbose))
-    click.echo("configfile: " + repr(configfile))
 
     port_map = {}
-    config = find_config(configfile)
+    config = find_config(configfile, verbose)
+    if config is None:
+        click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
+                   click.style('No apex configuration found, can not continue.', bold=True))
+        return
     for section in config.sections():
         if section.startswith("TNC "):
             tnc_name = section.split(" ")[1]
@@ -143,7 +150,8 @@ def main(verbose, configfile):
             plugins.append(loaded_plugin)
             threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
     except FileNotFoundError:
-        click.echo("The plugin directory doesnt exist, without plugins this program has nothing to do, so it will exit now.")
+        click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
+                   click.style('plugin directory not found, this program has nothing to do.', bold=True))
         return
 
     while 1:
