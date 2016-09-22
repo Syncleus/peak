@@ -4,4 +4,4 @@ Installation
 
 At the command line::
 
-    pip install apex
+    pip install apex-radio

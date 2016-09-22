@@ -24,21 +24,21 @@ source_suffix = '.rst'
 master_doc = 'index'
 project = u'APEX'
 year = '2016'
-author = u'Jeffrey Phillips Freeman'
+author = u'Jeffrey Phillips Freeman (WI2ARD)'
 copyright = '{0}, {1}'.format(year, author)
 version = release = u'0.0.2'
 
 pygments_style = 'trac'
 templates_path = ['.']
 extlinks = {
-    'issue': ('https://github.com/syncleus/apex/issues/%s', '#'),
-    'pr': ('https://github.com/syncleus/apex/pull/%s', 'PR #'),
+    'issue': ('https://github.com/Syncleus/apex/issues/%s', '#'),
+    'pr': ('https://github.com/Syncleus/apex/pull/%s', 'PR #'),
 }
 import sphinx_py3doc_enhanced_theme
 html_theme = "sphinx_py3doc_enhanced_theme"
 html_theme_path = [sphinx_py3doc_enhanced_theme.get_html_theme_path()]
 html_theme_options = {
-    'githuburl': 'https://github.com/syncleus/apex/'
+    'githuburl': 'https://github.com/Syncleus/apex/'
 }
 
 html_use_smartypants = True
