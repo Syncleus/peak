@@ -151,7 +151,7 @@ Note, to combine the coverage data from all the tox environments run:
             PYTEST_ADDOPTS=--cov-append tox
 
 Releasing
-=========
+---------
 
 * Ensure you have an account on PyPI, if you do not create one `here <https://pypi.python.org/pypi?%3Aaction=register_form>`_.
 
