@@ -101,8 +101,16 @@ def main(verbose, configfile):
                 tcp_port = config.get(section, 'tcp_port')
                 kiss_tnc = apex.aprs.AprsKiss(host=tcp_host, tcp_port=tcp_port)
             else:
-                raise Exception(
-                    "Must have either both com_port and baud set or tcp_host and tcp_port set in configuration file")
+                click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
+                           click.style("""Invalid configuration, must have both com_port and baud set or tcp_host and
+                           tcp_port set in TNC sections of configuration file""", bold=True))
+                return
+
+            if not config.has_option(section, 'kiss_init'):
+                click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
+                           click.style("""Invalid configuration, must have kiss_init set in TNC sections of
+                           configuration file""", bold=True))
+                return
             kiss_init_string = config.get(section, 'kiss_init')
             if kiss_init_string == 'MODE_INIT_W8DED':
                 kiss_tnc.start(kissConstants.MODE_INIT_W8DED)
@@ -111,7 +119,10 @@ def main(verbose, configfile):
             elif kiss_init_string == 'NONE':
                 kiss_tnc.start()
             else:
-                raise Exception("KISS init mode not specified")
+                click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
+                           click.style('Invalid configuration, value assigned to kiss_init was not recognized: %s'
+                                       % kiss_init_string, bold=True))
+                return
             for port in range(1, 1 + int(config.get(section, 'port_count'))):
                 port_name = tnc_name + '-' + str(port)
                 port_section = 'PORT ' + port_name
