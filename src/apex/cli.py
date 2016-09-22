@@ -47,6 +47,7 @@ __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
 
+
 def find_config(config_paths):
     config_file = 'apex.conf'
     rc_file = '.apexrc'
@@ -67,6 +68,7 @@ def find_config(config_paths):
                 return config
         except IOError:
             pass
+
 
 @click.command(context_settings=dict(auto_envvar_prefix='APEX'))
 @click.option('-c',
