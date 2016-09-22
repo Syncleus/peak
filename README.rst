@@ -101,7 +101,7 @@ automatically and respond to the WIDEN-n paradigm as well as your own callsign. 
 now but only by specifying the call sign directly. The application is still pre-release so more features and
 configuration options should be added soon.
 
-* Free software: BSD license
+This is Free software: Apache License v2
 
 Installation
 ============
