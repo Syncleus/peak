@@ -183,7 +183,7 @@ def main(verbose, configfile):
                     formatted_aprs = '>'.join([click.style(frame['source'], fg='green'), click.style(frame['destination'], fg='blue')])
                     paths = []
                     for path in frame['path']:
-                        paths += click.style(path, fg='magenta')
+                        paths.append(click.style(path, fg='magenta'))
                     paths = ','.join(paths)
                     if frame['path']:
                         formatted_aprs = ','.join([formatted_aprs, paths])
