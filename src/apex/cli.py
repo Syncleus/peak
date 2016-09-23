@@ -159,6 +159,8 @@ def main(verbose, configfile):
     try:
         plugin_loaders = getPlugins()
         for plugin_loader in plugin_loaders:
+            if verbose:
+                click.echo('Plugin found at the following location: %s' % repr(plugin_loader))
             loaded_plugin = loadPlugin(plugin_loader)
             plugins.append(loaded_plugin)
             threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
@@ -167,6 +169,8 @@ def main(verbose, configfile):
                    click.style('plugin directory not found, this program has nothing to do.', bold=True))
         return
 
+    if verbose:
+        click.echo('Starting packet processing...')
     while 1:
         something_read = False
         try:
