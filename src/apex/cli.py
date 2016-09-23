@@ -159,9 +159,8 @@ def main(verbose, configfile):
     try:
         plugin_loaders = getPlugins()
         if not len(plugin_loaders):
-            click.echo(click.style('Warning: ', fg='red', bold=True, blink=True) +
-                       click.style("No plugins were able to be discovered, will only display incoming messages",
-                                   bold=True))
+            click.echo(click.style('Warning: ', fg='yellow') +
+                       click.style("No plugins were able to be discovered, will only display incoming messages."))
         for plugin_loader in plugin_loaders:
             if verbose:
                 click.echo('Plugin found at the following location: %s' % repr(plugin_loader))
@@ -169,9 +168,8 @@ def main(verbose, configfile):
             plugins.append(loaded_plugin)
             threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
     except IOError:
-        click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
-                   click.style('plugin directory not found, this program has nothing to do.', bold=True))
-        return
+        click.echo(click.style('Warning: ', fg='yellow') +
+                   click.style('plugin directory not found, will only display incoming messages.'))
 
     if verbose:
         click.echo('Starting packet processing...')
