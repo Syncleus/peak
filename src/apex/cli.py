@@ -48,7 +48,7 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
 
 
-def find_config(config_paths):
+def find_config(config_paths, verbose):
     config_file = 'apex.conf'
     rc_file = '.apexrc'
     cur_path = os.path.join(os.curdir, config_file)
@@ -61,6 +61,9 @@ def find_config(config_paths):
     elif not isinstance(config_paths, list):
         raise TypeError('config_paths argument was neither a string nor a list')
 
+    if verbose:
+        click.echo('Searching for configuration file in the following locations: %s' % repr(config_paths))
+
     config = configparser.ConfigParser()
     for config_path in config_paths:
         try:
@@ -68,6 +71,8 @@ def find_config(config_paths):
                 return config
         except IOError:
             pass
+
+    return None
 
 
 @click.command(context_settings=dict(auto_envvar_prefix='APEX'))
@@ -77,11 +82,13 @@ def find_config(config_paths):
               help='Configuration file for APEX.')
 @click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
 def main(verbose, configfile):
-    click.echo("verbosity: " + repr(verbose))
-    click.echo("configfile: " + repr(configfile))
 
     port_map = {}
-    config = find_config(configfile)
+    config = find_config(configfile, verbose)
+    if config is None:
+        click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
+                   click.style('No apex configuration found, can not continue.', bold=True))
+        return
     for section in config.sections():
         if section.startswith("TNC "):
             tnc_name = section.split(" ")[1]
@@ -94,8 +101,16 @@ def main(verbose, configfile):
                 tcp_port = config.get(section, 'tcp_port')
                 kiss_tnc = apex.aprs.AprsKiss(host=tcp_host, tcp_port=tcp_port)
             else:
-                raise Exception(
-                    "Must have either both com_port and baud set or tcp_host and tcp_port set in configuration file")
+                click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
+                           click.style("""Invalid configuration, must have both com_port and baud set or tcp_host and
+                           tcp_port set in TNC sections of configuration file""", bold=True))
+                return
+
+            if not config.has_option(section, 'kiss_init'):
+                click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
+                           click.style("""Invalid configuration, must have kiss_init set in TNC sections of
+                           configuration file""", bold=True))
+                return
             kiss_init_string = config.get(section, 'kiss_init')
             if kiss_init_string == 'MODE_INIT_W8DED':
                 kiss_tnc.start(kissConstants.MODE_INIT_W8DED)
@@ -104,7 +119,10 @@ def main(verbose, configfile):
             elif kiss_init_string == 'NONE':
                 kiss_tnc.start()
             else:
-                raise Exception("KISS init mode not specified")
+                click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
+                           click.style('Invalid configuration, value assigned to kiss_init was not recognized: %s'
+                                       % kiss_init_string, bold=True))
+                return
             for port in range(1, 1 + int(config.get(section, 'port_count'))):
                 port_name = tnc_name + '-' + str(port)
                 port_section = 'PORT ' + port_name
@@ -142,8 +160,9 @@ def main(verbose, configfile):
             loaded_plugin = loadPlugin(plugin_loader)
             plugins.append(loaded_plugin)
             threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
-    except FileNotFoundError:
-        click.echo("The plugin directory doesnt exist, without plugins this program has nothing to do, so it will exit now.")
+    except IOError:
+        click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
+                   click.style('plugin directory not found, this program has nothing to do.', bold=True))
         return
 
     while 1:
