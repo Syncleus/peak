@@ -7,11 +7,8 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from __future__ import unicode_literals
 
 import logging
-import sys
-import unicodedata
 
 import apex.aprs.constants
 import apex.aprs.decimaldegrees
@@ -48,8 +45,6 @@ def dec2dm_lat(dec):
         suffix = 'N'
 
     retval = ''.join([str(abs_deg), "%.2f" % dec_min[1], suffix])
-    if sys.version_info < (3, 0):
-        retval = unicodedata.normalize('NFKD', retval).encode('ascii', 'ignore')
 
     return retval
 
@@ -75,8 +70,6 @@ def dec2dm_lng(dec):
         suffix = 'E'
 
     retval = ''.join([str(abs_deg), "%.2f" % dec_min[1], suffix])
-    if sys.version_info < (3, 0):
-        retval = unicodedata.normalize('NFKD', retval).encode('ascii', 'ignore')
 
     return retval
 
@@ -138,8 +131,7 @@ def format_aprs_frame(frame):
     if frame['path']:
         formatted_frame = ','.join([formatted_frame, format_path(frame['path'])])
     formatted_frame += ':'
-    for frame_byte in bytearray(frame['text'], 'ascii'):
-        formatted_frame += chr(frame_byte)
+    formatted_frame += frame['text']
     return formatted_frame
 
 
