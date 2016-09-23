@@ -158,6 +158,10 @@ def main(verbose, configfile):
     plugins = []
     try:
         plugin_loaders = getPlugins()
+        if not len(plugin_loaders):
+            click.echo(click.style('Warning: ', fg='red', bold=True, blink=True) +
+                       click.style("No plugins were able to be discovered, will only display incoming messages",
+                                   bold=True))
         for plugin_loader in plugin_loaders:
             if verbose:
                 click.echo('Plugin found at the following location: %s' % repr(plugin_loader))
@@ -175,8 +179,10 @@ def main(verbose, configfile):
         something_read = False
         try:
             for port_name in port_map.keys():
+                click.echo('reading port: %s', port_name)
                 port = port_map[port_name]
                 frame = port['tnc'].read()
+                click.echo('raw frame read in: %s' % frame)
                 if frame:
                     formatted_aprs = apex.aprs.util.format_aprs_frame(frame)
                     print(port_name + " << " + formatted_aprs)
@@ -186,7 +192,8 @@ def main(verbose, configfile):
         except Exception as ex:
             # We want to keep this thread alive so long as the application runs.
             traceback.print_exc(file=sys.stdout)
-            click.echo("caught exception while reading packet: " + str(ex))
+            click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
+                       click.style('Caught exception while reading packet: %s' % str(ex), bold=True))
 
         if something_read is False:
             time.sleep(1)
