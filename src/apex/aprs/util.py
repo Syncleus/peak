@@ -138,7 +138,7 @@ def format_aprs_frame(frame):
     if frame['path']:
         formatted_frame = ','.join([formatted_frame, format_path(frame['path'])])
     formatted_frame += ':'
-    for frame_byte in bytearray(frame['text'], 'Ascii'):
+    for frame_byte in bytearray(frame['text'], 'ascii'):
         formatted_frame += chr(frame_byte)
     return formatted_frame
 
