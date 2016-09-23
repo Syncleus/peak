@@ -187,8 +187,7 @@ def main(verbose, configfile):
                     formatted_aprs += ':'
                     formatted_aprs += frame['text']
                     click.echo(click.style(port_name + ' << ', fg='magenta') + formatted_aprs)
-                    # formatted_aprs = apex.aprs.util.format_aprs_frame(frame)
-                    # print(port_name + " << " + formatted_aprs)
+
                     for plugin in plugins:
                         something_read = True
                         plugin.handle_packet(frame, port, port_name)
