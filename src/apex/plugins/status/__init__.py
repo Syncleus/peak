@@ -8,8 +8,8 @@ import time
 import apex.aprs.util
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
-__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
-__email__ = "jeffrey.freeman@syncleus.com"
+__maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
@@ -35,8 +35,8 @@ class StatusPlugin(object):
         self.aprsis = aprsis
 
         for section in config.sections():
-            if section.startswith("TNC "):
-                tnc_name = section.split(" ")[1]
+            if section.startswith('TNC '):
+                tnc_name = section.split(' ')[1]
                 for port_id in range(1, 1+int(config.get(section, 'port_count'))):
                     port_name = tnc_name + '-' + str(port_id)
                     port = port_map[port_name]
@@ -59,5 +59,5 @@ class StatusPlugin(object):
                 if frame_hash not in self.packet_cache.values():
                     self.packet_cache[str(frame_hash)] = frame_hash
                     port['tnc'].write(status_frame, port['tnc_port'])
-                    print(port_name + " >> " + apex.aprs.util.format_aprs_frame(status_frame))
+                    print(port_name + ' >> ' + apex.aprs.util.format_aprs_frame(status_frame))
             time.sleep(600)

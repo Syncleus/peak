@@ -15,8 +15,8 @@ import apex.aprs.decimaldegrees
 import apex.kiss.constants
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
-__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
-__email__ = "jeffrey.freeman@syncleus.com"
+__maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
@@ -44,7 +44,7 @@ def dec2dm_lat(dec):
     else:
         suffix = 'N'
 
-    retval = ''.join([str(abs_deg), "%.2f" % dec_min[1], suffix])
+    retval = ''.join([str(abs_deg), '%.2f' % dec_min[1], suffix])
 
     return retval
 
@@ -69,7 +69,7 @@ def dec2dm_lng(dec):
     else:
         suffix = 'E'
 
-    retval = ''.join([str(abs_deg), "%.2f" % dec_min[1], suffix])
+    retval = ''.join([str(abs_deg), '%.2f' % dec_min[1], suffix])
 
     return retval
 
@@ -190,7 +190,7 @@ def hash_frame(frame):
     """
     hashing = 0
     index = 0
-    frame_string_prefix = frame['source'] + ">" + frame['destination'] + ":"
+    frame_string_prefix = frame['source'] + '>' + frame['destination'] + ':'
     for frame_chr in frame_string_prefix:
         hashing = ord(frame_chr) << (8*(index % 4)) ^ hashing
         index += 1

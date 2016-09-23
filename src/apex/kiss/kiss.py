@@ -15,8 +15,8 @@ import serial
 from apex.kiss import constants as kissConstants
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
-__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
-__email__ = "jeffrey.freeman@syncleus.com"
+__maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
@@ -138,9 +138,9 @@ class Kiss(object):
         :return: An integer combining the two values into a single byte
         """
         if port > 127 or port < 0:
-            raise Exception("port out of range")
+            raise Exception('port out of range')
         elif command_code > 127 or command_code < 0:
-            raise Exception("command_Code out of range")
+            raise Exception('command_Code out of range')
         return (port << 4) & command_code
 
     def start(self, mode_init=None, **kwargs):
@@ -152,7 +152,7 @@ class Kiss(object):
 
         :param **kwargs: name/value pairs to use as initial config values.
         """
-        self.logger.debug("kwargs=%s", kwargs)
+        self.logger.debug('kwargs=%s', kwargs)
 
         if 'tcp' in self.interface_mode:
             address = (self.host, self.tcp_port)

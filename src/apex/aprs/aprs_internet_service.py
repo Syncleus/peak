@@ -16,8 +16,8 @@ from apex.aprs import constants as aprsConstants
 from apex.aprs import util as aprsUtil
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
-__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
-__email__ = "jeffrey.freeman@syncleus.com"
+__maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
@@ -95,12 +95,12 @@ class AprsInternetService(object):
                 message_sent = True
             return True
         elif 'HTTP' in protocol:
-            content = "\n".join([self._auth, aprsUtil.format_aprs_frame(frame)])
+            content = '\n'.join([self._auth, aprsUtil.format_aprs_frame(frame)])
             headers = headers or aprsConstants.APRSIS_HTTP_HEADERS
             result = requests.post(self._url, data=content, headers=headers)
             return 204 == result.status_code
         elif 'UDP' in protocol:
-            content = "\n".join([self._auth, aprsUtil.format_aprs_frame(frame)])
+            content = '\n'.join([self._auth, aprsUtil.format_aprs_frame(frame)])
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.sendto(
                 content,
