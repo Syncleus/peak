@@ -48,10 +48,10 @@ class AprsKiss(apex.kiss.Kiss):
                     # Less than 2 callsigns?
                     if 1 < i < 11:
                         if (raw_frame[raw_slice + 1] & 0x03 == 0x03 and raw_frame[raw_slice + 2] in [0xf0, 0xcf]):
-                            frame['text'] = raw_frame[raw_slice + 3:]
+                            frame['text'] = "".join(map(chr, raw_frame[raw_slice + 3:]))
                             frame['destination'] = AprsKiss.__identity_as_string(AprsKiss.__extract_callsign(raw_frame))
                             frame['source'] = AprsKiss.__identity_as_string(AprsKiss.__extract_callsign(raw_frame[7:]))
-                            frame['path'] = AprsKiss.__extract_path(math.floor(i), raw_frame)
+                            frame['path'] = AprsKiss.__extract_path(int(i), raw_frame)
                             return frame
 
         logging.debug('frame=%s', frame)

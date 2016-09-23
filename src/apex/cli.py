@@ -15,7 +15,7 @@ Why does this file exist, and why not put this in __main__?
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
 
-# These imports are for python3 compatability inside python2
+# These imports are for python3 compatibility inside python2
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -179,10 +179,8 @@ def main(verbose, configfile):
         something_read = False
         try:
             for port_name in port_map.keys():
-                click.echo('reading port: %s' % port_name)
                 port = port_map[port_name]
                 frame = port['tnc'].read()
-                click.echo('raw frame read in: %s' % frame)
                 if frame:
                     formatted_aprs = apex.aprs.util.format_aprs_frame(frame)
                     print(port_name + " << " + formatted_aprs)

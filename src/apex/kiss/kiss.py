@@ -87,7 +87,7 @@ class Kiss(object):
             waiting_data = self.interface.inWaiting()
             if waiting_data:
                 read_data += self.interface.read(waiting_data)
-            return read_data
+            return map(ord, read_data)
 
     @staticmethod
     def __strip_df_start(frame):

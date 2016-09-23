@@ -183,7 +183,7 @@ def run_doctest():  # pragma: no cover
 
 def hash_frame(frame):
     """
-    Produces an integr value that acts as a hash for the frame
+    Produces an integer value that acts as a hash for the frame
     :param frame: A frame packet
     :type frame: dict
     :return: an integer representing the hash
