@@ -179,7 +179,7 @@ def main(verbose, configfile):
         something_read = False
         try:
             for port_name in port_map.keys():
-                click.echo('reading port: %s', port_name)
+                click.echo('reading port: %s' % port_name)
                 port = port_map[port_name]
                 frame = port['tnc'].read()
                 click.echo('raw frame read in: %s' % frame)
