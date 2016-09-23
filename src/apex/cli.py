@@ -180,8 +180,15 @@ def main(verbose, configfile):
                 port = port_map[port_name]
                 frame = port['tnc'].read()
                 if frame:
-                    formatted_aprs = apex.aprs.util.format_aprs_frame(frame)
-                    print(port_name + " << " + formatted_aprs)
+                    formatted_aprs = '>'.join([click.style(frame['source'], fg='green'), click.style(frame['destination'], fg='blue')])
+                    if frame['path']:
+                        formatted_aprs = ','.join([formatted_aprs, click.style(','.join(frame['path']),
+                                                                                 fg='cyan')])
+                    formatted_aprs += ':'
+                    formatted_aprs += frame['text']
+                    click.echo(click.style(port_name + ' << ', fg='magenta') + formatted_aprs)
+                    # formatted_aprs = apex.aprs.util.format_aprs_frame(frame)
+                    # print(port_name + " << " + formatted_aprs)
                     for plugin in plugins:
                         something_read = True
                         plugin.handle_packet(frame, port, port_name)
