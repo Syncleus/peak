@@ -182,8 +182,7 @@ def main(verbose, configfile):
                 if frame:
                     formatted_aprs = '>'.join([click.style(frame['source'], fg='green'), click.style(frame['destination'], fg='blue')])
                     if frame['path']:
-                        formatted_aprs = ','.join([formatted_aprs, click.style(','.join(frame['path']),
-                                                                                 fg='cyan')])
+                        formatted_aprs = ','.join([formatted_aprs, ','.join(click.style(frame['path'], fg='cyan'))])
                     formatted_aprs += ':'
                     formatted_aprs += frame['text']
                     click.echo(click.style(port_name + ' << ', fg='magenta') + formatted_aprs)
