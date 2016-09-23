@@ -10,8 +10,8 @@ import click
 import apex.aprs.util
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
-__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
-__email__ = "jeffrey.freeman@syncleus.com"
+__maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
@@ -79,24 +79,24 @@ class ApexParadigmPlugin(object):
                         if band_path_net:
                             if node == port['net']:
                                 frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] +\
-                                                [hop + "*"] + frame['path'][hop_index+1:]
+                                                [hop + '*'] + frame['path'][hop_index+1:]
                                 frame_hash = apex.aprs.util.hash_frame(frame)
                                 if frame_hash not in self.packet_cache.values():
                                     self.packet_cache[str(frame_hash)] = frame_hash
                                     port['tnc'].write(frame, port['tnc_port'])
                                     self.aprsis.send(frame)
-                                    click.echo(port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
+                                    click.echo(port_name + ' >> ' + apex.aprs.util.format_aprs_frame(frame))
                                 return
                         else:
                             if port['net'].startswith(node):
                                 frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] +\
-                                                [hop + "*"] + frame['path'][hop_index+1:]
+                                                [hop + '*'] + frame['path'][hop_index+1:]
                                 frame_hash = apex.aprs.util.hash_frame(frame)
                                 if frame_hash not in self.packet_cache.values():
                                     self.packet_cache[str(frame_hash)] = frame_hash
                                     port['tnc'].write(frame, port['tnc_port'])
                                     self.aprsis.send(frame)
-                                    click.echo(port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
+                                    click.echo(port_name + ' >> ' + apex.aprs.util.format_aprs_frame(frame))
                                 return
                     if node == port_callsign and ssid == port_ssid:
                         if ssid is 0:
@@ -108,39 +108,39 @@ class ApexParadigmPlugin(object):
                             self.packet_cache[str(frame_hash)] = frame_hash
                             port['tnc'].write(frame, port['tnc_port'])
                             self.aprsis.send(frame)
-                            click.echo(port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
+                            click.echo(port_name + ' >> ' + apex.aprs.util.format_aprs_frame(frame))
                         return
-                    elif node == "GATE" and port['net'].startswith("2M"):
-                        frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "*"] +\
+                    elif node == 'GATE' and port['net'].startswith('2M'):
+                        frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + '*'] +\
                                         frame['path'][hop_index+1:]
                         frame_hash = apex.aprs.util.hash_frame(frame)
                         if frame_hash not in self.packet_cache.values():
                             self.packet_cache[str(frame_hash)] = frame_hash
                             port['tnc'].write(frame, port['tnc_port'])
                             self.aprsis.send(frame)
-                            click.echo(port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
+                            click.echo(port_name + ' >> ' + apex.aprs.util.format_aprs_frame(frame))
                         return
                 if node.startswith('WIDE') and ssid > 1:
                     frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] +\
-                        [node + "-" + str(ssid-1)] + frame['path'][hop_index+1:]
+                        [node + '-' + str(ssid-1)] + frame['path'][hop_index+1:]
                     frame_hash = apex.aprs.util.hash_frame(frame)
                     if frame_hash not in self.packet_cache.values():
                         self.packet_cache[str(frame_hash)] = frame_hash
                         recv_port['tnc'].write(frame, recv_port['tnc_port'])
                         self.aprsis.send(frame)
-                        click.echo(recv_port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
+                        click.echo(recv_port_name + ' >> ' + apex.aprs.util.format_aprs_frame(frame))
                     return
                 elif node.startswith('WIDE') and ssid is 1:
-                    frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + "*"] + frame['path'][hop_index+1:]
+                    frame['path'] = frame['path'][:hop_index] + [recv_port['identifier'] + '*'] + [node + '*'] + frame['path'][hop_index+1:]
                     frame_hash = apex.aprs.util.hash_frame(frame)
                     if frame_hash not in self.packet_cache.values():
                         self.packet_cache[str(frame_hash)] = frame_hash
                         recv_port['tnc'].write(frame, recv_port['tnc_port'])
                         self.aprsis.send(frame)
-                        click.echo(recv_port_name + " >> " + apex.aprs.util.format_aprs_frame(frame))
+                        click.echo(recv_port_name + ' >> ' + apex.aprs.util.format_aprs_frame(frame))
                     return
                 elif node.startswith('WIDE') and ssid is 0:
-                    frame['path'][hop_index] = node + "*"
+                    frame['path'][hop_index] = node + '*'
                     # no return
                 else:
                     # If we didnt digipeat it then we didn't modify the frame, send it to aprsis as-is
@@ -256,9 +256,9 @@ class ApexParadigmPlugin(object):
             if hop[-1] != '*':
                 if hop_index == selected_hop['index']:
                     if selected_hop['band_path'] is None:
-                        new_path += [hop + "*"]
+                        new_path += [hop + '*']
                     else:
-                        new_path += [selected_hop['port']['identifier'] + "*"] + [hop + "*"]
+                        new_path += [selected_hop['port']['identifier'] + '*'] + [hop + '*']
                 elif hop_index > selected_hop['index']:
                     new_path += [hop]
             else:
@@ -269,7 +269,7 @@ class ApexParadigmPlugin(object):
             self.packet_cache[str(frame_hash)] = frame_hash
             selected_hop['port']['tnc'].write(frame, selected_hop['port']['tnc_port'])
             self.aprsis.send(frame)
-            click.echo(selected_hop['port_name'] + " >> " + apex.aprs.util.format_aprs_frame(frame))
+            click.echo(selected_hop['port_name'] + ' >> ' + apex.aprs.util.format_aprs_frame(frame))
         return
 
     def run(self):

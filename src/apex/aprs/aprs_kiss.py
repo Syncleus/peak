@@ -13,8 +13,8 @@ import logging
 import apex.kiss
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
-__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
-__email__ = "jeffrey.freeman@syncleus.com"
+__maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
@@ -47,7 +47,7 @@ class AprsKiss(apex.kiss.Kiss):
                     # Less than 2 callsigns?
                     if 1 < i < 11:
                         if (raw_frame[raw_slice + 1] & 0x03 == 0x03 and raw_frame[raw_slice + 2] in [0xf0, 0xcf]):
-                            frame['text'] = "".join(map(chr, raw_frame[raw_slice + 3:]))
+                            frame['text'] = ''.join(map(chr, raw_frame[raw_slice + 3:]))
                             frame['destination'] = AprsKiss.__identity_as_string(AprsKiss.__extract_callsign(raw_frame))
                             frame['source'] = AprsKiss.__identity_as_string(AprsKiss.__extract_callsign(raw_frame[7:]))
                             frame['path'] = AprsKiss.__extract_path(int(i), raw_frame)

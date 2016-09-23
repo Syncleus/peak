@@ -43,8 +43,8 @@ elif sys.version_info >= (3, 0):
     import configparser
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
-__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
-__email__ = "jeffrey.freeman@syncleus.com"
+__maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
@@ -54,7 +54,7 @@ def find_config(config_paths, verbose):
     config_file = 'apex.conf'
     rc_file = '.apexrc'
     cur_path = os.path.join(os.curdir, config_file)
-    home_path = os.path.join(os.path.expanduser("~"), rc_file)
+    home_path = os.path.join(os.path.expanduser('~'), rc_file)
     etc_path = os.path.join('etc', config_file)
     if config_paths is None:
         config_paths = [cur_path, home_path, etc_path]
@@ -160,7 +160,7 @@ def main(verbose, configfile):
         plugin_loaders = getPlugins()
         if not len(plugin_loaders):
             click.echo(click.style('Warning: ', fg='yellow') +
-                       click.style("No plugins were able to be discovered, will only display incoming messages."))
+                       click.style('No plugins were able to be discovered, will only display incoming messages.'))
         for plugin_loader in plugin_loaders:
             if verbose:
                 click.echo('Plugin found at the following location: %s' % repr(plugin_loader))
