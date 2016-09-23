@@ -35,8 +35,11 @@ from apex.kiss import constants as kissConstants
 from apex.pluginloader import getPlugins
 from apex.pluginloader import loadPlugin
 
+configparser = None
 if sys.version_info < (3, 0):
     import ConfigParser  # noqa: F401
+    if configparser is None:
+        configparser = ConfigParser
 elif sys.version_info >= (3, 0):
     import configparser
 
