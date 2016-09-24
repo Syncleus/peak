@@ -104,7 +104,6 @@ class Kiss(with_metaclass(ABCMeta, object)):
     def _write_interface(self, data):
         pass
 
-    @abstractmethod
     def start(self, mode_init=None, **kwargs):
         """
         Initializes the KISS device and commits configuration.
