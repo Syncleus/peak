@@ -107,6 +107,8 @@ class KissSerial(Kiss):
         #    kwargs = kiss.constants.DEFAULT_KISS_CONFIG_VALUES
 
     def close(self):
+        super(KissSerial, self).close()
+
         if not self.serial:
             raise RuntimeError('Attempting to close before the class has been started.')
         elif self.serial.isOpen():

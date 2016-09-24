@@ -78,10 +78,11 @@ class KissTcp(Kiss):
         self.socket = socket.create_connection(address)
 
     def close(self):
+        super(KissTcp, self).close()
+
         if not self.socket:
             raise RuntimeError('Attempting to close before the class has been started.')
 
-        super(KissTcp, self).close()
         self.socket.shutdown()
         self.socket.close()
 
