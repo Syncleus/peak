@@ -12,8 +12,8 @@ import logging
 import socket
 import requests
 
-from apex.aprs import constants as aprsConstants
-from apex.aprs import util as aprsUtil
+from apex.aprs import constants as aprs_constants
+from apex.aprs import util as aprs_util
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
@@ -28,16 +28,16 @@ class AprsInternetService(object):
     """APRS Object."""
 
     logger = logging.getLogger(__name__)
-    logger.setLevel(aprsConstants.LOG_LEVEL)
+    logger.setLevel(aprs_constants.LOG_LEVEL)
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(aprsConstants.LOG_LEVEL)
-    console_handler.setFormatter(aprsConstants.LOG_FORMAT)
+    console_handler.setLevel(aprs_constants.LOG_LEVEL)
+    console_handler.setFormatter(aprs_constants.LOG_FORMAT)
     logger.addHandler(console_handler)
     logger.propagate = False
 
     def __init__(self, user, password='-1', input_url=None):
         self.user = user
-        self._url = input_url or aprsConstants.APRSIS_URL
+        self._url = input_url or aprs_constants.APRSIS_URL
         self._auth = ' '.join(
             ['user', user, 'pass', password, 'vers', 'APRS Python Module'])
         self.aprsis_sock = None
@@ -53,8 +53,8 @@ class AprsInternetService(object):
         :type port: int
         :type filte: str
         """
-        server = server or aprsConstants.APRSIS_SERVER
-        port = port or aprsConstants.APRSIS_FILTER_PORT
+        server = server or aprs_constants.APRSIS_SERVER
+        port = port or aprs_constants.APRSIS_FILTER_PORT
         aprs_filter = aprs_filter or '/'.join(['p', self.user])
 
         self.full_auth = ' '.join([self._auth, 'filter', aprs_filter])
@@ -87,7 +87,7 @@ class AprsInternetService(object):
             self.logger.debug('sending message=%s', str(frame))
             # TODO: simplify this
             message = bytearray()
-            for frame_chr in aprsUtil.format_aprs_frame(frame):
+            for frame_chr in aprs_util.format_aprs_frame(frame):
                 message.append(ord(frame_chr))
             message_sent = False
             while not message_sent:
@@ -95,16 +95,16 @@ class AprsInternetService(object):
                 message_sent = True
             return True
         elif 'HTTP' in protocol:
-            content = '\n'.join([self._auth, aprsUtil.format_aprs_frame(frame)])
-            headers = headers or aprsConstants.APRSIS_HTTP_HEADERS
+            content = '\n'.join([self._auth, aprs_util.format_aprs_frame(frame)])
+            headers = headers or aprs_constants.APRSIS_HTTP_HEADERS
             result = requests.post(self._url, data=content, headers=headers)
             return 204 == result.status_code
         elif 'UDP' in protocol:
-            content = '\n'.join([self._auth, aprsUtil.format_aprs_frame(frame)])
+            content = '\n'.join([self._auth, aprs_util.format_aprs_frame(frame)])
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.sendto(
                 content,
-                (aprsConstants.APRSIS_SERVER, aprsConstants.APRSIS_RX_PORT)
+                (aprs_constants.APRSIS_SERVER, aprs_constants.APRSIS_RX_PORT)
             )
             return True
 
@@ -119,7 +119,7 @@ class AprsInternetService(object):
 
         try:
             while 1:
-                recv_data = self.aprsis_sock.recv(aprsConstants.RECV_BUFFER)
+                recv_data = self.aprsis_sock.recv(aprs_constants.RECV_BUFFER)
 
                 if not recv_data:
                     break

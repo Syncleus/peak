@@ -17,10 +17,10 @@ PluginFolder = './plugins'
 MainModule = '__init__'
 
 
-def getPlugins():
+def get_plugins():
     plugins = []
-    possibleplugins = os.listdir(PluginFolder)
-    for i in possibleplugins:
+    possible_plugins = os.listdir(PluginFolder)
+    for i in possible_plugins:
         location = os.path.join(PluginFolder, i)
         if not os.path.isdir(location) or not MainModule + '.py' in os.listdir(location):
             continue
@@ -29,5 +29,5 @@ def getPlugins():
     return plugins
 
 
-def loadPlugin(plugin):
+def load_plugin(plugin):
     return importlib.import_module('plugins.' + plugin)

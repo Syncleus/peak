@@ -11,7 +11,7 @@ from __future__ import print_function
 import logging
 
 import apex.aprs.constants
-import apex.aprs.decimaldegrees
+import apex.aprs.decimal_degrees
 import apex.kiss.constants
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
@@ -34,7 +34,7 @@ def dec2dm_lat(dec):
         >>> aprs_lat
         '3744.51N'
     """
-    dec_min = apex.aprs.decimaldegrees.decimal2dm(dec)
+    dec_min = apex.aprs.decimal_degrees.decimal2dm(dec)
 
     deg = dec_min[0]
     abs_deg = abs(deg)
@@ -44,9 +44,7 @@ def dec2dm_lat(dec):
     else:
         suffix = 'N'
 
-    retval = ''.join([str(abs_deg), '%.2f' % dec_min[1], suffix])
-
-    return retval
+    return''.join([str(abs_deg), '%.2f' % dec_min[1], suffix])
 
 
 def dec2dm_lng(dec):
@@ -59,7 +57,7 @@ def dec2dm_lng(dec):
         >>> aprs_lng
         '12223.30W'
     """
-    dec_min = apex.aprs.decimaldegrees.decimal2dm(dec)
+    dec_min = apex.aprs.decimal_degrees.decimal2dm(dec)
 
     deg = dec_min[0]
     abs_deg = abs(deg)
@@ -69,9 +67,7 @@ def dec2dm_lng(dec):
     else:
         suffix = 'E'
 
-    retval = ''.join([str(abs_deg), '%.2f' % dec_min[1], suffix])
-
-    return retval
+    return ''.join([str(abs_deg), '%.2f' % dec_min[1], suffix])
 
 
 def decode_aprs_ascii_frame(ascii_frame):

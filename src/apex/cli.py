@@ -31,8 +31,8 @@ import click
 
 import apex.aprs
 from apex.kiss import constants as kissConstants
-from apex.pluginloader import getPlugins
-from apex.pluginloader import loadPlugin
+from apex.plugin_loader import get_plugins
+from apex.plugin_loader import load_plugin
 
 configparser = None
 if sys.version_info < (3, 0):
@@ -97,11 +97,11 @@ def main(verbose, configfile):
             if config.has_option(section, 'com_port') and config.has_option(section, 'baud'):
                 com_port = config.get(section, 'com_port')
                 baud = config.get(section, 'baud')
-                kiss_tnc = apex.aprs.AprsKiss(com_port=com_port, baud=baud)
+                kiss_tnc = apex.kiss.KissSerial(com_port=com_port, baud=baud)
             elif config.has_option(section, 'tcp_host') and config.has_option(section, 'tcp_port'):
                 tcp_host = config.get(section, 'tcp_host')
                 tcp_port = config.get(section, 'tcp_port')
-                kiss_tnc = apex.aprs.AprsKiss(host=tcp_host, tcp_port=tcp_port)
+                kiss_tnc = apex.kiss.KissTcp(host=tcp_host, tcp_port=tcp_port)
             else:
                 click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
                            click.style("""Invalid configuration, must have both com_port and baud set or tcp_host and
@@ -125,13 +125,16 @@ def main(verbose, configfile):
                            click.style('Invalid configuration, value assigned to kiss_init was not recognized: %s'
                                        % kiss_init_string, bold=True))
                 return
+
+            aprs_tnc = apex.aprs.Aprs(data_stream=kiss_tnc)
+
             for port in range(1, 1 + int(config.get(section, 'port_count'))):
                 port_name = tnc_name + '-' + str(port)
                 port_section = 'PORT ' + port_name
                 port_identifier = config.get(port_section, 'identifier')
                 port_net = config.get(port_section, 'net')
                 tnc_port = int(config.get(port_section, 'tnc_port'))
-                port_map[port_name] = {'identifier': port_identifier, 'net': port_net, 'tnc': kiss_tnc,
+                port_map[port_name] = {'identifier': port_identifier, 'net': port_net, 'tnc': aprs_tnc,
                                        'tnc_port': tnc_port}
     if config.has_section('APRS-IS'):
         aprsis_callsign = config.get('APRS-IS', 'callsign')
@@ -146,7 +149,7 @@ def main(verbose, configfile):
 
     def sigint_handler(signal, frame):
         for port in port_map.values():
-            port['tnc'].close()
+            port['tnc'].data_stream.close()
         sys.exit(0)
 
     signal.signal(signal.SIGINT, sigint_handler)
@@ -157,14 +160,14 @@ def main(verbose, configfile):
     # start the plugins
     plugins = []
     try:
-        plugin_loaders = getPlugins()
+        plugin_loaders = get_plugins()
         if not len(plugin_loaders):
             click.echo(click.style('Warning: ', fg='yellow') +
                        click.style('No plugins were able to be discovered, will only display incoming messages.'))
         for plugin_loader in plugin_loaders:
             if verbose:
                 click.echo('Plugin found at the following location: %s' % repr(plugin_loader))
-            loaded_plugin = loadPlugin(plugin_loader)
+            loaded_plugin = load_plugin(plugin_loader)
             plugins.append(loaded_plugin)
             threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
     except IOError:

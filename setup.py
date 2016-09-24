@@ -66,7 +66,8 @@ setup(
         'Ham Radio', 'APEX', 'APRS'
     ],
     install_requires=[
-        'click',
+        'click >= 6.6',
+        'six >= 1.10.0',
         'pynmea2 >= 1.4.2',
         'pyserial >= 2.7',
         'requests >= 2.7.0',

@@ -22,6 +22,8 @@ from __future__ import print_function
 
 import logging
 from .kiss import Kiss  # noqa: F401
+from .kiss_serial import KissSerial  # noqa: F401
+from .kiss_tcp import KissTcp  # noqa: F401
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'

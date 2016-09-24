@@ -22,8 +22,8 @@ from __future__ import print_function
 
 import logging
 
+from .aprs import Aprs  # noqa: F401
 from .aprs_internet_service import AprsInternetService  # noqa: F401
-from .aprs_kiss import AprsKiss  # noqa: F401
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
