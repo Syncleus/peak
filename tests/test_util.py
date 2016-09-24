@@ -32,7 +32,7 @@ INVALID_CALLSIGNS = ['xW2GMDx', 'W2GMD-16', 'W2GMD-A', 'W', 'W2GMD-1-0',
                      'W*GMD', 'W2GMD-123']
 
 
-class APRSUtilTestCase(unittest.TestCase):  # pylint: disable=R0904
+class AprsUtilTestCase(unittest.TestCase):  # pylint: disable=R0904
     """Tests for Python APRS Utils."""
 
     logger = logging.getLogger(__name__)

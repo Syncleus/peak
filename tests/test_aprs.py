@@ -33,7 +33,7 @@ POSITIVE_NUMBERS = NUMBERS[1:]
 ALPHANUM = ''.join([ALPHABET, NUMBERS])
 
 
-class APRSTest(unittest.TestCase):  # pylint: disable=R0904
+class AprsTest(unittest.TestCase):  # pylint: disable=R0904
     """Tests for Python APRS-IS Bindings."""
 
     logger = logging.getLogger(__name__)

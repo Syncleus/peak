@@ -21,7 +21,7 @@ __credits__ = []
 
 
 # pylint: disable=R0904,C0103
-class KISSUtilTestCase(unittest.TestCase):
+class KissUtilTestCase(unittest.TestCase):
 
     """Test class for KISS Python Module."""
 
