@@ -11,7 +11,7 @@ from __future__ import print_function
 import logging
 import socket
 
-from apex.kiss import constants as kissConstants
+from apex.kiss import constants as kiss_constants
 from .kiss import Kiss
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
@@ -27,10 +27,10 @@ class KissTcp(Kiss):
     """KISS TCP Object Class."""
 
     logger = logging.getLogger(__name__)
-    logger.setLevel(kissConstants.LOG_LEVEL)
+    logger.setLevel(kiss_constants.LOG_LEVEL)
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(kissConstants.LOG_LEVEL)
-    formatter = logging.Formatter(kissConstants.LOG_FORMAT)
+    console_handler.setLevel(kiss_constants.LOG_LEVEL)
+    formatter = logging.Formatter(kiss_constants.LOG_FORMAT)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
     logger.propagate = False
@@ -58,7 +58,7 @@ class KissTcp(Kiss):
         self.socket.close()
 
     def _read_interface(self):
-        return self.socket.recv(kissConstants.READ_BYTES)
+        return self.socket.recv(kiss_constants.READ_BYTES)
 
     def _write_interface(self, data):
         self.socket.write(data)

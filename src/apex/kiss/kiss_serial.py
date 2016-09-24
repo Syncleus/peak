@@ -11,7 +11,7 @@ from __future__ import print_function
 import logging
 import serial
 
-from apex.kiss import constants as kissConstants
+from apex.kiss import constants as kiss_constants
 
 from .kiss import Kiss
 
@@ -28,10 +28,10 @@ class KissSerial(Kiss):
     """KISS Serial Object Class."""
 
     logger = logging.getLogger(__name__)
-    logger.setLevel(kissConstants.LOG_LEVEL)
+    logger.setLevel(kiss_constants.LOG_LEVEL)
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(kissConstants.LOG_LEVEL)
-    formatter = logging.Formatter(kissConstants.LOG_FORMAT)
+    console_handler.setLevel(kiss_constants.LOG_LEVEL)
+    formatter = logging.Formatter(kiss_constants.LOG_FORMAT)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
     logger.propagate = False
@@ -68,7 +68,7 @@ class KissSerial(Kiss):
             self.serial.close()
 
     def _read_interface(self):
-        read_data = self.serial.read(kissConstants.READ_BYTES)
+        read_data = self.serial.read(kiss_constants.READ_BYTES)
         waiting_data = self.serial.inWaiting()
         if waiting_data:
             read_data += self.serial.read(waiting_data)
@@ -90,7 +90,7 @@ class KissSerial(Kiss):
 
         self.serial = serial.Serial(port=self.com_port, baudrate=self.baud, parity=self.parity,
                                     stopbits=self.stop_bits, bytesize=self.byte_size)
-        self.serial.timeout = kissConstants.SERIAL_TIMEOUT
+        self.serial.timeout = kiss_constants.SERIAL_TIMEOUT
         if mode_init is not None:
             self.serial.write(mode_init)
             self.exit_kiss = True

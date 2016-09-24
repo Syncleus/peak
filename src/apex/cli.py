@@ -31,8 +31,8 @@ import click
 
 import apex.aprs
 from apex.kiss import constants as kissConstants
-from apex.pluginloader import getPlugins
-from apex.pluginloader import loadPlugin
+from apex.plugin_loader import get_plugins
+from apex.plugin_loader import load_plugin
 
 configparser = None
 if sys.version_info < (3, 0):
@@ -158,14 +158,14 @@ def main(verbose, configfile):
     # start the plugins
     plugins = []
     try:
-        plugin_loaders = getPlugins()
+        plugin_loaders = get_plugins()
         if not len(plugin_loaders):
             click.echo(click.style('Warning: ', fg='yellow') +
                        click.style('No plugins were able to be discovered, will only display incoming messages.'))
         for plugin_loader in plugin_loaders:
             if verbose:
                 click.echo('Plugin found at the following location: %s' % repr(plugin_loader))
-            loaded_plugin = loadPlugin(plugin_loader)
+            loaded_plugin = load_plugin(plugin_loader)
             plugins.append(loaded_plugin)
             threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
     except IOError:

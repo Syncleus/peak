@@ -44,7 +44,7 @@ DD: 121.135
 To run doctest units just execut this module script as follows
 (-v instructs Python to run script in verbose mode):
 
-$ python decimaldegrees.py [-v]
+$ python decimal_degrees.py [-v]
 
 """
 

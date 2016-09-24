@@ -13,7 +13,7 @@ from abc import ABCMeta
 from abc import abstractmethod
 from six import with_metaclass
 
-from apex.kiss import constants as kissConstants
+from apex.kiss import constants as kiss_constants
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
@@ -28,10 +28,10 @@ class Kiss(with_metaclass(ABCMeta, object)):
     """Abstract KISS Object Class."""
 
     logger = logging.getLogger(__name__)
-    logger.setLevel(kissConstants.LOG_LEVEL)
+    logger.setLevel(kiss_constants.LOG_LEVEL)
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(kissConstants.LOG_LEVEL)
-    formatter = logging.Formatter(kissConstants.LOG_FORMAT)
+    console_handler.setLevel(kiss_constants.LOG_LEVEL)
+    formatter = logging.Formatter(kiss_constants.LOG_FORMAT)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
     logger.propagate = False
@@ -52,7 +52,7 @@ class Kiss(with_metaclass(ABCMeta, object)):
         :returns: APRS/AX.25 frame sans DATA_FRAME start (0x00).
         :rtype: str
         """
-        while frame[0] is kissConstants.DATA_FRAME:
+        while frame[0] is kiss_constants.DATA_FRAME:
             del frame[0]
         while chr(frame[0]).isspace():
             del frame[0]
@@ -72,10 +72,10 @@ class Kiss(with_metaclass(ABCMeta, object)):
         """
         encoded_bytes = []
         for raw_code_byte in raw_code_bytes:
-            if raw_code_byte is kissConstants.FESC:
-                encoded_bytes += kissConstants.FESC_TFESC
-            elif raw_code_byte is kissConstants.FEND:
-                encoded_bytes += kissConstants.FESC_TFEND
+            if raw_code_byte is kiss_constants.FESC:
+                encoded_bytes += kiss_constants.FESC_TFESC
+            elif raw_code_byte is kiss_constants.FEND:
+                encoded_bytes += kiss_constants.FESC_TFEND
             else:
                 encoded_bytes += [raw_code_byte]
         return encoded_bytes
@@ -120,7 +120,7 @@ class Kiss(with_metaclass(ABCMeta, object)):
 
     def close(self):
         if self.exit_kiss is True:
-            self._write_interface(kissConstants.MODE_END)
+            self._write_interface(kiss_constants.MODE_END)
 
     def write_setting(self, name, value):
         """
@@ -138,10 +138,10 @@ class Kiss(with_metaclass(ABCMeta, object)):
             value = chr(value)
 
         return self._write_interface(
-            kissConstants.FEND +
-            getattr(kissConstants, name.upper()) +
+            kiss_constants.FEND +
+            getattr(kiss_constants, name.upper()) +
             Kiss.__escape_special_codes(value) +
-            kissConstants.FEND
+            kiss_constants.FEND
         )
 
     def fill_buffer(self):
@@ -155,7 +155,7 @@ class Kiss(with_metaclass(ABCMeta, object)):
         while read_data is not None and len(read_data):
             split_data = [[]]
             for read_byte in read_data:
-                if read_byte is kissConstants.FEND:
+                if read_byte is kiss_constants.FEND:
                     split_data.append([])
                 else:
                     split_data[-1].append(read_byte)
@@ -210,7 +210,7 @@ class Kiss(with_metaclass(ABCMeta, object)):
 
         :param frame: Frame to write.
         """
-        kiss_packet = [kissConstants.FEND] + [Kiss.__command_byte_combine(port, kissConstants.DATA_FRAME)] + \
-            Kiss.__escape_special_codes(frame_bytes) + [kissConstants.FEND]
+        kiss_packet = [kiss_constants.FEND] + [Kiss.__command_byte_combine(port, kiss_constants.DATA_FRAME)] + \
+            Kiss.__escape_special_codes(frame_bytes) + [kiss_constants.FEND]
 
         return self._write_interface(kiss_packet)
