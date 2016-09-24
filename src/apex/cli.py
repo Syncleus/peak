@@ -107,7 +107,6 @@ def main(verbose, configfile):
                            click.style("""Invalid configuration, must have both com_port and baud set or tcp_host and
                            tcp_port set in TNC sections of configuration file""", bold=True))
                 return
-            aprs_tnc = apex.aprs.Aprs(data_stream=kiss_tnc)
 
             if not config.has_option(section, 'kiss_init'):
                 click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
@@ -116,16 +115,19 @@ def main(verbose, configfile):
                 return
             kiss_init_string = config.get(section, 'kiss_init')
             if kiss_init_string == 'MODE_INIT_W8DED':
-                aprs_tnc.start(kissConstants.MODE_INIT_W8DED)
+                kiss_tnc.start(kissConstants.MODE_INIT_W8DED)
             elif kiss_init_string == 'MODE_INIT_KENWOOD_D710':
-                aprs_tnc.start(kissConstants.MODE_INIT_KENWOOD_D710)
+                kiss_tnc.start(kissConstants.MODE_INIT_KENWOOD_D710)
             elif kiss_init_string == 'NONE':
-                aprs_tnc.start()
+                kiss_tnc.start()
             else:
                 click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
                            click.style('Invalid configuration, value assigned to kiss_init was not recognized: %s'
                                        % kiss_init_string, bold=True))
                 return
+
+            aprs_tnc = apex.aprs.Aprs(data_stream=kiss_tnc)
+
             for port in range(1, 1 + int(config.get(section, 'port_count'))):
                 port_name = tnc_name + '-' + str(port)
                 port_section = 'PORT ' + port_name
@@ -147,7 +149,7 @@ def main(verbose, configfile):
 
     def sigint_handler(signal, frame):
         for port in port_map.values():
-            port['tnc'].close()
+            port['tnc'].data_stream.close()
         sys.exit(0)
 
     signal.signal(signal.SIGINT, sigint_handler)
