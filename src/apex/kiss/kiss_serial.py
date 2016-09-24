@@ -52,8 +52,6 @@ class KissSerial(Kiss):
         self.stop_bits = stop_bits
         self.byte_size = byte_size
         self.serial = None
-        self.strip_df_start = strip_df_start
-        self.exit_kiss = False
 
         self.logger.info('Using interface_mode=Serial')
 

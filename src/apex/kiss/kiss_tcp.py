@@ -46,8 +46,6 @@ class KissTcp(Kiss):
         self.host = host
         self.tcp_port = tcp_port
         self.socket = None
-        self.strip_df_start = strip_df_start
-        self.exit_kiss = False
 
         self.logger.info('Using interface_mode=TCP')
 
