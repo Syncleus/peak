@@ -20,9 +20,12 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
 
 
-class AprsKiss(apex.kiss.Kiss):
+class Aprs(object):
 
-    """APRS interface for KISS serial devices."""
+    """APRS interface."""
+
+    def __init__(self, data_stream):
+        self.data_Stream = data_stream
 
     @staticmethod
     def __decode_frame(raw_frame):
@@ -48,9 +51,9 @@ class AprsKiss(apex.kiss.Kiss):
                     if 1 < i < 11:
                         if (raw_frame[raw_slice + 1] & 0x03 == 0x03 and raw_frame[raw_slice + 2] in [0xf0, 0xcf]):
                             frame['text'] = ''.join(map(chr, raw_frame[raw_slice + 3:]))
-                            frame['destination'] = AprsKiss.__identity_as_string(AprsKiss.__extract_callsign(raw_frame))
-                            frame['source'] = AprsKiss.__identity_as_string(AprsKiss.__extract_callsign(raw_frame[7:]))
-                            frame['path'] = AprsKiss.__extract_path(int(i), raw_frame)
+                            frame['destination'] = Aprs.__identity_as_string(Aprs.__extract_callsign(raw_frame))
+                            frame['source'] = Aprs.__identity_as_string(Aprs.__extract_callsign(raw_frame[7:]))
+                            frame['path'] = Aprs.__extract_path(int(i), raw_frame)
                             return frame
 
         logging.debug('frame=%s', frame)
@@ -69,7 +72,7 @@ class AprsKiss(apex.kiss.Kiss):
         full_path = []
 
         for i in range(2, start):
-            path = AprsKiss.__identity_as_string(AprsKiss.__extract_callsign(raw_frame[i * 7:]))
+            path = Aprs.__identity_as_string(Aprs.__extract_callsign(raw_frame[i * 7:]))
             if path:
                 if raw_frame[i * 7 + 6] & 0x80:
                     full_path.append(''.join([path, '*']))
@@ -117,10 +120,10 @@ class AprsKiss(apex.kiss.Kiss):
         :return: KISS-encoded APRS frame.
         :rtype: list
         """
-        enc_frame = AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(frame['destination'])) +\
-            AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(frame['source']))
+        enc_frame = Aprs.__encode_callsign(Aprs.__parse_identity_string(frame['destination'])) + \
+            Aprs.__encode_callsign(Aprs.__parse_identity_string(frame['source']))
         for p in frame['path']:
-            enc_frame += AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(p))
+            enc_frame += Aprs.__encode_callsign(Aprs.__parse_identity_string(p))
 
         return enc_frame[:-1] + [enc_frame[-1] | 0x01] + [apex.kiss.constants.SLOT_TIME] + [0xf0] + frame['text']
 
@@ -179,14 +182,14 @@ class AprsKiss(apex.kiss.Kiss):
         :param frame: APRS frame to write to KISS device.
         :type frame: dict
         """
-        encoded_frame = AprsKiss.__encode_frame(frame)
-        super(AprsKiss, self).write(encoded_frame, port)
+        encoded_frame = Aprs.__encode_frame(frame)
+        self.data_Stream.write(encoded_frame, port)
 
     def read(self):
         """Reads APRS-encoded frame from KISS device.
         """
-        frame = super(AprsKiss, self).read()
+        frame = self.data_Stream.read()
         if frame is not None and len(frame):
-            return AprsKiss.__decode_frame(frame)
+            return Aprs.__decode_frame(frame)
         else:
             return None

@@ -97,16 +97,17 @@ def main(verbose, configfile):
             if config.has_option(section, 'com_port') and config.has_option(section, 'baud'):
                 com_port = config.get(section, 'com_port')
                 baud = config.get(section, 'baud')
-                kiss_tnc = apex.aprs.AprsKiss(com_port=com_port, baud=baud)
+                kiss_tnc = apex.kiss.KissSerial(com_port=com_port, baud=baud)
             elif config.has_option(section, 'tcp_host') and config.has_option(section, 'tcp_port'):
                 tcp_host = config.get(section, 'tcp_host')
                 tcp_port = config.get(section, 'tcp_port')
-                kiss_tnc = apex.aprs.AprsKiss(host=tcp_host, tcp_port=tcp_port)
+                kiss_tnc = apex.kiss.KissTcp(host=tcp_host, tcp_port=tcp_port)
             else:
                 click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
                            click.style("""Invalid configuration, must have both com_port and baud set or tcp_host and
                            tcp_port set in TNC sections of configuration file""", bold=True))
                 return
+            aprs_tnc = apex.aprs.Aprs(data_stream=kiss_tnc)
 
             if not config.has_option(section, 'kiss_init'):
                 click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
@@ -115,11 +116,11 @@ def main(verbose, configfile):
                 return
             kiss_init_string = config.get(section, 'kiss_init')
             if kiss_init_string == 'MODE_INIT_W8DED':
-                kiss_tnc.start(kissConstants.MODE_INIT_W8DED)
+                aprs_tnc.start(kissConstants.MODE_INIT_W8DED)
             elif kiss_init_string == 'MODE_INIT_KENWOOD_D710':
-                kiss_tnc.start(kissConstants.MODE_INIT_KENWOOD_D710)
+                aprs_tnc.start(kissConstants.MODE_INIT_KENWOOD_D710)
             elif kiss_init_string == 'NONE':
-                kiss_tnc.start()
+                aprs_tnc.start()
             else:
                 click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
                            click.style('Invalid configuration, value assigned to kiss_init was not recognized: %s'
@@ -131,7 +132,7 @@ def main(verbose, configfile):
                 port_identifier = config.get(port_section, 'identifier')
                 port_net = config.get(port_section, 'net')
                 tnc_port = int(config.get(port_section, 'tnc_port'))
-                port_map[port_name] = {'identifier': port_identifier, 'net': port_net, 'tnc': kiss_tnc,
+                port_map[port_name] = {'identifier': port_identifier, 'net': port_net, 'tnc': aprs_tnc,
                                        'tnc_port': tnc_port}
     if config.has_section('APRS-IS'):
         aprsis_callsign = config.get('APRS-IS', 'callsign')

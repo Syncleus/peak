@@ -9,8 +9,9 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
-import socket
-import serial
+from abc import ABCMeta
+from abc import abstractmethod
+from six import with_metaclass
 
 from apex.kiss import constants as kissConstants
 
@@ -22,9 +23,9 @@ __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
 
 
-class Kiss(object):
+class Kiss(with_metaclass(ABCMeta, object)):
 
-    """KISS Object Class."""
+    """Abstract KISS Object Class."""
 
     logger = logging.getLogger(__name__)
     logger.setLevel(kissConstants.LOG_LEVEL)
@@ -37,57 +38,9 @@ class Kiss(object):
 
     frame_buffer = []
 
-    def __init__(self, com_port=None,
-                 baud=38400,
-                 parity=serial.PARITY_NONE,
-                 stop_bits=serial.STOPBITS_ONE,
-                 byte_size=serial.EIGHTBITS,
-                 host=None,
-                 tcp_port=8000,
-                 strip_df_start=True):
-        self.com_port = com_port
-        self.baud = baud
-        self.parity = parity
-        self.stop_bits = stop_bits
-        self.byte_size = byte_size
-        self.host = host
-        self.tcp_port = tcp_port
-        self.interface = None
-        self.interface_mode = None
+    def __init__(self, strip_df_start=True):
         self.strip_df_start = strip_df_start
         self.exit_kiss = False
-
-        if self.com_port is not None:
-            self.interface_mode = 'serial'
-        elif self.host is not None:
-            self.interface_mode = 'tcp'
-        if self.interface_mode is None:
-            raise Exception('Must set port/speed or host/tcp_port.')
-
-        self.logger.info('Using interface_mode=%s', self.interface_mode)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if 'tcp' in self.interface_mode:
-            self.interface.shutdown()
-        elif self.interface and self.interface.isOpen():
-            self.interface.close()
-
-    def __del__(self):
-        if self.interface and self.interface.isOpen():
-            self.interface.close()
-
-    def __read_interface(self):
-        if 'tcp' in self.interface_mode:
-            return self.interface.recv(kissConstants.READ_BYTES)
-        elif 'serial' in self.interface_mode:
-            read_data = self.interface.read(kissConstants.READ_BYTES)
-            waiting_data = self.interface.inWaiting()
-            if waiting_data:
-                read_data += self.interface.read(waiting_data)
-            return map(ord, read_data)
 
     @staticmethod
     def __strip_df_start(frame):
@@ -143,42 +96,31 @@ class Kiss(object):
             raise Exception('command_Code out of range')
         return (port << 4) & command_code
 
+    @abstractmethod
+    def _read_interface(self):
+        pass
+
+    @abstractmethod
+    def _write_interface(self, data):
+        pass
+
+    @abstractmethod
     def start(self, mode_init=None, **kwargs):
         """
         Initializes the KISS device and commits configuration.
+
+        This method is abstract and must be implemented by a concrete class.
 
         See http://en.wikipedia.org/wiki/KISS_(TNC)#Command_codes
         for configuration names.
 
         :param **kwargs: name/value pairs to use as initial config values.
         """
-        self.logger.debug('kwargs=%s', kwargs)
-
-        if 'tcp' in self.interface_mode:
-            address = (self.host, self.tcp_port)
-            self.interface = socket.create_connection(address)
-        elif 'serial' in self.interface_mode:
-            self.interface = serial.Serial(port=self.com_port, baudrate=self.baud, parity=self.parity,
-                                           stopbits=self.stop_bits, bytesize=self.byte_size)
-            self.interface.timeout = kissConstants.SERIAL_TIMEOUT
-            if mode_init is not None:
-                self.interface.write(mode_init)
-                self.exit_kiss = True
-
-        # Previous verious defaulted to Xastir-friendly configs. Unfortunately
-        # those don't work with Bluetooth TNCs, so we're reverting to None.
-        if 'serial' in self.interface_mode and kwargs:
-            for name, value in kwargs.items():
-                self.write_setting(name, value)
-
-        # If no settings specified, default to config values similar
-        # to those that ship with Xastir.
-        # if not kwargs:
-        #    kwargs = kiss.constants.DEFAULT_KISS_CONFIG_VALUES
+        pass
 
     def close(self):
         if self.exit_kiss is True:
-            self.interface.write(kissConstants.MODE_END)
+            self._write_interface(kissConstants.MODE_END)
 
     def write_setting(self, name, value):
         """
@@ -195,7 +137,7 @@ class Kiss(object):
         if isinstance(value, int):
             value = chr(value)
 
-        return self.interface.write(
+        return self._write_interface(
             kissConstants.FEND +
             getattr(kissConstants, name.upper()) +
             Kiss.__escape_special_codes(value) +
@@ -209,7 +151,7 @@ class Kiss(object):
 
         new_frames = []
         read_buffer = []
-        read_data = self.__read_interface()
+        read_data = self._read_interface()
         while read_data is not None and len(read_data):
             split_data = [[]]
             for read_byte in read_data:
@@ -243,7 +185,7 @@ class Kiss(object):
                 if split_data[len_fend - 1]:
                     read_buffer = split_data[len_fend - 1]
             # Get anymore data that is waiting
-            read_data = self.__read_interface()
+            read_data = self._read_interface()
 
         for new_frame in new_frames:
             if len(new_frame) and new_frame[0] == 0:
@@ -268,10 +210,7 @@ class Kiss(object):
 
         :param frame: Frame to write.
         """
-        kiss_packet = [kissConstants.FEND] + [Kiss.__command_byte_combine(port, kissConstants.DATA_FRAME)] +\
+        kiss_packet = [kissConstants.FEND] + [Kiss.__command_byte_combine(port, kissConstants.DATA_FRAME)] + \
             Kiss.__escape_special_codes(frame_bytes) + [kissConstants.FEND]
 
-        if 'tcp' in self.interface_mode:
-            return self.interface.send(bytearray(kiss_packet))
-        elif 'serial' in self.interface_mode:
-            return self.interface.write(kiss_packet)
+        return self._write_interface(kiss_packet)
