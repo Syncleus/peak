@@ -3,17 +3,23 @@
 
 """Utilities for the APRS Python Module."""
 
-__author__ = 'Jeffrey Phillips Freeman WI2ARD <freemo@gmail.com>'
-__license__ = 'Apache License, Version 2.0'
-__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
-
+# These imports are for python3 compatability inside python2
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import logging
 
-import aprs.constants
-import aprs.decimaldegrees
-import kiss.constants
-import math
+import apex.aprs.constants
+import apex.aprs.decimaldegrees
+import apex.kiss.constants
+
+__author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__email__ = 'jeffrey.freeman@syncleus.com'
+__license__ = 'Apache License, Version 2.0'
+__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
+__credits__ = []
 
 
 def dec2dm_lat(dec):
@@ -28,7 +34,7 @@ def dec2dm_lat(dec):
         >>> aprs_lat
         '3744.51N'
     """
-    dec_min = aprs.decimaldegrees.decimal2dm(dec)
+    dec_min = apex.aprs.decimaldegrees.decimal2dm(dec)
 
     deg = dec_min[0]
     abs_deg = abs(deg)
@@ -38,7 +44,9 @@ def dec2dm_lat(dec):
     else:
         suffix = 'N'
 
-    return ''.join([str(abs_deg), "%.2f" % dec_min[1], suffix])
+    retval = ''.join([str(abs_deg), '%.2f' % dec_min[1], suffix])
+
+    return retval
 
 
 def dec2dm_lng(dec):
@@ -51,7 +59,7 @@ def dec2dm_lng(dec):
         >>> aprs_lng
         '12223.30W'
     """
-    dec_min = aprs.decimaldegrees.decimal2dm(dec)
+    dec_min = apex.aprs.decimaldegrees.decimal2dm(dec)
 
     deg = dec_min[0]
     abs_deg = abs(deg)
@@ -61,7 +69,9 @@ def dec2dm_lng(dec):
     else:
         suffix = 'E'
 
-    return ''.join([str(abs_deg), "%.2f" % dec_min[1], suffix])
+    retval = ''.join([str(abs_deg), '%.2f' % dec_min[1], suffix])
+
+    return retval
 
 
 def decode_aprs_ascii_frame(ascii_frame):
@@ -93,6 +103,7 @@ def decode_aprs_ascii_frame(ascii_frame):
 
     return decoded_frame
 
+
 def format_path(path_list):
     """
     Formats path from raw APRS KISS frame.
@@ -120,8 +131,7 @@ def format_aprs_frame(frame):
     if frame['path']:
         formatted_frame = ','.join([formatted_frame, format_path(frame['path'])])
     formatted_frame += ':'
-    for frame_byte in frame['text']:
-        formatted_frame += chr(frame_byte)
+    formatted_frame += frame['text']
     return formatted_frame
 
 
@@ -167,8 +177,27 @@ def valid_callsign(callsign):
 def run_doctest():  # pragma: no cover
     """Runs doctests for this module."""
     import doctest
-    import aprs.util  # pylint: disable=W0406,W0621
-    return doctest.testmod(aprs.util)
+    import apex.aprs.util  # pylint: disable=W0406,W0621
+    return doctest.testmod(apex.aprs.util)
+
+
+def hash_frame(frame):
+    """
+    Produces an integer value that acts as a hash for the frame
+    :param frame: A frame packet
+    :type frame: dict
+    :return: an integer representing the hash
+    """
+    hashing = 0
+    index = 0
+    frame_string_prefix = frame['source'] + '>' + frame['destination'] + ':'
+    for frame_chr in frame_string_prefix:
+        hashing = ord(frame_chr) << (8*(index % 4)) ^ hashing
+        index += 1
+    for byte in frame['text']:
+        hashing = byte << (8*(index % 4)) ^ hashing
+        index += 1
+    return hashing
 
 
 if __name__ == '__main__':

@@ -1,1 +1,22 @@
-include README.rst LICENSE requirements.txt
+graft docs
+graft src
+graft ci
+graft tests
+
+include .bumpversion.cfg
+include .coveragerc
+include .editorconfig
+
+include AUTHORS.rst
+include CHANGELOG.rst
+include CONTRIBUTORS.rst
+include CONTRIBUTING.rst
+include LICENSE
+include README.rst
+
+include apex.conf.example
+include MAKEFILE
+
+include tox.ini .travis.yml
+
+global-exclude *.py[cod] __pycache__ *.so *.dylib

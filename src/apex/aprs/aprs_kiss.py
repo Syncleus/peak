@@ -3,17 +3,24 @@
 
 """APRS KISS Class Definitions"""
 
-__author__ = 'Jeffrey Phillips Freeman WI2ARD <freemo@gmail.com>'
-__license__ = 'Apache License, Version 2.0'
-__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
+# These imports are for python3 compatability inside python2
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import logging
-import math
 
-import kiss
+import apex.kiss
+
+__author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__email__ = 'jeffrey.freeman@syncleus.com'
+__license__ = 'Apache License, Version 2.0'
+__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
+__credits__ = []
 
 
-class AprsKiss(kiss.Kiss):
+class AprsKiss(apex.kiss.Kiss):
 
     """APRS interface for KISS serial devices."""
 
@@ -40,10 +47,10 @@ class AprsKiss(kiss.Kiss):
                     # Less than 2 callsigns?
                     if 1 < i < 11:
                         if (raw_frame[raw_slice + 1] & 0x03 == 0x03 and raw_frame[raw_slice + 2] in [0xf0, 0xcf]):
-                            frame['text'] = raw_frame[raw_slice + 3:]
+                            frame['text'] = ''.join(map(chr, raw_frame[raw_slice + 3:]))
                             frame['destination'] = AprsKiss.__identity_as_string(AprsKiss.__extract_callsign(raw_frame))
                             frame['source'] = AprsKiss.__identity_as_string(AprsKiss.__extract_callsign(raw_frame[7:]))
-                            frame['path'] = AprsKiss.__extract_path(math.floor(i), raw_frame)
+                            frame['path'] = AprsKiss.__extract_path(int(i), raw_frame)
                             return frame
 
         logging.debug('frame=%s', frame)
@@ -110,11 +117,12 @@ class AprsKiss(kiss.Kiss):
         :return: KISS-encoded APRS frame.
         :rtype: list
         """
-        enc_frame = AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(frame['destination'])) + AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(frame['source']))
+        enc_frame = AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(frame['destination'])) +\
+            AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(frame['source']))
         for p in frame['path']:
             enc_frame += AprsKiss.__encode_callsign(AprsKiss.__parse_identity_string(p))
 
-        return enc_frame[:-1] + [enc_frame[-1] | 0x01] + [kiss.constants.SLOT_TIME] + [0xf0] + frame['text']
+        return enc_frame[:-1] + [enc_frame[-1] | 0x01] + [apex.kiss.constants.SLOT_TIME] + [0xf0] + frame['text']
 
     @staticmethod
     def __encode_callsign(callsign):

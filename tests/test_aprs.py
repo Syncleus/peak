@@ -2,22 +2,30 @@
 # -*- coding: utf-8 -*-
 
 """Tests for Python APRS-IS Bindings."""
-import aprs.aprs_internet_service
 
-__author__ = 'Jeffrey Phillips Freeman WI2ARD <freemo@gmail.com>'
-__license__ = 'Apache License, Version 2.0'
-__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
+# These imports are for python3 compatability inside python2
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-
-import random
-import unittest
 import logging
 import logging.handlers
+import random
+import sys
+import unittest
 
-import httpretty
+import apex.aprs.aprs_internet_service
+import apex.aprs.constants
 
-from .context import aprs
+if sys.version_info < (3, 0):
+    import httpretty
 
+__author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
+__email__ = "jeffrey.freeman@syncleus.com"
+__license__ = 'Apache License, Version 2.0'
+__copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
+__credits__ = []
 
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 NUMBERS = '0123456789'
@@ -29,10 +37,10 @@ class APRSTest(unittest.TestCase):  # pylint: disable=R0904
     """Tests for Python APRS-IS Bindings."""
 
     logger = logging.getLogger(__name__)
-    logger.setLevel(aprs.constants.LOG_LEVEL)
+    logger.setLevel(apex.aprs.constants.LOG_LEVEL)
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(aprs.constants.LOG_LEVEL)
-    formatter = logging.Formatter(aprs.constants.LOG_FORMAT)
+    console_handler.setLevel(apex.aprs.constants.LOG_LEVEL)
+    formatter = logging.Formatter(apex.aprs.constants.LOG_FORMAT)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
     logger.propagate = False
@@ -73,77 +81,84 @@ class APRSTest(unittest.TestCase):  # pylint: disable=R0904
             self.fake_callsign
         )
 
-    @httpretty.httprettified
-    def test_fake_good_auth(self):
-        """
-        Tests authenticating against APRS-IS using a valid call+pass.
-        """
-        httpretty.HTTPretty.register_uri(
-            httpretty.HTTPretty.POST,
-            self.fake_server,
-            status=204
-        )
+    if sys.version_info < (3, 0):
+        @httpretty.httprettified
+        def test_fake_good_auth(self):
+            """
+            Tests authenticating against APRS-IS using a valid call+pass.
+            """
+            httpretty.HTTPretty.register_uri(
+                httpretty.HTTPretty.POST,
+                self.fake_server,
+                status=204
+            )
 
-        aprs_conn = aprs.aprs_internet_service.AprsInternetService(
-            user=self.fake_callsign,
-            input_url=self.fake_server
-        )
-        aprs_conn.connect()
+            aprs_conn = apex.aprs.aprs_internet_service.AprsInternetService(
+                user=self.fake_callsign,
+                input_url=self.fake_server
+            )
+            aprs_conn.connect()
 
-        msg = '>'.join([
-            self.fake_callsign,
-            'APRS,TCPIP*:=3745.00N/12227.00W-Simulated Location'
-        ])
-        self.logger.debug(locals())
+            msg = {
+                'source': self.fake_callsign,
+                'destination': 'APRS',
+                'path': ['TCPIP*'],
+                'text': '=3745.00N/12227.00W-Simulated Location'
+            }
+            self.logger.debug(locals())
 
-        result = aprs_conn.send(msg)
+            result = aprs_conn.send(msg)
 
-        self.assertTrue(result)
+            self.assertTrue(result)
 
-    @httpretty.httprettified
-    def test_fake_bad_auth_http(self):
-        """
-        Tests authenticating against APRS-IS using an invalid call+pass.
-        """
-        httpretty.HTTPretty.register_uri(
-            httpretty.HTTPretty.POST,
-            self.fake_server,
-            status=401
-        )
+        @httpretty.httprettified
+        def test_fake_bad_auth_http(self):
+            """
+            Tests authenticating against APRS-IS using an invalid call+pass.
+            """
+            httpretty.HTTPretty.register_uri(
+                httpretty.HTTPretty.POST,
+                self.fake_server,
+                status=401
+            )
 
-        aprs_conn = aprs.aprs_internet_service.AprsInternetService(
-            user=self.fake_callsign,
-            input_url=self.fake_server
-        )
-        aprs_conn.connect()
+            aprs_conn = apex.aprs.aprs_internet_service.AprsInternetService(
+                user=self.fake_callsign,
+                input_url=self.fake_server
+            )
+            aprs_conn.connect()
 
-        msg = '>'.join([
-            self.fake_callsign,
-            'APRS,TCPIP*:=3745.00N/12227.00W-Simulated Location'
-        ])
-        self.logger.debug(locals())
+            msg = {
+                'source': self.fake_callsign,
+                'destination': 'APRS',
+                'path': ['TCPIP*'],
+                'text': '=3745.00N/12227.00W-Simulated Location'
+            }
+            self.logger.debug(locals())
 
-        result = aprs_conn.send(msg, protocol='HTTP')
+            result = aprs_conn.send(msg, protocol='HTTP')
 
-        self.assertFalse(result)
+            self.assertFalse(result)
 
-    @unittest.skip('Test only works with real server.')
-    def test_more(self):
-        """
-        Tests APRS-IS binding against a real APRS-IS server.
-        """
-        aprs_conn = aprs.aprs_internet_service.AprsInternetService(
-            user=self.real_callsign,
-            input_url=self.real_server
-        )
-        aprs_conn.connect()
+        @unittest.skip('Test only works with real server.')
+        def test_more(self):
+            """
+            Tests APRS-IS binding against a real APRS-IS server.
+            """
+            aprs_conn = apex.aprs.aprs_internet_service.AprsInternetService(
+                user=self.real_callsign,
+                input_url=self.real_server
+            )
+            aprs_conn.connect()
 
-        msg = '>'.join([
-            self.real_callsign,
-            'APRS,TCPIP*:=3745.00N/12227.00W-Simulated Location'
-        ])
-        self.logger.debug(locals())
+            msg = {
+                'source': self.fake_callsign,
+                'destination': 'APRS',
+                'path': ['TCPIP*'],
+                'text': '=3745.00N/12227.00W-Simulated Location'
+            }
+            self.logger.debug(locals())
 
-        result = aprs_conn.send(msg)
+            result = aprs_conn.send(msg)
 
-        self.assertFalse(result)
+            self.assertFalse(result)
