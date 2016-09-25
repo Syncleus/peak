@@ -179,7 +179,7 @@ def main(verbose, configfile):
 
         running = False
 
-        click.echo('SIGINT caught, exiting APEX...')
+        click.echo('SIGINT caught, shutting down..')
 
         for plugin_module in plugin_modules:
             plugin_module.stop()
@@ -188,6 +188,8 @@ def main(verbose, configfile):
             plugin_thread.join()
         for port in port_map.values():
             port['tnc'].data_stream.close()
+
+        click.echo('APEX successfully shutdown.')
         sys.exit(0)
 
     signal.signal(signal.SIGINT, sigint_handler)
