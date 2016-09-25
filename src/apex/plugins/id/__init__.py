@@ -53,7 +53,7 @@ class IdPlugin(object):
                 port = self.port_map[port_name]
 
                 id_frame = {'source': port['identifier'], 'destination': 'ID', 'path': port['id_path'].split(','),
-                            'text': list(port['id_text'].encode('ascii'))}
+                            'text': port['id_text']}
                 frame_hash = apex.aprs.util.hash_frame(id_frame)
                 if frame_hash not in self.packet_cache.values():
                     self.packet_cache[str(frame_hash)] = frame_hash
