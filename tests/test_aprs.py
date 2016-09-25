@@ -21,8 +21,8 @@ if sys.version_info < (3, 0):
     import httpretty
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
-__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
-__email__ = "jeffrey.freeman@syncleus.com"
+__maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
@@ -76,7 +76,7 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
         self.real_callsign = '-'.join(['W2GMD', self.random(1, '123456789')])
 
         self.logger.debug(
-            "fake_server=%s fake_callsign=%s",
+            'fake_server=%s fake_callsign=%s',
             self.fake_server,
             self.fake_callsign
         )

@@ -16,8 +16,8 @@ import apex.aprs.util
 from apex.aprs import constants as aprsConstants
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
-__maintainer__ = "Jeffrey Phillips Freeman (WI2ARD)"
-__email__ = "jeffrey.freeman@syncleus.com"
+__maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
+__email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
@@ -177,8 +177,7 @@ class AprsUtilTestCase(unittest.TestCase):  # pylint: disable=R0904
         Tests valid callsigns using `aprs.util.valid_callsign()`.
         """
         for i in VALID_CALLSIGNS:
-            self.assertTrue(
-                apex.aprs.util.valid_callsign(i), "%s is a valid call" % i)
+            self.assertTrue(apex.aprs.util.valid_callsign(i), '%s is a valid call' % i)
 
     def test_valid_callsign_invalid(self):
         """
@@ -186,7 +185,7 @@ class AprsUtilTestCase(unittest.TestCase):  # pylint: disable=R0904
         """
         for i in INVALID_CALLSIGNS:
             self.assertFalse(
-                apex.aprs.util.valid_callsign(i), "%s is an invalid call" % i)
+                apex.aprs.util.valid_callsign(i), '%s is an invalid call' % i)
 
     def test_decode_aprs_ascii_frame(self):
         """
