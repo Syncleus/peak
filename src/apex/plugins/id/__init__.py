@@ -29,12 +29,17 @@ def handle_packet(frame, recv_port, recv_port_name):
     return
 
 
+def stop():
+    plugin.stop()
+
+
 class IdPlugin(object):
 
     def __init__(self, config, port_map, packet_cache, aprsis):
         self.port_map = port_map
         self.packet_cache = packet_cache
         self.aprsis = aprsis
+        self.running = False
 
         for section in config.sections():
             if section.startswith('TNC '):
@@ -46,17 +51,31 @@ class IdPlugin(object):
                     port['id_text'] = config.get(port_section, 'id_text')
                     port['id_path'] = config.get(port_section, 'id_path')
 
-    def run(self):
-        time.sleep(30)
-        while 1:
-            for port_name in self.port_map.keys():
-                port = self.port_map[port_name]
+    def stop(self):
+        self.running = False
 
-                id_frame = {'source': port['identifier'], 'destination': 'ID', 'path': port['id_path'].split(','),
-                            'text': port['id_text']}
-                frame_hash = apex.aprs.util.hash_frame(id_frame)
-                if frame_hash not in self.packet_cache.values():
-                    self.packet_cache[str(frame_hash)] = frame_hash
-                    port['tnc'].write(id_frame, port['tnc_port'])
-                    click.echo(port_name + ' >> ' + apex.aprs.util.format_aprs_frame(id_frame))
-            time.sleep(600)
+    def run(self):
+        self.running = True
+
+        # Don't do anything in the first 30 seconds
+        last_trigger = time.time()
+        while self.running and time.time() - last_trigger < 30:
+            time.sleep(1)
+
+        # run every 600 second
+        last_trigger = time.time()
+        while self.running:
+            if time.time() - last_trigger >= 600:
+                last_trigger = time.time()
+                for port_name in self.port_map.keys():
+                    port = self.port_map[port_name]
+
+                    id_frame = {'source': port['identifier'], 'destination': 'ID', 'path': port['id_path'].split(','),
+                                'text': port['id_text']}
+                    frame_hash = apex.aprs.util.hash_frame(id_frame)
+                    if frame_hash not in self.packet_cache.values():
+                        self.packet_cache[str(frame_hash)] = frame_hash
+                        port['tnc'].write(id_frame, port['tnc_port'])
+                        click.echo(port_name + ' >> ' + apex.aprs.util.format_aprs_frame(id_frame))
+            else:
+                time.sleep(1)

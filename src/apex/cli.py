@@ -49,6 +49,11 @@ __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
 
+port_map = {}
+running = True
+plugin_modules = []
+plugin_threads = []
+
 
 def find_config(config_paths, verbose):
     config_file = 'apex.conf'
@@ -85,7 +90,6 @@ def find_config(config_paths, verbose):
 @click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
 def main(verbose, configfile):
 
-    port_map = {}
     config = find_config(configfile, verbose)
     if config is None:
         click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
@@ -147,18 +151,10 @@ def main(verbose, configfile):
         aprsis = apex.aprs.AprsInternetService(aprsis_callsign, aprsis_password)
         aprsis.connect(aprsis_server, int(aprsis_server_port))
 
-    def sigint_handler(signal, frame):
-        for port in port_map.values():
-            port['tnc'].data_stream.close()
-        sys.exit(0)
-
-    signal.signal(signal.SIGINT, sigint_handler)
-
     click.echo("Press ctrl + c at any time to exit")
 
     packet_cache = cachetools.TTLCache(10000, 5)
     # start the plugins
-    plugins = []
     try:
         plugin_loaders = get_plugins()
         if not len(plugin_loaders):
@@ -168,15 +164,37 @@ def main(verbose, configfile):
             if verbose:
                 click.echo('Plugin found at the following location: %s' % repr(plugin_loader))
             loaded_plugin = load_plugin(plugin_loader)
-            plugins.append(loaded_plugin)
-            threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis)).start()
+            plugin_modules.append(loaded_plugin)
+            new_thread = threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis))
+            new_thread.start()
+            plugin_threads.append(new_thread)
     except IOError:
         click.echo(click.style('Warning: ', fg='yellow') +
                    click.style('plugin directory not found, will only display incoming messages.'))
 
+    def sigint_handler(signal, frame):
+        global running
+        global port_map
+        global plugin_modules
+
+        running = False
+
+        click.echo('SIGINT caught, exiting APEX...')
+
+        for plugin_module in plugin_modules:
+            plugin_module.stop()
+        # Lets wait until all the plugins successfully end
+        for plugin_thread in plugin_threads:
+            plugin_thread.join()
+        for port in port_map.values():
+            port['tnc'].data_stream.close()
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, sigint_handler)
+
     if verbose:
         click.echo('Starting packet processing...')
-    while 1:
+    while running:
         something_read = False
         try:
             for port_name in port_map.keys():
@@ -194,9 +212,9 @@ def main(verbose, configfile):
                     formatted_aprs += frame['text']
                     click.echo(click.style(port_name + ' << ', fg='magenta') + formatted_aprs)
 
-                    for plugin in plugins:
+                    for plugin_module in plugin_modules:
                         something_read = True
-                        plugin.handle_packet(frame, port, port_name)
+                        plugin_module.handle_packet(frame, port, port_name)
         except Exception as ex:
             # We want to keep this thread alive so long as the application runs.
             traceback.print_exc(file=sys.stdout)

@@ -9,6 +9,7 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+import threading
 from abc import ABCMeta
 from abc import abstractmethod
 from six import with_metaclass
@@ -41,6 +42,7 @@ class Kiss(with_metaclass(ABCMeta, object)):
     def __init__(self, strip_df_start=True):
         self.strip_df_start = strip_df_start
         self.exit_kiss = False
+        self.lock = threading.Lock()
 
     @staticmethod
     def __strip_df_start(frame):
@@ -193,15 +195,16 @@ class Kiss(with_metaclass(ABCMeta, object)):
                 self.frame_buffer.append(new_frame)
 
     def read(self):
-        if not len(self.frame_buffer):
-            self.fill_buffer()
+        with self.lock:
+            if not len(self.frame_buffer):
+                self.fill_buffer()
 
-        if len(self.frame_buffer):
-            return_frame = self.frame_buffer[0]
-            del self.frame_buffer[0]
-            return return_frame
-        else:
-            return None
+            if len(self.frame_buffer):
+                return_frame = self.frame_buffer[0]
+                del self.frame_buffer[0]
+                return return_frame
+            else:
+                return None
 
     def write(self, frame_bytes, port=0):
         """
@@ -209,7 +212,8 @@ class Kiss(with_metaclass(ABCMeta, object)):
 
         :param frame: Frame to write.
         """
-        kiss_packet = [kiss_constants.FEND] + [Kiss.__command_byte_combine(port, kiss_constants.DATA_FRAME)] + \
-            Kiss.__escape_special_codes(frame_bytes) + [kiss_constants.FEND]
+        with self.lock:
+            kiss_packet = [kiss_constants.FEND] + [Kiss.__command_byte_combine(port, kiss_constants.DATA_FRAME)] + \
+                Kiss.__escape_special_codes(frame_bytes) + [kiss_constants.FEND]
 
-        return self._write_interface(kiss_packet)
+            return self._write_interface(kiss_packet)

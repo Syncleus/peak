@@ -29,12 +29,17 @@ def handle_packet(frame, recv_port, recv_port_name):
     return
 
 
+def stop():
+    plugin.stop()
+
+
 class BeaconPlugin(object):
 
     def __init__(self, config, port_map, packet_cache, aprsis):
         self.port_map = port_map
         self.packet_cache = packet_cache
         self.aprsis = aprsis
+        self.running = False
 
         for section in config.sections():
             if section.startswith('TNC '):
@@ -46,16 +51,31 @@ class BeaconPlugin(object):
                     port['beacon_text'] = config.get(port_section, 'beacon_text')
                     port['beacon_path'] = config.get(port_section, 'beacon_path')
 
-    def run(self):
-        while 1:
-            for port_name in self.port_map.keys():
-                port = self.port_map[port_name]
+    def stop(self):
+        self.running = False
 
-                beacon_frame = {'source': port['identifier'], 'destination': 'APRS',
-                                'path': port['beacon_path'].split(','), 'text': port['beacon_text']}
-                frame_hash = apex.aprs.util.hash_frame(beacon_frame)
-                if frame_hash not in self.packet_cache.values():
-                    self.packet_cache[str(frame_hash)] = frame_hash
-                    port['tnc'].write(beacon_frame, port['tnc_port'])
-                    click.echo(port_name + ' >> ' + apex.aprs.util.format_aprs_frame(beacon_frame))
-            time.sleep(600)
+    def run(self):
+        self.running = True
+
+        # Don't do anything in the first 30 seconds
+        last_trigger = time.time()
+        while self.running and time.time() - last_trigger < 30:
+            time.sleep(1)
+
+        # run every 600 second
+        last_trigger = time.time()
+        while self.running:
+            if time.time() - last_trigger >= 600:
+                last_trigger = time.time()
+                for port_name in self.port_map.keys():
+                    port = self.port_map[port_name]
+
+                    beacon_frame = {'source': port['identifier'], 'destination': 'APRS',
+                                    'path': port['beacon_path'].split(','), 'text': port['beacon_text']}
+                    frame_hash = apex.aprs.util.hash_frame(beacon_frame)
+                    if frame_hash not in self.packet_cache.values():
+                        self.packet_cache[str(frame_hash)] = frame_hash
+                        port['tnc'].write(beacon_frame, port['tnc_port'])
+                        click.echo(port_name + ' >> ' + apex.aprs.util.format_aprs_frame(beacon_frame))
+            else:
+                time.sleep(1)

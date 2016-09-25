@@ -9,6 +9,7 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+import threading
 
 import apex.kiss
 
@@ -26,6 +27,7 @@ class Aprs(object):
 
     def __init__(self, data_stream):
         self.data_stream = data_stream
+        self.lock = threading.Lock()
 
     @staticmethod
     def __decode_frame(raw_frame):
@@ -182,14 +184,16 @@ class Aprs(object):
         :param frame: APRS frame to write to KISS device.
         :type frame: dict
         """
-        encoded_frame = Aprs.__encode_frame(frame)
-        self.data_stream.write(encoded_frame, port)
+        with self.lock:
+            encoded_frame = Aprs.__encode_frame(frame)
+            self.data_stream.write(encoded_frame, port)
 
     def read(self):
         """Reads APRS-encoded frame from KISS device.
         """
-        frame = self.data_stream.read()
-        if frame is not None and len(frame):
-            return Aprs.__decode_frame(frame)
-        else:
-            return None
+        with self.lock:
+            frame = self.data_stream.read()
+            if frame is not None and len(frame):
+                return Aprs.__decode_frame(frame)
+            else:
+                return None

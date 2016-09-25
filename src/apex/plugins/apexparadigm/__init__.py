@@ -30,6 +30,10 @@ def handle_packet(frame, recv_port, recv_port_name):
     plugin.handle_packet(frame, recv_port, recv_port_name)
 
 
+def stop():
+    plugin.stop()
+
+
 class ApexParadigmPlugin(object):
 
     BAND_PATH_REGEX = re.compile(r'(\d{1,4})M(\d{0,3})')
@@ -271,6 +275,9 @@ class ApexParadigmPlugin(object):
             selected_hop['port']['tnc'].write(frame, selected_hop['port']['tnc_port'])
             self.aprsis.send(frame)
             click.echo(selected_hop['port_name'] + ' >> ' + apex.aprs.util.format_aprs_frame(frame))
+        return
+
+    def stop(self):
         return
 
     def run(self):

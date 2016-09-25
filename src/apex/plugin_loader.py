@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 
 import importlib
-import os
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
@@ -16,14 +15,14 @@ __credits__ = []
 PluginFolder = './plugins'
 MainModule = '__init__'
 
-plugins = ['apex.plugins.apexparadigm',
+plugin_modules = ['apex.plugins.apexparadigm',
            'apex.plugins.beacon',
            'apex.plugins.id',
            'apex.plugins.status']
 
 
 def get_plugins():
-    return plugins
+    return plugin_modules
 
 
 def load_plugin(plugin):
