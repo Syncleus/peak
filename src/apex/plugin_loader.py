@@ -16,18 +16,15 @@ __credits__ = []
 PluginFolder = './plugins'
 MainModule = '__init__'
 
+plugins = ['plugins.apexparadigm',
+           'plugins.beacon',
+           'plugins.id',
+           'plugins.status']
+
 
 def get_plugins():
-    plugins = []
-    possible_plugins = os.listdir(PluginFolder)
-    for i in possible_plugins:
-        location = os.path.join(PluginFolder, i)
-        if not os.path.isdir(location) or not MainModule + '.py' in os.listdir(location):
-            continue
-
-        plugins.append(i)
     return plugins
 
 
 def load_plugin(plugin):
-    return importlib.import_module('plugins.' + plugin)
+    return importlib.import_module(plugin)
