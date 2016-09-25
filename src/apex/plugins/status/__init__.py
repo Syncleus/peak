@@ -55,7 +55,7 @@ class StatusPlugin(object):
                     'source': port['identifier'],
                     'destination': 'APRS',
                     'path': port['status_path'].split(','),
-                    'text': list(port['status_text'].encode('ascii'))}
+                    'text': port['status_text']}
                 frame_hash = apex.aprs.util.hash_frame(status_frame)
                 if frame_hash not in self.packet_cache.values():
                     self.packet_cache[str(frame_hash)] = frame_hash
