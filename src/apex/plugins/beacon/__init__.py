@@ -52,7 +52,7 @@ class BeaconPlugin(object):
                 port = self.port_map[port_name]
 
                 beacon_frame = {'source': port['identifier'], 'destination': 'APRS',
-                                'path': port['beacon_path'].split(','), 'text': list(port['beacon_text'].encode('ascii'))}
+                                'path': port['beacon_path'].split(','), 'text': port['beacon_text']}
                 frame_hash = apex.aprs.util.hash_frame(beacon_frame)
                 if frame_hash not in self.packet_cache.values():
                     self.packet_cache[str(frame_hash)] = frame_hash
