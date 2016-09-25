@@ -25,7 +25,7 @@ class Aprs(object):
     """APRS interface."""
 
     def __init__(self, data_stream):
-        self.data_Stream = data_stream
+        self.data_stream = data_stream
 
     @staticmethod
     def __decode_frame(raw_frame):
@@ -183,12 +183,12 @@ class Aprs(object):
         :type frame: dict
         """
         encoded_frame = Aprs.__encode_frame(frame)
-        self.data_Stream.write(encoded_frame, port)
+        self.data_stream.write(encoded_frame, port)
 
     def read(self):
         """Reads APRS-encoded frame from KISS device.
         """
-        frame = self.data_Stream.read()
+        frame = self.data_stream.read()
         if frame is not None and len(frame):
             return Aprs.__decode_frame(frame)
         else:
