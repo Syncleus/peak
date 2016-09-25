@@ -190,8 +190,8 @@ def hash_frame(frame):
     for frame_chr in frame_string_prefix:
         hashing = ord(frame_chr) << (8*(index % 4)) ^ hashing
         index += 1
-    for byte in frame['text']:
-        hashing = byte << (8*(index % 4)) ^ hashing
+    for char in frame['text']:
+        hashing = ord(char) << (8*(index % 4)) ^ hashing
         index += 1
     return hashing
 
