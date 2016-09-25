@@ -174,8 +174,6 @@ def main(verbose, configfile):
 
     def sigint_handler(signal, frame):
         global running
-        global port_map
-        global plugin_modules
 
         running = False
 
