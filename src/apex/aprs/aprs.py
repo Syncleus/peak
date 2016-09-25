@@ -125,7 +125,7 @@ class Aprs(object):
         for p in frame['path']:
             enc_frame += Aprs.__encode_callsign(Aprs.__parse_identity_string(p))
 
-        return enc_frame[:-1] + [enc_frame[-1] | 0x01] + [apex.kiss.constants.SLOT_TIME] + [0xf0] + frame['text']
+        return enc_frame[:-1] + [enc_frame[-1] | 0x01] + [apex.kiss.constants.SLOT_TIME] + [0xf0] + [ord(c) for c in frame['text']]
 
     @staticmethod
     def __encode_callsign(callsign):

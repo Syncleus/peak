@@ -9,6 +9,7 @@ from __future__ import division
 from __future__ import print_function
 
 import unittest
+# import apex.kiss.util
 
 from . import constants
 
@@ -35,7 +36,6 @@ class KissUtilTestCase(unittest.TestCase):
         self.test_frames.close()
 
     # # All other tests only work on python2
-    # # if sys.version_info < (3, 0):
     # def test_extract_ui(self):
     #     """
     #     Tests `kiss.util.extract_ui` util function.

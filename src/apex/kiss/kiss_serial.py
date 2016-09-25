@@ -70,7 +70,7 @@ class KissSerial(Kiss):
         waiting_data = self.serial.inWaiting()
         if waiting_data:
             read_data += self.serial.read(waiting_data)
-        return map(ord, read_data)
+        return [ord(c) for c in read_data]
 
     def _write_interface(self, data):
         self.serial.write(data)
