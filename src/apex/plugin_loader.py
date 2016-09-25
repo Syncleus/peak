@@ -16,10 +16,10 @@ __credits__ = []
 PluginFolder = './plugins'
 MainModule = '__init__'
 
-plugins = ['plugins.apexparadigm',
-           'plugins.beacon',
-           'plugins.id',
-           'plugins.status']
+plugins = ['apex.plugins.apexparadigm',
+           'apex.plugins.beacon',
+           'apex.plugins.id',
+           'apex.plugins.status']
 
 
 def get_plugins():
