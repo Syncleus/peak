@@ -8,15 +8,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import logging
-import logging.handlers
-import random
 import sys
 import unittest
 
 import apex.aprs.aprs_internet_service
 import apex.aprs.constants
-from .constants import *
 
 if sys.version_info < (3, 0):
     import httpretty

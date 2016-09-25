@@ -8,13 +8,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import array
 import sys
 import unittest
 
 import apex.kiss
 import apex.kiss.constants
-import apex.kiss.util
 from . import constants
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
