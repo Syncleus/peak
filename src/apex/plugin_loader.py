@@ -16,9 +16,9 @@ PluginFolder = './plugins'
 MainModule = '__init__'
 
 plugin_modules = ['apex.plugins.apexparadigm',
-           'apex.plugins.beacon',
-           'apex.plugins.id',
-           'apex.plugins.status']
+                  'apex.plugins.beacon',
+                  'apex.plugins.id',
+                  'apex.plugins.status']
 
 
 def get_plugins():
