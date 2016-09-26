@@ -75,7 +75,7 @@ class KissSerial(Kiss):
     def _write_interface(self, data):
         self.serial.write(data)
 
-    def start(self, mode_init=None, **kwargs):
+    def connect(self, mode_init=None, **kwargs):
         """
         Initializes the KISS device and commits configuration.
 

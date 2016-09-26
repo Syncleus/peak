@@ -20,6 +20,7 @@ __email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
+__version__ = '0.0.2'
 
 
 class KissTcp(Kiss):
@@ -61,7 +62,7 @@ class KissTcp(Kiss):
     def _write_interface(self, data):
         self.socket.write(data)
 
-    def start(self, mode_init=None, **kwargs):
+    def connect(self, mode_init=None, **kwargs):
         """
         Initializes the KISS device and commits configuration.
 

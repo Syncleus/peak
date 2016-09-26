@@ -119,11 +119,11 @@ def main(verbose, configfile):
                 return
             kiss_init_string = config.get(section, 'kiss_init')
             if kiss_init_string == 'MODE_INIT_W8DED':
-                kiss_tnc.start(kissConstants.MODE_INIT_W8DED)
+                kiss_tnc.connect(kissConstants.MODE_INIT_W8DED)
             elif kiss_init_string == 'MODE_INIT_KENWOOD_D710':
-                kiss_tnc.start(kissConstants.MODE_INIT_KENWOOD_D710)
+                kiss_tnc.connect(kissConstants.MODE_INIT_KENWOOD_D710)
             elif kiss_init_string == 'NONE':
-                kiss_tnc.start()
+                kiss_tnc.connect()
             else:
                 click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
                            click.style('Invalid configuration, value assigned to kiss_init was not recognized: %s'
@@ -165,7 +165,7 @@ def main(verbose, configfile):
                 click.echo('Plugin found at the following location: %s' % repr(plugin_loader))
             loaded_plugin = load_plugin(plugin_loader)
             plugin_modules.append(loaded_plugin)
-            new_thread = threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis))
+            new_thread = threading.Thread(target=loaded_plugin.connect, args=(config, port_map, packet_cache, aprsis))
             new_thread.start()
             plugin_threads.append(new_thread)
     except IOError:
