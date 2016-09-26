@@ -140,6 +140,8 @@ def main(verbose, configfile):
                 tnc_port = int(config.get(port_section, 'tnc_port'))
                 port_map[port_name] = {'identifier': port_identifier, 'net': port_net, 'tnc': aprs_tnc,
                                        'tnc_port': tnc_port}
+
+    aprsis = None
     if config.has_section('APRS-IS'):
         aprsis_callsign = config.get('APRS-IS', 'callsign')
         if config.has_option('APRS-IS', 'password'):
@@ -148,7 +150,7 @@ def main(verbose, configfile):
             aprsis_password = -1
         aprsis_server = config.get('APRS-IS', 'server')
         aprsis_server_port = config.get('APRS-IS', 'server_port')
-        aprsis = apex.aprs.AprsInternetService(aprsis_callsign, aprsis_password)
+        aprsis = apex.aprs.ReconnectingPacketBuffer(apex.aprs.IGate(aprsis_callsign, aprsis_password))
         aprsis.connect(aprsis_server, int(aprsis_server_port))
 
     click.echo("Press ctrl + c at any time to exit")
@@ -165,7 +167,7 @@ def main(verbose, configfile):
                 click.echo('Plugin found at the following location: %s' % repr(plugin_loader))
             loaded_plugin = load_plugin(plugin_loader)
             plugin_modules.append(loaded_plugin)
-            new_thread = threading.Thread(target=loaded_plugin.connect, args=(config, port_map, packet_cache, aprsis))
+            new_thread = threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis))
             new_thread.start()
             plugin_threads.append(new_thread)
     except IOError:
@@ -177,10 +179,13 @@ def main(verbose, configfile):
 
         running = False
 
+        click.echo()
         click.echo('SIGINT caught, shutting down..')
 
         for plugin_module in plugin_modules:
             plugin_module.stop()
+        if aprsis:
+            aprsis.close()
         # Lets wait until all the plugins successfully end
         for plugin_thread in plugin_threads:
             plugin_thread.join()

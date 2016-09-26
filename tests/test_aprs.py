@@ -11,8 +11,8 @@ from __future__ import print_function
 import sys
 import unittest
 
-import apex.aprs.aprs_internet_service
 import apex.aprs.constants
+import apex.aprs.igate
 
 if sys.version_info < (3, 0):
     import httpretty
@@ -23,6 +23,7 @@ __email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
+__version__ = '0.0.2'
 
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 NUMBERS = '0123456789'
@@ -189,7 +190,7 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
                 status=204
             )
 
-            aprs_conn = apex.aprs.aprs_internet_service.AprsInternetService(
+            aprs_conn = apex.aprs.igate.IGate(
                 user=self.fake_callsign,
                 input_url=self.fake_server
             )
@@ -202,7 +203,7 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
                 'text': '=3745.00N/12227.00W-Simulated Location'
             }
 
-            result = aprs_conn.send(msg)
+            result = aprs_conn.write(msg)
 
             self.assertTrue(result)
 
@@ -217,7 +218,7 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
                 status=401
             )
 
-            aprs_conn = apex.aprs.aprs_internet_service.AprsInternetService(
+            aprs_conn = apex.aprs.igate.IGate(
                 user=self.fake_callsign,
                 input_url=self.fake_server
             )
@@ -230,7 +231,7 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
                 'text': '=3745.00N/12227.00W-Simulated Location'
             }
 
-            result = aprs_conn.send(msg, protocol='HTTP')
+            result = aprs_conn.write(msg, protocol='HTTP')
 
             self.assertFalse(result)
 
@@ -239,7 +240,7 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
             """
             Tests APRS-IS binding against a real APRS-IS server.
             """
-            aprs_conn = apex.aprs.aprs_internet_service.AprsInternetService(
+            aprs_conn = apex.aprs.igate.IGate(
                 user=self.real_callsign,
                 input_url=self.real_server
             )
@@ -253,6 +254,6 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
             }
             self.logger.debug(locals())
 
-            result = aprs_conn.send(msg)
+            result = aprs_conn.write(msg)
 
             self.assertFalse(result)

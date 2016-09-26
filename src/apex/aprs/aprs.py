@@ -178,7 +178,13 @@ class Aprs(object):
             ssid = 0
         return {'callsign': call_sign, 'ssid': int(ssid)}
 
-    def write(self, frame, port=0):
+    def connect(self, *args, **kwargs):
+        self.data_stream.connect(*args, **kwargs)
+
+    def close(self, *args, **kwargs):
+        self.data_stream.close(*args, **kwargs)
+
+    def write(self, frame, *args, **kwargs):
         """Writes APRS-encoded frame to KISS device.
 
         :param frame: APRS frame to write to KISS device.
@@ -186,13 +192,13 @@ class Aprs(object):
         """
         with self.lock:
             encoded_frame = Aprs.__encode_frame(frame)
-            self.data_stream.write(encoded_frame, port)
+            self.data_stream.write(encoded_frame, *args, **kwargs)
 
-    def read(self):
+    def read(self, *args, **kwargs):
         """Reads APRS-encoded frame from KISS device.
         """
         with self.lock:
-            frame = self.data_stream.read()
+            frame = self.data_stream.read(*args, **kwargs)
             if frame is not None and len(frame):
                 return Aprs.__decode_frame(frame)
             else:

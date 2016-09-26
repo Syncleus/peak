@@ -76,6 +76,6 @@ class BeaconPlugin(object):
                     if frame_hash not in self.packet_cache.values():
                         self.packet_cache[str(frame_hash)] = frame_hash
                         port['tnc'].write(beacon_frame, port['tnc_port'])
-                        click.echo(port_name + ' >> ' + apex.aprs.util.format_aprs_frame(beacon_frame))
+                        click.echo(port_name + ' >> ' + apex.aprs.util.encode_frame(beacon_frame))
             else:
                 time.sleep(1)

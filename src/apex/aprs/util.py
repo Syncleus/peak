@@ -70,7 +70,7 @@ def dec2dm_lng(dec):
     return ''.join([str(abs_deg), '%.2f' % dec_min[1], suffix])
 
 
-def decode_aprs_ascii_frame(ascii_frame):
+def decode_frame(frame):
     """
     Breaks an ASCII APRS Frame down to it's constituent parts.
 
@@ -80,11 +80,11 @@ def decode_aprs_ascii_frame(ascii_frame):
     :returns: Dictionary of APRS Frame parts: source, destination, path, text.
     :rtype: dict
     """
-    logging.debug('frame=%s', ascii_frame)
+    logging.debug('frame=%s', frame)
     decoded_frame = {}
     frame_so_far = ''
 
-    for char in ascii_frame:
+    for char in frame:
         if '>' in char and 'source' not in decoded_frame:
             decoded_frame['source'] = frame_so_far
             frame_so_far = ''
@@ -100,20 +100,7 @@ def decode_aprs_ascii_frame(ascii_frame):
     return decoded_frame
 
 
-def format_path(path_list):
-    """
-    Formats path from raw APRS KISS frame.
-
-    :param path_list: List of path elements.
-    :type path_list: list
-
-    :return: Formatted APRS path.
-    :rtype: str
-    """
-    return ','.join(path_list)
-
-
-def format_aprs_frame(frame):
+def encode_frame(frame):
     """
     Formats APRS frame-as-dict into APRS frame-as-string.
 
@@ -129,6 +116,19 @@ def format_aprs_frame(frame):
     formatted_frame += ':'
     formatted_frame += frame['text']
     return formatted_frame
+
+
+def format_path(path_list):
+    """
+    Formats path from raw APRS KISS frame.
+
+    :param path_list: List of path elements.
+    :type path_list: list
+
+    :return: Formatted APRS path.
+    :rtype: str
+    """
+    return ','.join(path_list)
 
 
 def valid_callsign(callsign):

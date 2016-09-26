@@ -195,7 +195,7 @@ class AprsUtilTestCase(unittest.TestCase):  # pylint: disable=R0904
         ascii_frame = (
             'W2GMD-9>APOTC1,WIDE1-1,WIDE2-1:!3745.94N/12228.05W>118/010/'
             'A=000269 38C=Temp http://w2gmd.org/ Twitter: @ampledata')
-        frame = apex.aprs.util.decode_aprs_ascii_frame(ascii_frame)
+        frame = apex.aprs.util.decode_frame(ascii_frame)
         self.assertEqual(
             {
                 'source': 'W2GMD-9',
@@ -218,7 +218,7 @@ class AprsUtilTestCase(unittest.TestCase):  # pylint: disable=R0904
             'path': ['WIDE1-1'],
             'text': 'test_format_aprs_frame'
         }
-        formatted_frame = apex.aprs.util.format_aprs_frame(frame)
+        formatted_frame = apex.aprs.util.encode_frame(frame)
         self.assertEqual(
             formatted_frame,
             'W2GMD-1>OMG,WIDE1-1:test_format_aprs_frame'
