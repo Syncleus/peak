@@ -97,7 +97,7 @@ class KissSerial(Kiss):
         # those don't work with Bluetooth TNCs, so we're reverting to None.
         if kwargs:
             for name, value in kwargs.items():
-                super(KissSerial, self).write_setting(name, value)
+                super(KissSerial, self)._write_setting(name, value)
 
         # If no settings specified, default to config values similar
         # to those that ship with Xastir.

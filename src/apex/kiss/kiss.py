@@ -123,7 +123,7 @@ class Kiss(with_metaclass(ABCMeta, object)):
         if self.exit_kiss is True:
             self._write_interface(kiss_constants.MODE_END)
 
-    def write_setting(self, name, value):
+    def _write_setting(self, name, value):
         """
         Writes KISS Command Codes to attached device.
 
@@ -145,7 +145,7 @@ class Kiss(with_metaclass(ABCMeta, object)):
             kiss_constants.FEND
         )
 
-    def fill_buffer(self):
+    def __fill_buffer(self):
         """
         Reads any pending data in the interface and stores it in the frame_buffer
         """
@@ -197,7 +197,7 @@ class Kiss(with_metaclass(ABCMeta, object)):
     def read(self):
         with self.lock:
             if not len(self.frame_buffer):
-                self.fill_buffer()
+                self.__fill_buffer()
 
             if len(self.frame_buffer):
                 return_frame = self.frame_buffer[0]
