@@ -86,7 +86,7 @@ For more information on the project please check out `the project's home page <h
 Installation
 ============
 
-Install the application using pip:
+Install the application using pip.
 
     pip install apex
 
@@ -95,7 +95,7 @@ Running the app
 
 The application is written for python 2 or 3. Once installed copy the apex.conf.example file over to apex.conf in the
 /etc directory, then edit the file and replace it with your details. Next just run the application with the following
-command.:
+command.
 
     apex -v
 
