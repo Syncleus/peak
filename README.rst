@@ -86,19 +86,15 @@ For more information on the project please check out `the project's home page <h
 Running the app
 ===============
 
-Right now the setup.py has a few bugs in it. So you can either try to fix it, wait for us to fix it, or simply install
-the prerequsites manually. The following is a list of the preequsites that need to be installed.
+Install the application using pip:
 
-    pynmea2 >= 1.4.2
-    pyserial >= 2.7
-    requests >= 2.7.0
-    cachetools >= 1.1.5
+    pip install apex-radio
 
-The application is written for python 3 specifically, it may not work with python 2. Once installed copy the
-apex.cfg.example file over to apex.cfg in the same directory, then edit the file and replace it with your details. Next
-just run the application with the following command.
+The application is written for python 2 or 3. Once installed copy the apex.conf.example file over to apex.conf in the
+/etc directory, then edit the file and replace it with your details. Next just run the application with the following
+command.:
 
-    python ./apex.py
+    apex
 
 There isn't much to the application right now, so thats all you should need to run it. Digipeating will occur
 automatically and respond to the WIDEN-n paradigm as well as your own callsign. Cross-band repeating is enabled right
