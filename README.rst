@@ -94,7 +94,7 @@ The application is written for python 2 or 3. Once installed copy the apex.conf.
 /etc directory, then edit the file and replace it with your details. Next just run the application with the following
 command.:
 
-    apex-radio
+    apex -v
 
 There isn't much to the application right now, so thats all you should need to run it. Digipeating will occur
 automatically and respond to the WIDEN-n paradigm as well as your own callsign. Cross-band repeating is enabled right
