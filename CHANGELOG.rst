@@ -2,10 +2,10 @@
 Changelog
 =========
 
-0.0.1
+0.0.3
 -----
 
-* First release on PyPI.
+* Reordered changelog version entries.
 
 0.0.2
 -----
@@ -20,3 +20,8 @@ Changelog
 * Encapsulated IGate connection with a buffer that automatically reconnects when disconnected.
 * Removed a few obsolete and unused util functions.
 * Fix several errors thrown due to missing sections in the configuration file.
+
+0.0.1
+-----
+
+* First release on PyPI.
