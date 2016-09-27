@@ -191,7 +191,6 @@ Releasing
     tox
 
 
-
 * Release on PyPI by uploading both sdist and wheel::
 
     python setup.py sdist upload -r pypi
@@ -200,6 +199,11 @@ Releasing
     python setup.py bdist_wheel --universal upload -r pypitest
 
   NOTE: Make sure you have Python Wheel installed for your distribution or else the above commands will not work.
+
+* Create git tag for released version::
+
+    git tag -a v0.1.1 -m "version 0.1.1"
+
 
 * Update version number (can also be minor or major)::
 
