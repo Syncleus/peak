@@ -83,12 +83,15 @@ APEX is a next generation APRS based protocol. This repository represents the re
 
 For more information on the project please check out `the project's home page <http://apexprotocol.com/>`_.
 
-Running the app
-===============
+Installation
+============
 
 Install the application using pip:
 
-    pip install apex-radio
+    pip install apex
+
+Running the app
+===============
 
 The application is written for python 2 or 3. Once installed copy the apex.conf.example file over to apex.conf in the
 /etc directory, then edit the file and replace it with your details. Next just run the application with the following
@@ -102,13 +105,6 @@ now but only by specifying the call sign directly. The application is still pre-
 configuration options should be added soon.
 
 This is Free software: Apache License v2
-
-Installation
-============
-
-::
-
-    pip install apex
 
 Documentation
 =============
