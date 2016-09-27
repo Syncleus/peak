@@ -60,7 +60,7 @@ def find_config(config_paths, verbose):
     rc_file = '.apexrc'
     cur_path = os.path.join(os.curdir, config_file)
     home_path = os.path.join(os.path.expanduser('~'), rc_file)
-    etc_path = os.path.join('etc', config_file)
+    etc_path = os.path.join('', 'etc', config_file)
     if config_paths is None:
         config_paths = [cur_path, home_path, etc_path]
     elif isinstance(config_paths, str):
