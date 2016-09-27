@@ -7,8 +7,8 @@ Overview
 .. list-table::
     :stub-columns: 1
 
-    * - docs
-      - |docs|
+    * - support
+      - |docs| |gitter|
     * - tests
       - | |travis| |requires|
         | |coveralls| |codecov|
@@ -71,6 +71,10 @@ Overview
 .. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/Syncleus/apex/master.svg?style=flat
     :alt: Scrutinizer Status
     :target: https://scrutinizer-ci.com/g/Syncleus/apex/
+
+.. |gitter| image:: https://badges.gitter.im/Syncleus/APEX.svg
+   :alt: Join the chat at https://gitter.im/Syncleus/APEX
+   :target: https://gitter.im/Syncleus/APEX?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 
 .. end-badges
