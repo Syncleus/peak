@@ -30,6 +30,7 @@ import cachetools
 import click
 
 import apex.aprs
+from .util import *
 from apex.kiss import constants as kissConstants
 from apex.plugin_loader import get_plugins
 from apex.plugin_loader import load_plugin
@@ -209,16 +210,7 @@ def main(verbose, configfile):
                 port = port_map[port_name]
                 frame = port['tnc'].read()
                 if frame:
-                    formatted_aprs = '>'.join([click.style(frame['source'], fg='green'), click.style(frame['destination'], fg='blue')])
-                    paths = []
-                    for path in frame['path']:
-                        paths.append(click.style(path, fg='cyan'))
-                    paths = ','.join(paths)
-                    if frame['path']:
-                        formatted_aprs = ','.join([formatted_aprs, paths])
-                    formatted_aprs += ':'
-                    formatted_aprs += frame['text']
-                    click.echo(click.style(port_name + ' << ', fg='magenta') + formatted_aprs)
+                    print_colorized_frame(frame, port_name, True)
 
                     for plugin_module in plugin_modules:
                         something_read = True
