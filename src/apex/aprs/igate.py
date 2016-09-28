@@ -145,7 +145,7 @@ class ReconnectingPacketBuffer(object):
 
     def write(self, packet):
         with self.lock:
-            self.to_packet_layer[str(aprs_util.hash_frame(read_packet))] = packet
+            self.to_packet_layer[str(aprs_util.hash_frame(packet))] = packet
 
 
 class IGate(object):
