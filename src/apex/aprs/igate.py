@@ -48,11 +48,6 @@ class ReconnectingPacketBuffer(object):
         self.connect_kwargs = None
         self.connected = False
 
-    def __next_index(self):
-        if self.current_index > self.MAX_INDEX:
-            self.current_index = 0
-        return ++self.current_index
-
     def __increment_wait_time(self):
         self.reconnect_wait_time *= self.WAIT_TIME_MULTIPLIER
         if self.reconnect_wait_time > self.MAX_WAIT_TIME:
@@ -86,7 +81,7 @@ class ReconnectingPacketBuffer(object):
                     self.__reset_wait_time()
                     if read_packet:
                         with self.lock:
-                                self.from_packet_layer[self.__next_index()] = read_packet
+                                self.from_packet_layer[str(aprs_util.hash_frame(read_packet))] = read_packet
                         io_occured = True
                 except IOError:
                     try:
@@ -107,7 +102,7 @@ class ReconnectingPacketBuffer(object):
                         io_occured = True
                         self.__reset_wait_time()
                     except IOError:
-                        self.to_packet_layer[self.__next_index()] = write_packet
+                        self.to_packet_layer[str(aprs_util.hash_frame(read_packet))] = write_packet
                         try:
                             self.packet_layer.close()
                         except IOError:
@@ -150,7 +145,7 @@ class ReconnectingPacketBuffer(object):
 
     def write(self, packet):
         with self.lock:
-            self.to_packet_layer[self.__next_index()] = packet
+            self.to_packet_layer[str(aprs_util.hash_frame(read_packet))] = packet
 
 
 class IGate(object):
