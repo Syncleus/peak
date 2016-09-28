@@ -7,7 +7,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .util import *
+from .util import echo_colorized_error  # noqa: F401
+from .util import echo_colorized_frame  # noqa: F401
+from .util import echo_colorized_warning  # noqa: F401
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'

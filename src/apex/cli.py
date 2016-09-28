@@ -30,10 +30,13 @@ import cachetools
 import click
 
 import apex.aprs
-from .util import *
 from apex.kiss import constants as kissConstants
 from apex.plugin_loader import get_plugins
 from apex.plugin_loader import load_plugin
+
+from .util import echo_colorized_error
+from .util import echo_colorized_frame
+from .util import echo_colorized_warning
 
 configparser = None
 if sys.version_info < (3, 0):
@@ -128,7 +131,7 @@ def main(verbose, configfile):
                 kiss_tnc.connect()
             else:
                 echo_colorized_error('Invalid configuration, value assigned to kiss_init was not recognized: %s'
-                                       % kiss_init_string)
+                                     % kiss_init_string)
                 return
 
             aprs_tnc = apex.aprs.Aprs(data_stream=kiss_tnc)

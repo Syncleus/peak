@@ -5,7 +5,6 @@ from __future__ import print_function
 
 import copy
 import re
-import click
 
 import apex
 import apex.aprs.util
