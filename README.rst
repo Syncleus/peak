@@ -88,7 +88,7 @@ Installation
 
 Install the application using pip.
 
-    pip install apex
+    pip install apex-radio
 
 Running the app
 ===============
