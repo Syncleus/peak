@@ -6,6 +6,7 @@ Changelog
 -----
 
 * Reordered changelog version entries.
+* Fixed several mistakes in the README
 
 0.0.2
 -----
