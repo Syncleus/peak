@@ -2,11 +2,16 @@
 Changelog
 =========
 
+0.0.4
+-----
+
+* Colorized the output from the plugins.
+
 0.0.3
 -----
 
 * Reordered changelog version entries.
-* Fixed several mistakes in the README
+* Fixed several mistakes in the README.
 
 0.0.2
 -----
