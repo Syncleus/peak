@@ -79,6 +79,6 @@ class StatusPlugin(object):
                     if frame_hash not in self.packet_cache.values():
                         self.packet_cache[str(frame_hash)] = frame_hash
                         port['tnc'].write(status_frame, port['tnc_port'])
-                        apex.print_colorized_frame(status_frame, port_name, False)
+                        apex.echo_colorized_frame(status_frame, port_name, False)
             else:
                 time.sleep(1)

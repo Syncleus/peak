@@ -96,8 +96,7 @@ def main(verbose, configfile):
 
     config = find_config(configfile, verbose)
     if config is None:
-        click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
-                   click.style('No apex configuration found, can not continue.', bold=True))
+        echo_colorized_error('No apex configuration found, can not continue.')
         return
     for section in config.sections():
         if section.startswith("TNC "):
@@ -111,9 +110,8 @@ def main(verbose, configfile):
                 tcp_port = config.get(section, 'tcp_port')
                 kiss_tnc = apex.kiss.KissTcp(host=tcp_host, tcp_port=tcp_port)
             else:
-                click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
-                           click.style("""Invalid configuration, must have both com_port and baud set or tcp_host and
-                           tcp_port set in TNC sections of configuration file""", bold=True))
+                echo_colorized_error("""Invalid configuration, must have both com_port and baud set or tcp_host and
+                           tcp_port set in TNC sections of configuration file""")
                 return
 
             if not config.has_option(section, 'kiss_init'):
@@ -129,9 +127,8 @@ def main(verbose, configfile):
             elif kiss_init_string == 'NONE':
                 kiss_tnc.connect()
             else:
-                click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
-                           click.style('Invalid configuration, value assigned to kiss_init was not recognized: %s'
-                                       % kiss_init_string, bold=True))
+                echo_colorized_error('Invalid configuration, value assigned to kiss_init was not recognized: %s'
+                                       % kiss_init_string)
                 return
 
             aprs_tnc = apex.aprs.Aprs(data_stream=kiss_tnc)
@@ -164,8 +161,7 @@ def main(verbose, configfile):
     try:
         plugin_loaders = get_plugins()
         if not len(plugin_loaders):
-            click.echo(click.style('Warning: ', fg='yellow') +
-                       click.style('No plugins were able to be discovered, will only display incoming messages.'))
+            echo_colorized_warning('No plugins were able to be discovered, will only display incoming messages.')
         for plugin_loader in plugin_loaders:
             if verbose:
                 click.echo('Plugin found at the following location: %s' % repr(plugin_loader))
@@ -175,8 +171,7 @@ def main(verbose, configfile):
             new_thread.start()
             plugin_threads.append(new_thread)
     except IOError:
-        click.echo(click.style('Warning: ', fg='yellow') +
-                   click.style('plugin directory not found, will only display incoming messages.'))
+        echo_colorized_warning('plugin directory not found, will only display incoming messages.')
 
     def sigint_handler(signal, frame):
         global running
@@ -210,7 +205,7 @@ def main(verbose, configfile):
                 port = port_map[port_name]
                 frame = port['tnc'].read()
                 if frame:
-                    print_colorized_frame(frame, port_name, True)
+                    echo_colorized_frame(frame, port_name, True)
 
                     for plugin_module in plugin_modules:
                         something_read = True
@@ -218,8 +213,7 @@ def main(verbose, configfile):
         except Exception as ex:
             # We want to keep this thread alive so long as the application runs.
             traceback.print_exc(file=sys.stdout)
-            click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
-                       click.style('Caught exception while reading packet: %s' % str(ex), bold=True))
+            echo_colorized_error('Caught exception while reading packet: %s' % str(ex))
 
         if something_read is False:
             time.sleep(1)
