@@ -6,6 +6,7 @@ from __future__ import print_function
 import time
 import click
 
+import apex
 import apex.aprs.util
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
@@ -76,6 +77,6 @@ class IdPlugin(object):
                     if frame_hash not in self.packet_cache.values():
                         self.packet_cache[str(frame_hash)] = frame_hash
                         port['tnc'].write(id_frame, port['tnc_port'])
-                        click.echo(port_name + ' >> ' + apex.aprs.util.encode_frame(id_frame))
+                        apex.print_colorized_frame(id_frame, port_name, False)
             else:
                 time.sleep(1)
