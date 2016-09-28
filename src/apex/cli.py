@@ -34,6 +34,7 @@ from apex.kiss import constants as kissConstants
 from apex.plugin_loader import get_plugins
 from apex.plugin_loader import load_plugin
 
+from .nonrepeating_buffer import NonrepeatingBuffer
 from .util import echo_colorized_error
 from .util import echo_colorized_frame
 from .util import echo_colorized_warning
@@ -138,7 +139,9 @@ def configure(configfile, verbose=False):
                 port_identifier = config.get(port_section, 'identifier')
                 port_net = config.get(port_section, 'net')
                 tnc_port = int(config.get(port_section, 'tnc_port'))
-                port_map[port_name] = {'identifier': port_identifier, 'net': port_net, 'tnc': aprs_tnc,
+                port_map[port_name] = {'identifier': port_identifier,
+                                       'net': port_net,
+                                       'tnc': NonrepeatingBuffer(aprs_tnc, port_name, tnc_port),
                                        'tnc_port': tnc_port}
 
     global aprsis
@@ -151,7 +154,8 @@ def configure(configfile, verbose=False):
             aprsis_password = -1
         aprsis_server = config.get('APRS-IS', 'server')
         aprsis_server_port = config.get('APRS-IS', 'server_port')
-        aprsis = apex.aprs.ReconnectingPacketBuffer(apex.aprs.IGate(aprsis_callsign, aprsis_password))
+        aprsis_base = apex.aprs.ReconnectingPacketBuffer(apex.aprs.IGate(aprsis_callsign, aprsis_password))
+        aprsis = NonrepeatingBuffer(aprsis_base, 'APRS-IS')
         aprsis.connect(aprsis_server, int(aprsis_server_port))
 
 

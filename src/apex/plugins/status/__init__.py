@@ -5,9 +5,6 @@ from __future__ import print_function
 
 import time
 
-import apex
-import apex.aprs.util
-
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __email__ = 'jeffrey.freeman@syncleus.com'
@@ -75,10 +72,6 @@ class StatusPlugin(object):
                         'destination': 'APRS',
                         'path': port['status_path'].split(','),
                         'text': port['status_text']}
-                    frame_hash = apex.aprs.util.hash_frame(status_frame)
-                    if frame_hash not in self.packet_cache.values():
-                        self.packet_cache[str(frame_hash)] = frame_hash
-                        port['tnc'].write(status_frame, port['tnc_port'])
-                        apex.echo_colorized_frame(status_frame, port_name, False)
+                    port['tnc'].write(status_frame, port['tnc_port'])
             else:
                 time.sleep(1)

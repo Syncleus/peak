@@ -5,9 +5,6 @@ from __future__ import print_function
 
 import time
 
-import apex
-import apex.aprs.util
-
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __email__ = 'jeffrey.freeman@syncleus.com'
@@ -72,10 +69,6 @@ class IdPlugin(object):
 
                     id_frame = {'source': port['identifier'], 'destination': 'ID', 'path': port['id_path'].split(','),
                                 'text': port['id_text']}
-                    frame_hash = apex.aprs.util.hash_frame(id_frame)
-                    if frame_hash not in self.packet_cache.values():
-                        self.packet_cache[str(frame_hash)] = frame_hash
-                        port['tnc'].write(id_frame, port['tnc_port'])
-                        apex.echo_colorized_frame(id_frame, port_name, False)
+                    port['tnc'].write(id_frame, port['tnc_port'])
             else:
                 time.sleep(1)

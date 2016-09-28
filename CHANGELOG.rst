@@ -6,6 +6,7 @@ Changelog
 -----
 
 * Colorized the output from the plugins.
+* Removed packet_cache argument from plugins, it is no longer needed.
 
 0.0.3
 -----
