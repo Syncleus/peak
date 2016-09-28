@@ -125,7 +125,7 @@ list of available versions. You will need a version of 2.7.x, 3.3.x, 3.4.x, 3.5.
 available version for each. Also some flavors of pyenv have different formats for it's arguments. So read the pyenv
 documentation on your platform.
 
-To run the all tests run::
+To run all tests::
 
     tox
 
