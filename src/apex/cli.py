@@ -53,6 +53,8 @@ __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
 
+config = None
+aprsis = None
 port_map = {}
 running = True
 plugin_modules = []
@@ -89,14 +91,8 @@ def find_config(config_paths, verbose):
     return None
 
 
-@click.command(context_settings=dict(auto_envvar_prefix='APEX'))
-@click.option('-c',
-              '--configfile',
-              type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True, resolve_path=True),
-              help='Configuration file for APEX.')
-@click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
-def main(verbose, configfile):
-
+def configure(configfile, verbose=False):
+    global config
     config = find_config(configfile, verbose)
     if config is None:
         echo_colorized_error('No apex configuration found, can not continue.')
@@ -145,6 +141,7 @@ def main(verbose, configfile):
                 port_map[port_name] = {'identifier': port_identifier, 'net': port_net, 'tnc': aprs_tnc,
                                        'tnc_port': tnc_port}
 
+    global aprsis
     aprsis = None
     if config.has_section('APRS-IS'):
         aprsis_callsign = config.get('APRS-IS', 'callsign')
@@ -156,6 +153,16 @@ def main(verbose, configfile):
         aprsis_server_port = config.get('APRS-IS', 'server_port')
         aprsis = apex.aprs.ReconnectingPacketBuffer(apex.aprs.IGate(aprsis_callsign, aprsis_password))
         aprsis.connect(aprsis_server, int(aprsis_server_port))
+
+
+@click.command(context_settings=dict(auto_envvar_prefix='APEX'))
+@click.option('-c',
+              '--configfile',
+              type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True, resolve_path=True),
+              help='Configuration file for APEX.')
+@click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
+def main(verbose, configfile):
+    configure(configfile, verbose)
 
     click.echo("Press ctrl + c at any time to exit")
 
