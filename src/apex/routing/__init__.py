@@ -6,6 +6,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from .route import has_seen  # noqa: F401
+
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __email__ = 'jeffrey.freeman@syncleus.com'

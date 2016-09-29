@@ -9,6 +9,8 @@ from __future__ import print_function
 import copy
 import re
 
+import apex.routing
+
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __email__ = 'jeffrey.freeman@syncleus.com'
@@ -43,16 +45,9 @@ class ApexParadigmPlugin(object):
         self.aprsis = aprsis
 
     def __passive_digipeat(self, frame, recv_port, recv_port_name):
-        # Can't digipeat anything when you are the source
-        for port in self.port_map.values():
-            if frame['source'] == port['identifier']:
-                return
-
-        # can't digipeat things we already digipeated.
-        for hop in frame['path']:
-            for port in self.port_map.values():
-                if hop.startswith(port['identifier']) and hop.endswith('*'):
-                    return
+        # can't digipeat packets if we are in the expended path
+        if apex.routing.has_seen(self.port_map, frame):
+            return
 
         for hop_index in range(0, len(frame['path'])):
             hop = frame['path'][hop_index]
@@ -129,15 +124,9 @@ class ApexParadigmPlugin(object):
                     return
 
     def __preemptive_digipeat(self, frame, recv_port, recv_port_name):
-        # Can't digipeat anything when you are the source
-        for port in self.port_map.values():
-            if frame['source'] == port['identifier']:
-                return
-
-        # can't digipeat things we already digipeated.
-        for hop in frame['path']:
-            if hop.startswith('WI2ARD') and hop.endswith('*'):
-                return
+        # can't digipeat packets if we are in the expended path
+        if apex.routing.has_seen(self.port_map, frame):
+            return
 
         selected_hop = {}
         node = None

@@ -12,3 +12,17 @@ __email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
+
+def has_seen(port_map, frame):
+    # Can't digipeat anything when you are the source
+    for port in port_map.values():
+        if frame['source'] == port['identifier']:
+            return True
+
+    # can't digipeat things we already digipeated.
+    for hop in frame['path']:
+        for port in port_map.values():
+            if hop.startswith(port['identifier']) and hop.endswith('*'):
+                return True
+
+    return False
