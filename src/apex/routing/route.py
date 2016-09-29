@@ -27,3 +27,10 @@ def has_seen(port_map, frame):
                 return True
 
     return False
+
+
+def is_hop_consumed(hop):
+    if hop.trim()[-1] is '*':
+        return True
+    else:
+        return False

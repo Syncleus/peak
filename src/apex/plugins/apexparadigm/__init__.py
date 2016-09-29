@@ -51,7 +51,7 @@ class ApexParadigmPlugin(object):
 
         for hop_index in range(0, len(frame['path'])):
             hop = frame['path'][hop_index]
-            if hop[-1] is not '*':
+            if not apex.routing.is_hop_consumed(hop):
                 split_hop = hop.split('-')
                 node = split_hop[0].upper()
                 if len(split_hop) >= 2 and split_hop[1]:
@@ -134,7 +134,7 @@ class ApexParadigmPlugin(object):
         for hop_index in reversed(range(0, len(frame['path']))):
             hop = frame['path'][hop_index]
             # If this is the last node before a spent node, or a spent node itself, we are done
-            if hop[-1] == '*' or frame['path'][hop_index-1][-1] == '*':
+            if apex.routing.is_hop_consumed(hop) or apex.routing.is_hop_consumed(frame['path'][hop_index-1]):
                 break
             split_hop = hop.split('-')
             node = split_hop[0].upper()
@@ -198,7 +198,7 @@ class ApexParadigmPlugin(object):
         for hop_index in reversed(range(0, len(frame['path']))):
             hop = frame['path'][hop_index]
             # If this is the last node before a spent node, or a spent node itself, we are done
-            if hop[-1] == '*' or frame['path'][hop_index-1][-1] == '*':
+            if apex.routing.is_hop_consumed(hop) or apex.routing.is_hop_consumed(frame['path'][hop_index-1]):
                 break
             elif selected_hop and selected_hop['index'] <= hop_index:
                 break
@@ -225,7 +225,7 @@ class ApexParadigmPlugin(object):
         new_path = []
         for hop_index in range(0, len(frame['path'])):
             hop = frame['path'][hop_index]
-            if hop[-1] != '*':
+            if not apex.routing.is_hop_consumed(hop):
                 if hop_index == selected_hop['index']:
                     if selected_hop['band_path'] is None:
                         new_path += [hop + '*']
