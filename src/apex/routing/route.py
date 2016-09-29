@@ -13,6 +13,7 @@ __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
 
+
 def has_seen(port_map, frame):
     # Can't digipeat anything when you are the source
     for port in port_map.values():
