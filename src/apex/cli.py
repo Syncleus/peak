@@ -219,8 +219,6 @@ def main(verbose, configfile):
                 port = port_map[port_name]
                 frame = port['tnc'].read()
                 if frame:
-                    echo_colorized_frame(frame, port_name, True)
-
                     for plugin_module in plugin_modules:
                         something_read = True
                         plugin_module.handle_packet(frame, port, port_name)
