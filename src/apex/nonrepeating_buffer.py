@@ -48,6 +48,9 @@ class NonrepeatingBuffer(object):
             if not frame:
                 return frame
             frame_hash = str(apex.aprs.util.hash_frame(frame))
-            self.packet_cache[frame_hash] = frame
-            apex.echo_colorized_frame(frame, self.base_name, True)
-            return frame
+            if frame_hash not in self.packet_cache:
+                self.packet_cache[frame_hash] = frame
+                apex.echo_colorized_frame(frame, self.base_name, True)
+                return frame
+            else:
+                return None
