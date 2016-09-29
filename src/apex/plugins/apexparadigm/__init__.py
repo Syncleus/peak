@@ -47,8 +47,9 @@ class ApexParadigmPlugin(object):
 
         # can't digipeat things we already digipeated.
         for hop in frame['path']:
-            if hop.startswith('WI2ARD') and hop.endswith('*'):
-                return
+            for port in self.port_map.values():
+                if hop.startswith(port['identifier']) and hop.endswith('*'):
+                    return
 
         for hop_index in range(0, len(frame['path'])):
             hop = frame['path'][hop_index]
