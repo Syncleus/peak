@@ -7,6 +7,7 @@ Changelog
 
 * Colorized the output from the plugins.
 * Removed packet_cache argument from plugins, it is no longer needed.
+* Mechanisms added to ensure plugins can not send the same packet twice, plugins no longer need to handle this explicitly.
 
 0.0.3
 -----
