@@ -26,7 +26,6 @@ import sys
 import threading
 import time
 import traceback
-import cachetools
 import click
 
 import apex.aprs
@@ -36,7 +35,6 @@ from apex.plugin_loader import load_plugin
 
 from .nonrepeating_buffer import NonrepeatingBuffer
 from .util import echo_colorized_error
-from .util import echo_colorized_frame
 from .util import echo_colorized_warning
 
 configparser = None
