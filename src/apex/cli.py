@@ -203,7 +203,7 @@ def main(verbose, configfile):
         for plugin_thread in plugin_threads:
             plugin_thread.join()
         for port in port_map.values():
-            port['tnc'].data_stream.close()
+            port['tnc'].close()
 
         click.echo('APEX successfully shutdown.')
         sys.exit(0)
