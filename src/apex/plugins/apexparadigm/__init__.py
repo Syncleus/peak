@@ -136,6 +136,8 @@ class ApexParadigmPlugin(object):
                 return
 
         selected_hop = {}
+        node = None
+        ssid = None
         for hop_index in reversed(range(0, len(frame['path']))):
             hop = frame['path'][hop_index]
             # If this is the last node before a spent node, or a spent node itself, we are done
