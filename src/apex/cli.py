@@ -170,7 +170,6 @@ def main(verbose, configfile):
 
     click.echo("Press ctrl + c at any time to exit")
 
-    packet_cache = cachetools.TTLCache(10000, 5)
     # start the plugins
     try:
         plugin_loaders = get_plugins()
@@ -181,7 +180,7 @@ def main(verbose, configfile):
                 click.echo('Plugin found at the following location: %s' % repr(plugin_loader))
             loaded_plugin = load_plugin(plugin_loader)
             plugin_modules.append(loaded_plugin)
-            new_thread = threading.Thread(target=loaded_plugin.start, args=(config, port_map, packet_cache, aprsis))
+            new_thread = threading.Thread(target=loaded_plugin.start, args=(config, port_map, aprsis))
             new_thread.start()
             plugin_threads.append(new_thread)
     except IOError:

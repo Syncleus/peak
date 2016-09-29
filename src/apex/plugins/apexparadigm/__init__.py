@@ -17,9 +17,9 @@ __version__ = '0.0.4'
 plugin = None
 
 
-def start(config, port_map, packet_cache, aprsis):
+def start(config, port_map, aprsis):
     global plugin
-    plugin = ApexParadigmPlugin(config, port_map, packet_cache, aprsis)
+    plugin = ApexParadigmPlugin(config, port_map, aprsis)
     plugin.run()
 
 
@@ -35,9 +35,8 @@ class ApexParadigmPlugin(object):
 
     BAND_PATH_REGEX = re.compile(r'(\d{1,4})M(\d{0,3})')
 
-    def __init__(self, config, port_map, packet_cache, aprsis):
+    def __init__(self, config, port_map, aprsis):
         self.port_map = port_map
-        self.packet_cache = packet_cache
         self.aprsis = aprsis
 
     def __passive_digipeat(self, frame, recv_port, recv_port_name):

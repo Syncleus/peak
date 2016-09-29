@@ -16,9 +16,9 @@ __version__ = '0.0.4'
 plugin = None
 
 
-def start(config, port_map, packet_cache, aprsis):
+def start(config, port_map, aprsis):
     global plugin
-    plugin = StatusPlugin(config, port_map, packet_cache, aprsis)
+    plugin = StatusPlugin(config, port_map, aprsis)
     plugin.run()
 
 
@@ -32,9 +32,8 @@ def stop():
 
 class StatusPlugin(object):
 
-    def __init__(self, config, port_map, packet_cache, aprsis):
+    def __init__(self, config, port_map, aprsis):
         self.port_map = port_map
-        self.packet_cache = packet_cache
         self.aprsis = aprsis
         self.running = False
 
