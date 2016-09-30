@@ -38,7 +38,7 @@ status_text=>Robust Packet Radio http://JeffreyFreeman.me
 id_text=WI2ARD/30M1 GATE/2M1 WI2ARD-1/2M1 WIDEN-n IGATE
 id_path=WIDE1-1
 
-[APRS-IS]
+[IGATE]
 callsign=WI2ARD
 password=12345
 server=noam.aprs2.net

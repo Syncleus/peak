@@ -5,6 +5,8 @@ Changelog
 0.0.5
 -----
 
+* Changed the APRS-IS config section to be named IGATE instead.
+* Output now displays IGATE as the source/destination instead of APRS-IS.
 
 0.0.4
 -----
