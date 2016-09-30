@@ -23,10 +23,15 @@ def dump_load_path
     puts "Found in #{path}"
   end
 end
-require 'bundler'
-require 'rake/clean'
+gem 'json', '~> 1.8.3'
 
+gem 'bundler', '~> 1.13'
+require 'bundler'
+
+gem 'rake', '~> 11.3.0'
+require 'rake/clean'
 require 'rake/testtask'
+
 
 require 'cucumber'
 require 'cucumber/rake/task'
