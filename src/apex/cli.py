@@ -32,11 +32,12 @@ import traceback
 import click
 
 import apex.aprs
+import apex.buffers
 from apex.kiss import constants as kissConstants
 from apex.plugin_loader import get_plugins
 from apex.plugin_loader import load_plugin
 
-from .nonrepeating_buffer import NonrepeatingBuffer
+from .buffers import NonrepeatingBuffer
 from .util import echo_colorized_error
 from .util import echo_colorized_warning
 
@@ -105,11 +106,11 @@ def configure(configfile, verbose=False):
             if config.has_option(section, 'com_port') and config.has_option(section, 'baud'):
                 com_port = config.get(section, 'com_port')
                 baud = config.get(section, 'baud')
-                kiss_tnc = apex.aprs.ReconnectingPacketBuffer(apex.aprs.Aprs(apex.kiss.KissSerial(com_port=com_port, baud=baud)))
+                kiss_tnc = apex.buffers.ReconnectingPacketBuffer(apex.aprs.Aprs(apex.kiss.KissSerial(com_port=com_port, baud=baud)))
             elif config.has_option(section, 'tcp_host') and config.has_option(section, 'tcp_port'):
                 tcp_host = config.get(section, 'tcp_host')
                 tcp_port = config.get(section, 'tcp_port')
-                kiss_tnc = apex.aprs.ReconnectingPacketBuffer(apex.aprs.Aprs(apex.kiss.KissTcp(host=tcp_host, tcp_port=tcp_port)))
+                kiss_tnc = apex.buffers.ReconnectingPacketBuffer(apex.aprs.Aprs(apex.kiss.KissTcp(host=tcp_host, tcp_port=tcp_port)))
             else:
                 echo_colorized_error("""Invalid configuration, must have both com_port and baud set or tcp_host and
                            tcp_port set in TNC sections of configuration file""")
@@ -153,7 +154,7 @@ def configure(configfile, verbose=False):
             aprsis_password = -1
         aprsis_server = config.get('APRS-IS', 'server')
         aprsis_server_port = config.get('APRS-IS', 'server_port')
-        aprsis_base = apex.aprs.ReconnectingPacketBuffer(apex.aprs.IGate(aprsis_callsign, aprsis_password))
+        aprsis_base = apex.buffers.ReconnectingPacketBuffer(apex.aprs.IGate(aprsis_callsign, aprsis_password))
         aprsis = NonrepeatingBuffer(aprsis_base, 'APRS-IS')
         aprsis.connect(aprsis_server, int(aprsis_server_port))
 

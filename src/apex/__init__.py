@@ -7,7 +7,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .nonrepeating_buffer import NonrepeatingBuffer  # noqa: F401
+from .buffers import NonrepeatingBuffer  # noqa: F401
+from .buffers import ReconnectingPacketBuffer  # noqa: F401
 from .util import echo_colorized_error  # noqa: F401
 from .util import echo_colorized_frame  # noqa: F401
 from .util import echo_colorized_warning  # noqa: F401

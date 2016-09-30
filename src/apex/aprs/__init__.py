@@ -24,7 +24,6 @@ import logging
 
 from .aprs import Aprs  # noqa: F401
 from .igate import IGate  # noqa: F401
-from .igate import ReconnectingPacketBuffer  # noqa: F401
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'

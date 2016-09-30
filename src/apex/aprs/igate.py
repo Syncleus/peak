@@ -11,9 +11,7 @@ from __future__ import print_function
 import logging
 import select
 import socket
-import threading
-import time
-import cachetools
+
 import requests
 
 from apex.aprs import constants as aprs_constants
@@ -25,127 +23,6 @@ __email__ = 'jeffrey.freeman@syncleus.com'
 __license__ = 'Apache License, Version 2.0'
 __copyright__ = 'Copyright 2016, Syncleus, Inc. and contributors'
 __credits__ = []
-
-
-class ReconnectingPacketBuffer(object):
-
-    STARTING_WAIT_TIME = 2
-    MAX_WAIT_TIME = 300
-    WAIT_TIME_MULTIPLIER = 2
-    MAX_INDEX = 1000000
-
-    def __init__(self, packet_layer):
-        self.packet_layer = packet_layer
-        self.to_packet_layer = cachetools.TTLCache(10, 30)
-        self.current_index = 0
-        self.from_packet_layer = cachetools.TTLCache(10, 30)
-        self.connect_thread = None
-        self.lock = threading.Lock()
-        self.running = False
-        self.reconnect_wait_time = self.STARTING_WAIT_TIME
-        self.last_connect_attempt = None
-        self.connect_args = None
-        self.connect_kwargs = None
-        self.connected = False
-
-    def __increment_wait_time(self):
-        self.reconnect_wait_time *= self.WAIT_TIME_MULTIPLIER
-        if self.reconnect_wait_time > self.MAX_WAIT_TIME:
-            self.reconnect_wait_time = self.MAX_WAIT_TIME
-
-    def __reset_wait_time(self):
-        self.reconnect_wait_time = self.STARTING_WAIT_TIME
-
-    def __run(self):
-        while self.running:
-            if not self.connected:
-                if not self.last_connect_attempt or time.time() - self.last_connect_attempt > self.reconnect_wait_time:
-                    try:
-                        self.last_connect_attempt = time.time()
-                        self.packet_layer.connect(*self.connect_args, **self.connect_kwargs)
-                        self.connected = True
-                    except IOError:
-                        try:
-                            self.packet_layer.close()
-                        except IOError:
-                            pass
-                        self.__increment_wait_time()
-                else:
-                    time.sleep(1)
-            else:
-                io_occured = False
-
-                # lets attempt to read in a packet
-                try:
-                    read_packet = self.packet_layer.read()
-                    self.__reset_wait_time()
-                    if read_packet:
-                        with self.lock:
-                                self.from_packet_layer[str(aprs_util.hash_frame(read_packet))] = read_packet
-                        io_occured = True
-                except IOError:
-                    try:
-                        self.packet_layer.close()
-                    except IOError:
-                        pass
-                    self.connected = False
-                    continue
-
-                # lets try to write a packet, if any are waiting.
-                write_packet = None
-                with self.lock:
-                    if self.to_packet_layer:
-                        write_packet = self.to_packet_layer.popitem()[1]
-                if write_packet:
-                    try:
-                        self.packet_layer.write(write_packet)
-                        io_occured = True
-                        self.__reset_wait_time()
-                    except IOError:
-                        self.to_packet_layer[str(aprs_util.hash_frame(read_packet))] = write_packet
-                        try:
-                            self.packet_layer.close()
-                        except IOError:
-                            pass
-                        self.connected = False
-                        continue
-
-                if not io_occured:
-                    time.sleep(1)
-        try:
-            self.packet_layer.close()
-        except IOError:
-            pass
-
-    def connect(self, *args, **kwargs):
-        with self.lock:
-            if self.connect_thread:
-                raise RuntimeError('already connected')
-
-            self.running = True
-            self.connect_args = args
-            self.connect_kwargs = kwargs
-            self.connect_thread = threading.Thread(target=self.__run)
-            self.connect_thread.start()
-
-    def close(self):
-        with self.lock:
-            if not self.connect_thread:
-                raise RuntimeError('not connected')
-
-            self.running = False
-            self.connect_thread.join()
-            self.connect_thread = None
-
-    def read(self):
-        with self.lock:
-            if self.from_packet_layer:
-                return self.from_packet_layer.popitem()[1]
-        return None
-
-    def write(self, packet):
-        with self.lock:
-            self.to_packet_layer[str(aprs_util.hash_frame(packet))] = packet
 
 
 class IGate(object):
