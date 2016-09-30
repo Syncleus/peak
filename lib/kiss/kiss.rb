@@ -16,10 +16,15 @@ module KISS
 
         private
         def self.strip_df_start(frame)
-            while frame[0] == KISS::DATA_FRAME
+            while frame[0] == DATA_FRAME
                 frame.shift
             end
-            frame.strip
+            while frame[0]&.chr == ' '
+                frame.shift
+            end
+            while frame[-1]&.chr == ' '
+                frame.pop
+            end
             return frame
         end
 
@@ -27,10 +32,10 @@ module KISS
         def self.escape_special_codes(raw_code_bytes)
             encoded_bytes = []
             raw_code_bytes.each do |raw_code_byte|
-                if raw_code_byte == KISS::FESC
-                    encoded_bytes += KISS::FESC_TFESC
-                elsif raw_code_byte == KISS::FEND
-                    encoded_bytes += KISS::FESC_TFEND
+                if raw_code_byte == FESC
+                    encoded_bytes += FESC_TFESC
+                elsif raw_code_byte == FEND
+                    encoded_bytes += FESC_TFEND
                 else
                     encoded_bytes += [raw_code_byte]
                 end
@@ -62,11 +67,11 @@ module KISS
         def fill_buffer
             new_frames = []
             read_buffer = []
-            read_data = self.read_interface
-            while read_data&.length
+            read_data = read_interface
+            while read_data&.length and read_data.length > 0
                 split_data = [[]]
                 read_data.each do |read_byte|
-                    if read_byte == KISS::FEND
+                    if read_byte == FEND
                         split_data << []
                     else
                         split_data[-1] << read_byte
@@ -79,7 +84,7 @@ module KISS
                     read_buffer += split_data[0]
                 # Single FEND in frame
                 elsif len_fend == 2
-                # Closing FEND found
+                    # Closing FEND found
                     if split_data[0]
                         # Partial frame continued, otherwise drop
                         new_frames << read_buffer + split_data[0]
@@ -93,7 +98,7 @@ module KISS
                 elsif len_fend >= 3
                     (0...len_fend - 1).each do |i|
                         read_buffer_tmp = read_buffer + split_data[i]
-                        if read_buffer_tmp.length
+                        if read_buffer_tmp.length > 0
                             new_frames << read_buffer_tmp
                             read_buffer = []
                         end
@@ -103,11 +108,11 @@ module KISS
                     end
                 end
                 # Get anymore data that is waiting
-                read_data = self.read_interface
+                read_data = read_interface
             end
-
+            
             new_frames.each do |new_frame|
-                if new_frame.length and not new_frame[0]
+                if new_frame.length > 0 and new_frame[0] == 0
                     if @strip_df_start
                         new_frame = KISS.strip_df_start(new_frame)
                     end
@@ -116,22 +121,25 @@ module KISS
             end
         end
 
+        public
         def connect(mode_init=None, *args, **kwargs)
         end
 
+        public
         def close
             if @exit_kiss
-                self.write_interface(KISS::MODE_END)
+                write_interface(MODE_END)
             end
         end
 
+        public
         def read
             @lock.synchronize do
-                if @frame_buffer.length > 0
-                    self.fill_buffer
+                if @frame_buffer.length == 0
+                    fill_buffer
                 end
 
-                if @frame_buffer.length
+                if @frame_buffer.length > 0
                     return_frame = @frame_buffer[0]
                     @frame_buffer.shift
                     return return_frame
@@ -141,10 +149,11 @@ module KISS
             end
         end
 
+        public
         def write(frame_bytes, port=0)
             @lock.synchronize do
-                kiss_packet = [KISS:FEND] + [self.command_byte_combine(port, KISS::DATA_FRAME)] +
-                    self.escape_special_codes(frame_bytes) + [KISS::FEND]
+                kiss_packet = [FEND] + [command_byte_combine(port, DATA_FRAME)] +
+                    escape_special_codes(frame_bytes) + [FEND]
 
                 return self.write_interface(kiss_packet)
             end
