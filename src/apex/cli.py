@@ -64,6 +64,27 @@ plugin_modules = []
 plugin_threads = []
 
 
+def sigint_handler(signal=None, frame=None):
+    global running
+    running = False
+
+    click.echo()
+    click.echo('SIGINT caught, shutting down..')
+
+    for plugin_module in plugin_modules:
+        plugin_module.stop()
+    if aprsis:
+        aprsis.close()
+    # Lets wait until all the plugins successfully end
+    for plugin_thread in plugin_threads:
+        plugin_thread.join()
+    for port in port_map.values():
+        port['tnc'].close()
+
+    click.echo('APEX successfully shutdown.')
+    sys.exit(0)
+
+
 def find_config(config_paths, verbose):
     config_file = 'apex.conf'
     rc_file = '.apexrc'
@@ -99,13 +120,13 @@ def configure(configfile, verbose=False):
     config = find_config(configfile, verbose)
     if config is None:
         echo_colorized_error('No apex configuration found, can not continue.')
-        return
+        return False
     for section in config.sections():
         if section.startswith("TNC "):
             tnc_name = section.strip().split(" ")[1].strip()
             if tnc_name is 'IGATE':
                 echo_colorized_error('IGATE was used as the name for a TNC in the configuration, this name is reserved')
-                return
+                return False
             if config.has_option(section, 'com_port') and config.has_option(section, 'baud'):
                 com_port = config.get(section, 'com_port')
                 baud = config.get(section, 'baud')
@@ -117,13 +138,13 @@ def configure(configfile, verbose=False):
             else:
                 echo_colorized_error("""Invalid configuration, must have both com_port and baud set or tcp_host and
                            tcp_port set in TNC sections of configuration file""")
-                return
+                return False
 
             if not config.has_option(section, 'kiss_init'):
                 click.echo(click.style('Error: ', fg='red', bold=True, blink=True) +
                            click.style("""Invalid configuration, must have kiss_init set in TNC sections of
                            configuration file""", bold=True))
-                return
+                return False
             kiss_init_string = config.get(section, 'kiss_init')
             if kiss_init_string == 'MODE_INIT_W8DED':
                 kiss_tnc.connect(kissConstants.MODE_INIT_W8DED)
@@ -134,7 +155,7 @@ def configure(configfile, verbose=False):
             else:
                 echo_colorized_error('Invalid configuration, value assigned to kiss_init was not recognized: %s'
                                      % kiss_init_string)
-                return
+                return False
 
             for port in range(1, 1 + int(config.get(section, 'port_count'))):
                 port_name = tnc_name + '-' + str(port)
@@ -161,6 +182,8 @@ def configure(configfile, verbose=False):
         aprsis = NonrepeatingBuffer(aprsis_base, 'IGATE')
         aprsis.connect(aprsis_server, int(aprsis_server_port))
 
+    return True
+
 
 @click.command(context_settings=dict(auto_envvar_prefix='APEX'))
 @click.option('-c',
@@ -169,7 +192,8 @@ def configure(configfile, verbose=False):
               help='Configuration file for APEX.')
 @click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
 def main(verbose, configfile):
-    configure(configfile, verbose)
+    if not configure(configfile, verbose):
+        return
 
     click.echo("Press ctrl + c at any time to exit")
 
@@ -188,27 +212,6 @@ def main(verbose, configfile):
             plugin_threads.append(new_thread)
     except IOError:
         echo_colorized_warning('plugin directory not found, will only display incoming messages.')
-
-    def sigint_handler(signal, frame):
-        global running
-
-        running = False
-
-        click.echo()
-        click.echo('SIGINT caught, shutting down..')
-
-        for plugin_module in plugin_modules:
-            plugin_module.stop()
-        if aprsis:
-            aprsis.close()
-        # Lets wait until all the plugins successfully end
-        for plugin_thread in plugin_threads:
-            plugin_thread.join()
-        for port in port_map.values():
-            port['tnc'].close()
-
-        click.echo('APEX successfully shutdown.')
-        sys.exit(0)
 
     signal.signal(signal.SIGINT, sigint_handler)
 
