@@ -55,6 +55,7 @@ module KISS
 
         protected
         def write_setting(name, value)
+            # TODO: Implement this
             # return self.write_interface(
             #         KISS::FEND +
             #         getattr(kiss_constants, name.upper()) +
