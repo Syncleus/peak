@@ -219,18 +219,13 @@ def main(verbose, configfile):
         click.echo('Starting packet processing...')
     while running:
         something_read = False
-        try:
-            for port_name in port_map.keys():
-                port = port_map[port_name]
-                frame = port['tnc'].read()
-                if frame:
-                    for plugin_module in plugin_modules:
-                        something_read = True
-                        plugin_module.handle_packet(frame, port, port_name)
-        except Exception as ex:
-            # We want to keep this thread alive so long as the application runs.
-            traceback.print_exc(file=sys.stdout)
-            echo_colorized_error('Caught exception while reading packet: %s' % str(ex))
+        for port_name in port_map.keys():
+            port = port_map[port_name]
+            frame = port['tnc'].read()
+            if frame:
+                for plugin_module in plugin_modules:
+                    something_read = True
+                    plugin_module.handle_packet(frame, port, port_name)
 
         if something_read is False:
             time.sleep(1)
