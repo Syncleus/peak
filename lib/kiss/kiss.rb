@@ -10,6 +10,7 @@ module KISS
         def initialize(strip_df_start=true, exit_kiss=true)
             @strip_df_start = strip_df_start
             @exit_kiss = exit_kiss
+            @frame_buffer = []
             @lock = Mutex.new
         end
 
@@ -57,24 +58,95 @@ module KISS
             # )
         end
 
+        private
+        def fill_buffer
+            new_frames = []
+            read_buffer = []
+            read_data = self.read_interface
+            while read_data&.length
+                split_data = [[]]
+                read_data.each do |read_byte|
+                    if read_byte == KISS::FEND
+                        split_data << []
+                    else
+                        split_data[-1] << read_byte
+                    end
+                end
+                len_fend = split_data.length
+
+                # No FEND in frame
+                if len_fend == 1
+                    read_buffer += split_data[0]
+                # Single FEND in frame
+                elsif len_fend == 2
+                # Closing FEND found
+                    if split_data[0]
+                        # Partial frame continued, otherwise drop
+                        new_frames << read_buffer + split_data[0]
+                        read_buffer = []
+                    # Opening FEND found
+                    else
+                        new_frames << read_buffer
+                        read_buffer = split_data[1]
+                    end
+                # At least one complete frame received
+                elsif len_fend >= 3
+                    (0...len_fend - 1).each do |i|
+                        read_buffer_tmp = read_buffer + split_data[i]
+                        if read_buffer_tmp.length
+                            new_frames << read_buffer_tmp
+                            read_buffer = []
+                        end
+                    end
+                    if split_data[len_fend - 1]
+                        read_buffer = split_data[len_fend - 1]
+                    end
+                end
+                # Get anymore data that is waiting
+                read_data = self.read_interface
+            end
+
+            new_frames.each do |new_frame|
+                if new_frame.length and not new_frame[0]
+                    if @strip_df_start
+                        new_frame = KISS.strip_df_start(new_frame)
+                    end
+                    @frame_buffer << new_frame
+                end
+            end
+        end
+
         def connect(mode_init=None, *args, **kwargs)
         end
 
-        def close()
+        def close
             if @exit_kiss
                 self.write_interface(KISS::MODE_END)
             end
         end
 
-        def read()
+        def read
             @lock.synchronize do
-                # read stuff
+                if @frame_buffer.length > 0
+                    self.fill_buffer
+                end
+
+                if @frame_buffer.length
+                    return_frame = @frame_buffer[0]
+                    @frame_buffer.shift
+                    return return_frame
+                else
+                    return nil
+                end
             end
         end
 
         def write(frame_bytes, port=0)
             @lock.synchronize do
-                # write stuff
+                kiss_packet = [KISS:FEND] + [self.command_byte_combine(port, KISS::DATA_FRAME)] +
+                    self.escape_special_codes(frame_bytes) + [KISS::FEND]
+
+                return self.write_interface(kiss_packet)
             end
         end
     end
