@@ -28,7 +28,6 @@ import signal
 import sys
 import threading
 import time
-import traceback
 import click
 
 import apex.aprs
