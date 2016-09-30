@@ -146,16 +146,16 @@ def configure(configfile, verbose=False):
 
     global aprsis
     aprsis = None
-    if config.has_section('APRS-IS'):
-        aprsis_callsign = config.get('APRS-IS', 'callsign')
-        if config.has_option('APRS-IS', 'password'):
-            aprsis_password = config.get('APRS-IS', 'password')
+    if config.has_section('IGATE'):
+        aprsis_callsign = config.get('IGATE', 'callsign')
+        if config.has_option('IGATE', 'password'):
+            aprsis_password = config.get('IGATE', 'password')
         else:
             aprsis_password = -1
-        aprsis_server = config.get('APRS-IS', 'server')
-        aprsis_server_port = config.get('APRS-IS', 'server_port')
+        aprsis_server = config.get('IGATE', 'server')
+        aprsis_server_port = config.get('IGATE', 'server_port')
         aprsis_base = apex.buffers.ReconnectingPacketBuffer(apex.aprs.IGate(aprsis_callsign, aprsis_password))
-        aprsis = NonrepeatingBuffer(aprsis_base, 'APRS-IS')
+        aprsis = NonrepeatingBuffer(aprsis_base, 'IGATE')
         aprsis.connect(aprsis_server, int(aprsis_server_port))
 
 
