@@ -30,4 +30,4 @@ def echo_colorized_error(text):
 
 
 def echo_colorized_warning(text):
-    click.echo(click.style('Error: ', fg='yellow') + click.style(text))
+    click.echo(click.style('Warning: ', fg='yellow') + click.style(text))
