@@ -9,8 +9,8 @@ class App
   include Methadone::CLILogging
 
   main do |needed, maybe|
-    options[:switch]
-    options[:flag]
+    puts options[:switch]
+    puts options[:flag]
   end
 
   description "APEX reference implementation for the APEX protocol."

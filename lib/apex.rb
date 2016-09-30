@@ -1,5 +1,6 @@
-require_relative "apex/version"
+require_relative 'apex/version'
+require_relative 'kiss/kiss'
 
 module Apex
-  # Your code goes here...
+
 end
