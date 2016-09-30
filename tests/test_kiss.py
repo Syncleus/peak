@@ -74,8 +74,6 @@ class KissUtilTestCase(unittest.TestCase):
 
 class KissMock(apex.kiss.Kiss):
 
-    frame_buffer = []
-
     def __init__(self,
                  strip_df_start=True):
         super(KissMock, self).__init__(strip_df_start)
