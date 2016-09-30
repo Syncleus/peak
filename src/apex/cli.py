@@ -102,7 +102,10 @@ def configure(configfile, verbose=False):
         return
     for section in config.sections():
         if section.startswith("TNC "):
-            tnc_name = section.split(" ")[1]
+            tnc_name = section.strip().split(" ")[1].strip()
+            if tnc_name is 'IGATE':
+                echo_colorized_error('IGATE was used as the name for a TNC in the configuration, this name is reserved')
+                return
             if config.has_option(section, 'com_port') and config.has_option(section, 'baud'):
                 com_port = config.get(section, 'com_port')
                 baud = config.get(section, 'baud')
