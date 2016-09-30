@@ -100,7 +100,7 @@ class IGate(object):
 
         frame = aprs_util.encode_frame(frame_decoded)
         if 'TCP' in protocol:
-            self.aprsis_sock.sendall(frame)
+            self.aprsis_sock.sendall(frame.encode(encoding='UTF-8'))
             return True
         elif 'HTTP' in protocol:
             content = '\n'.join([self._auth, frame])
