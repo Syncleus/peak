@@ -1,4 +1,4 @@
-require "apex/version"
+require_relative "apex/version"
 
 module Apex
   # Your code goes here...

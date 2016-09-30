@@ -2,40 +2,29 @@
 
 require 'optparse'
 require 'methadone'
-require 'apex.rb'
+require_relative '../lib/apex.rb'
 
 class App
   include Methadone::Main
   include Methadone::CLILogging
 
-  main do # Add args you want: |like,so|
-    # your program code here
-    # You can access CLI options via
-    # the options Hash
+  main do |needed, maybe|
+    options[:switch]
+    options[:flag]
   end
 
-  # supplemental methods here
-
-  # Declare command-line interface here
-
-  # description "one line description of your app"
-  #
-  # Accept flags via:
-  # on("--flag VAL","Some flag")
-  # options[flag] will contain VAL
-  #
-  # Specify switches via:
-  # on("--[no-]switch","Some switch")
-  #
-  # Or, just call OptionParser methods on opts
-  #
-  # Require an argument
-  # arg :some_arg 
-  #
-  # # Make an argument optional
-  # arg :optional_arg, :optional
-
+  description "APEX reference implementation for the APEX protocol."
   version Apex::VERSION
+
+  # Proxy to an OptionParser instance's on method
+  on("--[no]-switch", "Toggles the switch")
+  on("--flag VALUE", "Sets the flag.")
+
+  arg :needed
+  arg :maybe, :optional
+
+  defaults_from_env_var 'SOME_VAR'
+  defaults_from_config_file '.apex.rc'
 
   use_log_level_option :toggle_debug_on_signal => 'USR1'
 
