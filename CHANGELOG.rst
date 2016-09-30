@@ -7,6 +7,7 @@ Changelog
 
 * Changed the APRS-IS config section to be named IGATE instead.
 * Output now displays IGATE as the source/destination instead of APRS-IS.
+* Made IGATE a reserved name in the configuration, it cannot be used for a TNC name.
 
 0.0.4
 -----
