@@ -123,7 +123,7 @@ module KISS
         end
 
         public
-        def connect(mode_init=None, *args, **kwargs)
+        def connect(mode_init=nil, *args, **kwargs)
         end
 
         public
