@@ -11,6 +11,8 @@ from __future__ import print_function
 import logging
 import serial
 
+import six
+
 from apex.kiss import constants as kiss_constants
 
 from .kiss import Kiss
@@ -70,7 +72,7 @@ class KissSerial(Kiss):
         waiting_data = self.serial.inWaiting()
         if waiting_data:
             read_data += self.serial.read(waiting_data)
-        return [ord(c) for c in read_data]
+        return [ord(c) if six.PY2 else c for c in read_data]
 
     def _write_interface(self, data):
         self.serial.write(data)
