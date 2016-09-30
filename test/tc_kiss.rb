@@ -55,15 +55,18 @@ module KISS
             kiss_mock = KISSMock.new
             kiss_mock.add_read_from_interface(ENCODED_FRAME)
             translated_frame = kiss_mock.read
-            assert DECODED_FRAME == translated_frame
+            assert_equal DECODED_FRAME, translated_frame
         end
 
         def test_write
             kiss_mock = KISSMock.new
             kiss_mock.write(DECODED_FRAME)
             all_raw_frames = kiss_mock.get_sent_to_interface
-            assert ENCODED_FRAME == all_raw_frames[0]
+            assert_equal ENCODED_FRAME, all_raw_frames[0]
+        end
+
+        def test_new_abstract_kiss
+            assert_raise(AbstractClassError) { KISS.new }
         end
     end
-
 end
