@@ -54,8 +54,9 @@ from __future__ import division
 from __future__ import print_function
 
 import decimal as libdecimal
-import sys
 from decimal import Decimal as D
+
+import six
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
 __maintainer__ = 'Jeffrey Phillips Freeman (WI2ARD)'
@@ -162,7 +163,7 @@ def dm2decimal(degrees, minutes):
 def run_doctest():  # pragma: no cover
     """Runs doctests for this module."""
     import doctest
-    if sys.version_info < (3, 0):
+    if six.PY2:
         import decimaldegrees  # pylint: disable=W0406,F0401
         return doctest.testmod(decimaldegrees)
 

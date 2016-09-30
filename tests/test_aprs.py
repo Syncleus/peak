@@ -8,13 +8,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import sys
 import unittest
+
+import six
 
 import apex.aprs.constants
 import apex.aprs.igate
 
-if sys.version_info < (3, 0):
+if six.PY2:
     import httpretty
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
@@ -178,7 +179,7 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
         full_callsign = apex.aprs.Aprs._Aprs__identity_as_string(callsign)
         self.assertEqual(full_callsign, 'W2GMD')
 
-    if sys.version_info < (3, 0):
+    if six.PY2:
         @httpretty.httprettified
         def test_fake_good_auth(self):
             """
