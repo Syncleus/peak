@@ -47,7 +47,23 @@ module KISS
             return (port << 4) & command_code
         end
 
+        protected
+        def write_setting(name, value)
+            # return self.write_interface(
+            #         KISS::FEND +
+            #         getattr(kiss_constants, name.upper()) +
+            #         Kiss.__escape_special_codes(value) +
+            #         kiss_constants.FEND
+            # )
+        end
+
         def connect(mode_init=None, *args, **kwargs)
+        end
+
+        def close()
+            if @exit_kiss
+                self.write_interface(KISS::MODE_END)
+            end
         end
 
         def read()
