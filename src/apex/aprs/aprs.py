@@ -45,13 +45,13 @@ class Aprs(object):
         frame_len = len(raw_frame)
 
         if frame_len > 16:
-            for raw_slice in range(0, frame_len):
+            for raw_slice in range(0, frame_len - 2):
                 # Is address field length correct?
                 if raw_frame[raw_slice] & 0x01 and ((raw_slice + 1) % 7) == 0:
                     i = (raw_slice + 1) / 7
                     # Less than 2 callsigns?
                     if 1 < i < 11:
-                        if (raw_frame[raw_slice + 1] & 0x03 == 0x03 and raw_frame[raw_slice + 2] in [0xf0, 0xcf]):
+                        if raw_frame[raw_slice + 1] & 0x03 is 0x03 and raw_frame[raw_slice + 2] in [0xf0, 0xcf]:
                             frame['text'] = ''.join(map(chr, raw_frame[raw_slice + 3:]))
                             frame['destination'] = Aprs.__identity_as_string(Aprs.__extract_callsign(raw_frame))
                             frame['source'] = Aprs.__identity_as_string(Aprs.__extract_callsign(raw_frame[7:]))
