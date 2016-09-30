@@ -8,6 +8,7 @@ Changelog
 * Changed the APRS-IS config section to be named IGATE instead.
 * Output now displays IGATE as the source/destination instead of APRS-IS.
 * Made IGATE a reserved name in the configuration, it cannot be used for a TNC name.
+* Removed a catch-everything block, the result is exceptions will now cause the application to exit.
 
 0.0.4
 -----

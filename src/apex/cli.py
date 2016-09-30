@@ -28,7 +28,9 @@ import signal
 import sys
 import threading
 import time
+
 import click
+import six
 
 import apex.aprs
 import apex.buffers
@@ -41,11 +43,11 @@ from .util import echo_colorized_error
 from .util import echo_colorized_warning
 
 configparser = None
-if sys.version_info < (3, 0):
+if six.PY2:
     import ConfigParser  # noqa: F401
     if configparser is None:
         configparser = ConfigParser
-elif sys.version_info >= (3, 0):
+elif six.PY3:
     import configparser
 
 __author__ = 'Jeffrey Phillips Freeman (WI2ARD)'
@@ -191,6 +193,7 @@ def configure(configfile, verbose=False):
               help='Configuration file for APEX.')
 @click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
 def main(verbose, configfile):
+    # load the configuration, if it fails, exit
     if not configure(configfile, verbose):
         return
 
@@ -214,6 +217,7 @@ def main(verbose, configfile):
 
     signal.signal(signal.SIGINT, sigint_handler)
 
+    # process all incoming frames by sending them to each of the plugins.
     if verbose:
         click.echo('Starting packet processing...')
     while running:
