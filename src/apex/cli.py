@@ -105,11 +105,11 @@ def configure(configfile, verbose=False):
             if config.has_option(section, 'com_port') and config.has_option(section, 'baud'):
                 com_port = config.get(section, 'com_port')
                 baud = config.get(section, 'baud')
-                kiss_tnc = apex.kiss.KissSerial(com_port=com_port, baud=baud)
+                kiss_tnc = apex.aprs.ReconnectingPacketBuffer(apex.aprs.Aprs(apex.kiss.KissSerial(com_port=com_port, baud=baud)))
             elif config.has_option(section, 'tcp_host') and config.has_option(section, 'tcp_port'):
                 tcp_host = config.get(section, 'tcp_host')
                 tcp_port = config.get(section, 'tcp_port')
-                kiss_tnc = apex.kiss.KissTcp(host=tcp_host, tcp_port=tcp_port)
+                kiss_tnc = apex.aprs.ReconnectingPacketBuffer(apex.aprs.Aprs(apex.kiss.KissTcp(host=tcp_host, tcp_port=tcp_port)))
             else:
                 echo_colorized_error("""Invalid configuration, must have both com_port and baud set or tcp_host and
                            tcp_port set in TNC sections of configuration file""")
@@ -132,8 +132,6 @@ def configure(configfile, verbose=False):
                                      % kiss_init_string)
                 return
 
-            aprs_tnc = apex.aprs.Aprs(data_stream=kiss_tnc)
-
             for port in range(1, 1 + int(config.get(section, 'port_count'))):
                 port_name = tnc_name + '-' + str(port)
                 port_section = 'PORT ' + port_name
@@ -142,7 +140,7 @@ def configure(configfile, verbose=False):
                 tnc_port = int(config.get(port_section, 'tnc_port'))
                 port_map[port_name] = {'identifier': port_identifier,
                                        'net': port_net,
-                                       'tnc': NonrepeatingBuffer(aprs_tnc, port_name, tnc_port),
+                                       'tnc': NonrepeatingBuffer(kiss_tnc, port_name, tnc_port),
                                        'tnc_port': tnc_port}
 
     global aprsis
