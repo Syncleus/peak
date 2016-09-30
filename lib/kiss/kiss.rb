@@ -39,8 +39,8 @@ module KISS
                 else
                     encoded_bytes += [raw_code_byte]
                 end
-                return encoded_bytes
             end
+            return encoded_bytes
         end
 
         private
@@ -152,10 +152,10 @@ module KISS
         public
         def write(frame_bytes, port=0)
             @lock.synchronize do
-                kiss_packet = [FEND] + [command_byte_combine(port, DATA_FRAME)] +
-                    escape_special_codes(frame_bytes) + [FEND]
+                kiss_packet = [FEND] + [KISS.command_byte_combine(port, DATA_FRAME)] +
+                    KISS.escape_special_codes(frame_bytes) + [FEND]
 
-                return self.write_interface(kiss_packet)
+                return write_interface(kiss_packet)
             end
         end
     end
