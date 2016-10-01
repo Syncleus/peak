@@ -67,7 +67,7 @@ module Kiss
             new_frames = []
             read_buffer = []
             read_data = read_interface
-            while read_data&.length and read_data.length > 0
+            while read_data and read_data.length > 0
                 split_data = [[]]
                 read_data.each do |read_byte|
                     if read_byte == FEND
