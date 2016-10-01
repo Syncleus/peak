@@ -71,7 +71,7 @@ module Kiss
                 write_interface(MODE_END)
             end
 
-            if @serial == nil or @serial&.closed?
+            if @serial == nil or @serial.closed?
                 raise 'Attempting to close before the class has been started.'
             else
                 @serial.close
