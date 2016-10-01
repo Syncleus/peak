@@ -30,7 +30,11 @@ module Kiss
         protected
         def read_interface
             read_data = @serial.read(@read_bytes)
-            read_data.map { |c| c.ord }
+            if read_data
+                return read_data.map { |c| c.ord }
+            else
+                return nil
+            end
         end
 
         protected
