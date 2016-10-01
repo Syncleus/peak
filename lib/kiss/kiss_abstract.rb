@@ -18,10 +18,10 @@ module Kiss
             while frame[0] == DATA_FRAME
                 frame.shift
             end
-            while frame[0]&.chr == ' '
+            while frame[0] and frame[0].chr == ' '
                 frame.shift
             end
-            while frame[-1]&.chr == ' '
+            while frame[-1] and frame[-1].chr == ' '
                 frame.pop
             end
             frame
