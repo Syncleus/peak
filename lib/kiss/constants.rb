@@ -24,11 +24,11 @@ module Kiss
     RETURN = 0xFF
 
     DEFAULT_KISS_CONFIG_VALUES = {
-        'TX_DELAY': 40,
-        'PERSISTENCE': 63,
-        'SLOT_TIME': 20,
-        'TX_TAIL': 30,
-        'FULL_DUPLEX': 0,
+        :TX_DELAY => 40,
+        :PERSISTENCE => 63,
+        :SLOT_TIME => 20,
+        :TX_TAIL => 30,
+        :FULL_DUPLEX => 0
     }
 
     # This command will exit KISS mode
