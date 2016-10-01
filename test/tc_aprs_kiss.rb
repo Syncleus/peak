@@ -78,7 +78,6 @@ module Aprs
 
             all_raw_frames = kiss_mock.get_sent_to_interface
 
-            p all_raw_frames
             assert_equal 0, all_raw_frames.length
         end
     end
