@@ -7,10 +7,10 @@ module KISS
     TFESC = 0xDD
 
     # "FEND is sent as FESC, TFEND"
-    FESC_TFEND = [KISS::FESC] + [KISS::TFEND]
+    FESC_TFEND = [FESC] + [TFEND]
 
     # "FESC is sent as FESC, TFESC"
-    FESC_TFESC = [KISS::FESC] + [KISS::TFESC]
+    FESC_TFESC = [FESC] + [TFESC]
 
     # KISS Command Codes
     # http://en.wikipedia.org/wiki/KISS_(TNC)#Command_Codes
@@ -36,7 +36,7 @@ module KISS
 
     # This will start kiss on a WA8DED or LINK>.<NORD firmware
     MODE_INIT_W8DED = [13, 27, 64, 75, 13]
-    MODE_INIT_LINKNORD = KISS::MODE_INIT_W8DED
+    MODE_INIT_LINKNORD = MODE_INIT_W8DED
 
     # Kenwood D710
     MODE_INIT_KENWOOD_D710 = [72, 66, 32, 49, 50, 48, 48, 13, # HB 1200

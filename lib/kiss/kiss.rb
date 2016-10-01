@@ -54,14 +54,13 @@ module KISS
         end
 
         protected
-        def write_setting(name, value)
-            # TODO: Implement this
-            # return self.write_interface(
-            #         KISS::FEND +
-            #         getattr(kiss_constants, name.upper()) +
-            #         Kiss.__escape_special_codes(value) +
-            #         kiss_constants.FEND
-            # )
+        def write_setting(command, value)
+            return self.write_interface(
+                [FEND] +
+                [command] +
+                escape_special_codes(value) +
+                [FEND]
+            )
         end
 
         private
