@@ -36,8 +36,6 @@ class KissTcp(Kiss):
     logger.addHandler(console_handler)
     logger.propagate = False
 
-    frame_buffer = []
-
     def __init__(self,
                  strip_df_start=True,
                  host=None,
