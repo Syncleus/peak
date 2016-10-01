@@ -64,7 +64,6 @@ class AprsKiss(object):
     @staticmethod
     def __valid_frame(raw_frame):
         logging.debug('raw_frame=%s', raw_frame)
-        frame = {}
         frame_len = len(raw_frame)
 
         if frame_len > 16:
@@ -76,8 +75,6 @@ class AprsKiss(object):
                     if 1 < i < 11:
                         if raw_frame[raw_slice + 1] & 0x03 is 0x03 and raw_frame[raw_slice + 2] in [0xf0, 0xcf]:
                             return True
-
-        logging.debug('frame=%s', frame)
         return False
 
     @staticmethod
