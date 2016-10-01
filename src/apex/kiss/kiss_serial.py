@@ -101,11 +101,6 @@ class KissSerial(Kiss):
             for name, value in kwargs.items():
                 super(KissSerial, self)._write_setting(name, value)
 
-        # If no settings specified, default to config values similar
-        # to those that ship with Xastir.
-        # if not kwargs:
-        #    kwargs = kiss.constants.DEFAULT_KISS_CONFIG_VALUES
-
     def close(self):
         super(KissSerial, self).close()
 
