@@ -52,5 +52,33 @@ module Aprs
 
             assert_equal ENCODED_FRAME_KISS, all_raw_frames[0]
         end
+
+        def test_read_invalid
+            kiss_mock = Kiss::KissMock.new
+            aprs_kiss = AprsKiss.new(kiss_mock)
+
+            kiss_mock.clear_interface
+            kiss_mock.add_read_from_interface(ENCODED_FRAME_KISS_INVALID)
+            translated_frame = nil
+            iter_left = 1000
+            while iter_left > 0 and not translated_frame
+                translated_frame = aprs_kiss.read
+                iter_left -= 1
+            end
+
+            assert_equal nil, translated_frame
+        end
+
+        def test_write_invalid
+            kiss_mock = Kiss::KissMock.new
+            aprs_kiss = AprsKiss.new(kiss_mock)
+
+            kiss_mock.clear_interface
+            aprs_kiss.write(DECODED_FRAME_KISS_INVALID)
+
+            all_raw_frames = kiss_mock.get_sent_to_interface
+
+            assert_equal 0, all_raw_frames.length
+        end
     end
 end
