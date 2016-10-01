@@ -17,7 +17,7 @@ module Aprs
             if frame_len > 16
                 (0...frame_len - 2).each do |raw_slice|
                     # Is address field length correct?
-                    if raw_frame[raw_slice] & 0x01 and ((raw_slice + 1) % 7) == 0
+                    if raw_frame[raw_slice] & 0x01 != 0 and ((raw_slice + 1) % 7) == 0
                         i = (raw_slice.to_f + 1.0) / 7.0
                         # Less than 2 callsigns?
                         if 1.0 < i and i < 11.0
@@ -42,8 +42,8 @@ module Aprs
 
             (2...start).each do |i|
                 path = identity_as_string(extract_callsign(raw_frame[i * 7..-1]))
-                if path
-                    if raw_frame[i * 7 + 6] & 0x80
+                if path&.length
+                    if raw_frame[i * 7 + 6] & 0x80 != 0
                         full_path << [path, '*'].join
                     else
                         full_path << path
@@ -58,12 +58,13 @@ module Aprs
             callsign_as_array = raw_frame[0...6].map { |x| (x >> 1).chr }
             callsign = callsign_as_array.join.strip
             ssid = (raw_frame[6] >> 1) & 0x0f
+            ssid = (ssid == nil or ssid == 0 ? nil : ssid)
             return {:callsign => callsign, :ssid => ssid}
         end
 
         private
         def self.identity_as_string(identity)
-            if identity[:ssid]
+            if identity[:ssid] and identity[:ssid] > 0
                 return [identity[:callsign], identity[:ssid].to_s].join('-')
             else
                 return identity[:callsign]
@@ -73,11 +74,12 @@ module Aprs
         private
         def self.encode_frame(frame)
             enc_frame = encode_callsign(parse_identity_string(frame[:destination])) + encode_callsign(parse_identity_string(frame[:source]))
-            frame[:path].each do |p|
-                enc_frame += encode_callsign(parse_identity_string(p))
+
+            frame[:path].each do |path|
+                enc_frame += encode_callsign(parse_identity_string(path))
             end
 
-            return enc_frame[0..-1] + [enc_frame[-1] | 0x01] + [Kiss::SLOT_TIME] + [0xf0] + frame[:text].chars.map { |c| c.ord }
+            return enc_frame[0...-1] + [enc_frame[-1] | 0x01] + [Kiss::SLOT_TIME] + [0xf0] + frame[:text].chars.map { |c| c.ord }
         end
 
         private
