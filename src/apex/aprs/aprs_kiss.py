@@ -62,6 +62,25 @@ class AprsKiss(object):
         return frame
 
     @staticmethod
+    def __valid_frame(raw_frame):
+        logging.debug('raw_frame=%s', raw_frame)
+        frame = {}
+        frame_len = len(raw_frame)
+
+        if frame_len > 16:
+            for raw_slice in range(0, frame_len - 2):
+                # Is address field length correct?
+                if raw_frame[raw_slice] & 0x01 and ((raw_slice + 1) % 7) == 0:
+                    i = (raw_slice + 1) / 7
+                    # Less than 2 callsigns?
+                    if 1 < i < 11:
+                        if raw_frame[raw_slice + 1] & 0x03 is 0x03 and raw_frame[raw_slice + 2] in [0xf0, 0xcf]:
+                            return True
+
+        logging.debug('frame=%s', frame)
+        return False
+
+    @staticmethod
     def __extract_path(start, raw_frame):
         """Extracts path from raw APRS KISS frame.
 
@@ -193,7 +212,8 @@ class AprsKiss(object):
         """
         with self.lock:
             encoded_frame = AprsKiss.__encode_frame(frame)
-            self.data_stream.write(encoded_frame, *args, **kwargs)
+            if AprsKiss.__valid_frame(encoded_frame):
+                self.data_stream.write(encoded_frame, *args, **kwargs)
 
     def read(self, *args, **kwargs):
         """Reads APRS-encoded frame from KISS device.
