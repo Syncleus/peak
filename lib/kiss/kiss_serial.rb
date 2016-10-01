@@ -17,6 +17,7 @@ module KISS
                        read_bytes=DEFAULT_READ_BYTES,
                        strip_df_start=true)
             super(strip_df_start)
+            
             @com_port = com_port
             @baud = baud
             @parity = parity
@@ -40,6 +41,8 @@ module KISS
 
         public
         def connect(mode_init=nil, **kwargs)
+            super
+
             @serial = SerialPort.new(@com_port, @baud, @byte_size, @stop_bits, @parity)
             @serial.read_timeout = SERIAL_READ_TIMEOUT
             @serial.write_timeout = SERIAL_WRITE_TIMEOUT
@@ -61,6 +64,7 @@ module KISS
         public
         def close
             super
+
             if @exit_kiss
                 write_interface(MODE_END)
             end
