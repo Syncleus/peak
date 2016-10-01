@@ -63,7 +63,7 @@ module Aprs
 
             (2...start).each do |i|
                 path = identity_as_string(extract_callsign(raw_frame[i * 7..-1]))
-                if path&.length
+                if path and path.length > 0
                     if raw_frame[i * 7 + 6] & 0x80 != 0
                         full_path << [path, '*'].join
                     else
