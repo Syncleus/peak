@@ -17,7 +17,7 @@ module KISS
                        read_bytes=DEFAULT_READ_BYTES,
                        strip_df_start=true)
             super(strip_df_start)
-            
+
             @com_port = com_port
             @baud = baud
             @parity = parity
