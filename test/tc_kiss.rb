@@ -1,5 +1,5 @@
 require 'test/unit'
-require_relative '../lib/kiss/kiss'
+require_relative '../lib/kiss/kiss_abstract'
 
 module KISS
     # KG6WTF>S7TSUV,MTOSO-2,WIDE2*,qAR,KF6FIR-10:`17El#X-/kg6wtf@gosselinfamily.com
