@@ -1,8 +1,8 @@
 require 'serialport'
 require_relative 'kiss_abstract'
 
-module KISS
-    class KISSSerial < KISSAbstract
+module Kiss
+    class KissSerial < KissAbstract
 
         DEFAULT_READ_BYTES = 1000
         SERIAL_READ_TIMEOUT = -1
@@ -31,7 +31,7 @@ module KISS
         protected
         def read_interface
             read_data = @serial.read(@read_bytes)
-            read_data.map { |c| ord(c) }
+            read_data.map { |c| c.ord }
         end
 
         protected

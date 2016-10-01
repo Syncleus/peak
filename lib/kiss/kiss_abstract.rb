@@ -2,8 +2,8 @@ require 'thread'
 require 'abstraction'
 require_relative 'constants'
 
-module KISS
-    class KISSAbstract
+module Kiss
+    class KissAbstract
         abstract
 
         protected
@@ -113,7 +113,7 @@ module KISS
             new_frames.each do |new_frame|
                 if new_frame.length > 0 and new_frame[0] == 0
                     if @strip_df_start
-                        new_frame = KISSAbstract.strip_df_start(new_frame)
+                        new_frame = KissAbstract.strip_df_start(new_frame)
                     end
                     @frame_buffer << new_frame
                 end
@@ -129,7 +129,7 @@ module KISS
         end
 
         public
-        def read
+        def read(*args, **kwargs)
             @lock.synchronize do
                 if @frame_buffer.length == 0
                     fill_buffer
@@ -146,10 +146,10 @@ module KISS
         end
 
         public
-        def write(frame_bytes, port=0)
+        def write(frame_bytes, port=0, *args, **kwargs)
             @lock.synchronize do
-                kiss_packet = [FEND] + [KISSAbstract.command_byte_combine(port, DATA_FRAME)] +
-                    KISSAbstract.escape_special_codes(frame_bytes) + [FEND]
+                kiss_packet = [FEND] + [KissAbstract.command_byte_combine(port, DATA_FRAME)] +
+                    KissAbstract.escape_special_codes(frame_bytes) + [FEND]
 
                 write_interface(kiss_packet)
             end

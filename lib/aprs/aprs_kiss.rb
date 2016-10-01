@@ -1,7 +1,7 @@
 require_relative '../kiss/constants'
 
-module APRS
-    class APRSKiss
+module Aprs
+    class AprsKiss
 
         protected
         def initialize(data_stream)
@@ -20,13 +20,13 @@ module APRS
                     if raw_frame[raw_slice] & 0x01 and ((raw_slice + 1) % 7) == 0
                         i = (raw_slice.to_f + 1.0) / 7.0
                         # Less than 2 callsigns?
-                        if 1.0 < i < 11.0
+                        if 1.0 < i and i < 11.0
                             if raw_frame[raw_slice + 1] & 0x03 == 0x03 and [0xf0, 0xcf].include? raw_frame[raw_slice + 2]
-                                text_as_array = raw_frame[raw_slice + 3..-1].map { |b| chr(b) }
-                                frame['text'] = text_as_array.join
-                                frame['destination'] = identity_as_string(extract_callsign(raw_frame))
-                                frame['source'] = identity_as_string(__extract_callsign(raw_frame[7..-1]))
-                                frame['path'] = extract_path(i.to_i, raw_frame)
+                                text_as_array = raw_frame[raw_slice + 3..-1].map { |b| b.chr }
+                                frame[:text] = text_as_array.join
+                                frame[:destination] = identity_as_string(extract_callsign(raw_frame))
+                                frame[:source] = identity_as_string(extract_callsign(raw_frame[7..-1]))
+                                frame[:path] = extract_path(i.to_i, raw_frame)
                                 return frame
                             end
                         end
@@ -55,36 +55,36 @@ module APRS
 
         private
         def self.extract_callsign(raw_frame)
-            callsign_as_array = raw_frame[0...6].map { |x| chr(x >> 1) }
+            callsign_as_array = raw_frame[0...6].map { |x| (x >> 1).chr }
             callsign = callsign_as_array.join.strip
             ssid = (raw_frame[6] >> 1) & 0x0f
-            return {'callsign': callsign, 'ssid': ssid}
+            return {:callsign => callsign, :ssid => ssid}
         end
 
         private
         def self.identity_as_string(identity)
-            if identity['ssid'] > 0
-                return [identity['callsign'], identity['ssid'].to_s].join('-')
+            if identity[:ssid]
+                return [identity[:callsign], identity[:ssid].to_s].join('-')
             else
-                return identity['callsign']
+                return identity[:callsign]
             end
         end
 
         private
         def self.encode_frame(frame)
-            enc_frame = encode_callsign(parse_identity_string(frame['destination'])) + encode_callsign(parse_identity_string(frame['source']))
-            frame['path'].each do |p|
+            enc_frame = encode_callsign(parse_identity_string(frame[:destination])) + encode_callsign(parse_identity_string(frame[:source]))
+            frame[:path].each do |p|
                 enc_frame += encode_callsign(parse_identity_string(p))
             end
 
-            return enc_frame[0..-1] + [enc_frame[-1] | 0x01] + [KISS::SLOT_TIME] + [0xf0] + frame['text'].map { |c| ord(c) }
+            return enc_frame[0..-1] + [enc_frame[-1] | 0x01] + [Kiss::SLOT_TIME] + [0xf0] + frame[:text].chars.map { |c| c.ord }
         end
 
         private
         def self.encode_callsign(callsign)
-            call_sign = callsign['callsign']
+            call_sign = callsign[:callsign]
 
-            enc_ssid = (callsign['ssid'] << 1) | 0x60
+            enc_ssid = (callsign[:ssid] << 1) | 0x60
 
             if call_sign.include? '*'
                 call_sign.gsub!(/\*/,'')
@@ -95,7 +95,7 @@ module APRS
                 call_sign = [call_sign, ' '].join
             end
 
-            return call_sign.map { |p| ord(p) << 1 } + [enc_ssid]
+            return call_sign.chars.map { |p| p.ord << 1 } + [enc_ssid]
         end
 
         private
@@ -112,7 +112,7 @@ module APRS
                 ssid = 0
             end
 
-            return {'callsign': call_sign, 'ssid': int(ssid)}
+            return {:callsign => call_sign, :ssid => ssid.to_i}
         end
 
         public
@@ -126,22 +126,22 @@ module APRS
         end
 
         public
-        def write(frame, *args, **kwargs)
-            @lock.synchronize do
-                encoded_frame = encode_frame(frame)
-                @data_stream.write(encoded_frame, *args, **kwargs)
-            end
-        end
-
-        public
         def read(*args, **kwargs)
             @lock.synchronize do
                 frame = @data_stream.read(*args, **kwargs)
                 if frame&.length
-                    return decode_frame(frame)
+                    return AprsKiss.decode_frame(frame)
                 else
                     return nil
                 end
+            end
+        end
+
+        public
+        def write(frame, *args, **kwargs)
+            @lock.synchronize do
+                encoded_frame = AprsKiss.encode_frame(frame)
+                @data_stream.write(encoded_frame, *args, **kwargs)
             end
         end
     end

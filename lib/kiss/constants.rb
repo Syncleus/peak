@@ -1,4 +1,4 @@
-module KISS
+module Kiss
     # KISS Special Characters
     # http://en.wikipedia.org/wiki/KISS_(TNC)#Special_Characters
     FEND = 0xC0
