@@ -33,7 +33,28 @@ module Aprs
                     end
                 end
             end
-            frame
+            return nil
+        end
+
+        private
+        def self.valid_frame(raw_frame)
+            frame_len = raw_frame.length
+
+            if frame_len > 16
+                (0...frame_len - 2).each do |raw_slice|
+                    # Is address field length correct?
+                    if raw_frame[raw_slice] & 0x01 != 0 and ((raw_slice + 1) % 7) == 0
+                        i = (raw_slice.to_f + 1.0) / 7.0
+                        # Less than 2 callsigns?
+                        if 1.0 < i and i < 11.0
+                            if raw_frame[raw_slice + 1] & 0x03 == 0x03 and [0xf0, 0xcf].include? raw_frame[raw_slice + 2]
+                                return true
+                            end
+                        end
+                    end
+                end
+            end
+            return false
         end
 
         private
@@ -143,7 +164,9 @@ module Aprs
         def write(frame, *args, **kwargs)
             @lock.synchronize do
                 encoded_frame = AprsKiss.encode_frame(frame)
-                @data_stream.write(encoded_frame, *args, **kwargs)
+                if AprsKiss.valid_frame(encoded_frame)
+                    @data_stream.write(encoded_frame, *args, **kwargs)
+                end
             end
         end
     end
