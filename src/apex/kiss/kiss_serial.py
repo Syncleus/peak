@@ -92,6 +92,8 @@ class KissSerial(Kiss):
         if mode_init is not None:
             self.serial.write(mode_init)
             self.exit_kiss = True
+        else:
+            self.exit_kiss = False
 
         # Previous verious defaulted to Xastir-friendly configs. Unfortunately
         # those don't work with Bluetooth TNCs, so we're reverting to None.
