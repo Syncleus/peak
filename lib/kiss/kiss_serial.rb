@@ -6,7 +6,6 @@ module Kiss
 
         DEFAULT_READ_BYTES = 1000
         SERIAL_READ_TIMEOUT = -1
-        SERIAL_WRITE_TIMEOUT = 1000
 
         protected
         def initialize(com_port,
@@ -45,7 +44,6 @@ module Kiss
 
             @serial = SerialPort.new(@com_port, @baud, @byte_size, @stop_bits, @parity)
             @serial.read_timeout = SERIAL_READ_TIMEOUT
-            @serial.write_timeout = SERIAL_WRITE_TIMEOUT
 
             if mode_init
                 @serial.write(mode_init)
