@@ -81,7 +81,7 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
         """
         Tests encoding a callsign.
         """
-        encoded_callsign = apex.aprs.Aprs._Aprs__encode_callsign(DECODED_CALLSIGN)
+        encoded_callsign = apex.aprs.AprsKiss._AprsKiss__encode_callsign(DECODED_CALLSIGN)
         self.assertEqual(ENCODED_CALLSIGN, encoded_callsign)
 
     def test_encode_callsign_digipeated(self):
@@ -89,70 +89,70 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
         Tests encoding a digipeated callsign with
         `aprs.util.encode_callsign()`.
         """
-        encoded_callsign = apex.aprs.Aprs._Aprs__encode_callsign(DECODED_CALLSIGN_DIGIPEATED)
+        encoded_callsign = apex.aprs.AprsKiss._AprsKiss__encode_callsign(DECODED_CALLSIGN_DIGIPEATED)
         self.assertEqual(ENCODED_CALLSIGN_DIGIPEATED, encoded_callsign)
 
     def test_decode_callsign(self):
         """
         Tests extracting the callsign from a KISS-encoded APRS frame.
         """
-        decoded_callsign = apex.aprs.Aprs._Aprs__extract_callsign(ENCODED_CALLSIGN)
+        decoded_callsign = apex.aprs.AprsKiss._AprsKiss__extract_callsign(ENCODED_CALLSIGN)
         self.assertEqual(DECODED_CALLSIGN, decoded_callsign)
 
     def test_decode_callsign_digipeated(self):
         """
         Tests extracting the callsign from a KISS-encoded APRS frame.
         """
-        decoded_callsign = apex.aprs.Aprs._Aprs__extract_callsign(ENCODED_CALLSIGN_DIGIPEATED)
+        decoded_callsign = apex.aprs.AprsKiss._AprsKiss__extract_callsign(ENCODED_CALLSIGN_DIGIPEATED)
         self.assertEqual(DECODED_CALLSIGN, decoded_callsign)
 
     def test_encode_frame(self):
         """
         Tests KISS-encoding an APRS.
         """
-        encoded_frame = apex.aprs.Aprs._Aprs__encode_frame(DECODED_FRAME)
+        encoded_frame = apex.aprs.AprsKiss._AprsKiss__encode_frame(DECODED_FRAME)
         self.assertEqual(ENCODED_FRAME, encoded_frame)
 
     def test_encode_frame_recorded(self):
         """
         Tests encoding a KISS-encoded APRS.
         """
-        encoded_frame = apex.aprs.Aprs._Aprs__encode_frame(DECODED_FRAME_RECORDED)
+        encoded_frame = apex.aprs.AprsKiss._AprsKiss__encode_frame(DECODED_FRAME_RECORDED)
         self.assertEqual(ENCODED_FRAME_RECORDED, encoded_frame)
 
     def test_encode_frame_multipath(self):
         """
         Tests encoding a KISS-encoded APRS.
         """
-        encoded_frame = apex.aprs.Aprs._Aprs__encode_frame(DECODED_FRAME_MULTIPATH)
+        encoded_frame = apex.aprs.AprsKiss._AprsKiss__encode_frame(DECODED_FRAME_MULTIPATH)
         self.assertEqual(ENCODED_FRAME_MULTIPATH, encoded_frame)
 
     def test_decode_frame(self):
         """
         Tests KISS-encoding an APRS
         """
-        decoded_frame = apex.aprs.Aprs._Aprs__decode_frame(ENCODED_FRAME)
+        decoded_frame = apex.aprs.AprsKiss._AprsKiss__decode_frame(ENCODED_FRAME)
         self.assertEqual(DECODED_FRAME, decoded_frame)
 
     def test_decode_frame_recorded(self):
         """
         Tests decoding a KISS-encoded APRS frame
         """
-        decoded_frame = apex.aprs.Aprs._Aprs__decode_frame(ENCODED_FRAME_RECORDED)
+        decoded_frame = apex.aprs.AprsKiss._AprsKiss__decode_frame(ENCODED_FRAME_RECORDED)
         self.assertEqual(DECODED_FRAME_RECORDED, decoded_frame)
 
     def test_decode_frame_multipath(self):
         """
         Tests decoding a KISS-encoded APRS frame
         """
-        decoded_frame = apex.aprs.Aprs._Aprs__decode_frame(ENCODED_FRAME_MULTIPATH)
+        decoded_frame = apex.aprs.AprsKiss._AprsKiss__decode_frame(ENCODED_FRAME_MULTIPATH)
         self.assertEqual(DECODED_FRAME_MULTIPATH, decoded_frame)
 
     def test_extract_path(self):
         """
         Tests extracting the APRS path from a KISS-encoded.
         """
-        extracted_path = apex.aprs.Aprs._Aprs__extract_path(3, ENCODED_FRAME)
+        extracted_path = apex.aprs.AprsKiss._AprsKiss__extract_path(3, ENCODED_FRAME)
         self.assertEqual(DECODED_FRAME['path'][0], extracted_path[0])
 
     def test_idwentity_as_string_with_ssid(self):
@@ -164,7 +164,7 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
             'callsign': 'W2GMD',
             'ssid': 1
         }
-        full_callsign = apex.aprs.Aprs._Aprs__identity_as_string(callsign)
+        full_callsign = apex.aprs.AprsKiss._AprsKiss__identity_as_string(callsign)
         self.assertEqual(full_callsign, 'W2GMD-1')
 
     def test_identity_as_string_sans_ssid(self):
@@ -176,7 +176,7 @@ class AprsTest(unittest.TestCase):  # pylint: disable=R0904
             'callsign': 'W2GMD',
             'ssid': 0
         }
-        full_callsign = apex.aprs.Aprs._Aprs__identity_as_string(callsign)
+        full_callsign = apex.aprs.AprsKiss._AprsKiss__identity_as_string(callsign)
         self.assertEqual(full_callsign, 'W2GMD')
 
     if six.PY2:
