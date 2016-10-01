@@ -56,8 +56,10 @@ module Kiss
 
             # Previous verious defaulted to Xastir-friendly configs. Unfortunately
             # those don't work with Bluetooth TNCs, so we're reverting to None.
-            kwargs&.each do |name,value|
-                write_setting(name, value)
+            if kwargs
+                kwargs.each do |name,value|
+                    write_setting(name, value)
+                end
             end
         end
 
