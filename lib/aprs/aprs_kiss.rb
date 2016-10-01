@@ -152,7 +152,7 @@ module Aprs
         def read(*args, **kwargs)
             @lock.synchronize do
                 frame = @data_stream.read(*args, **kwargs)
-                if frame&.length
+                if frame and frame.length > 0
                     return AprsKiss.decode_frame(frame)
                 else
                     return nil
