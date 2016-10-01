@@ -12,7 +12,7 @@ module KISS
                      88, 45, 47, 107, 103, 54, 119, 116, 102, 64, 103, 111, 115, 115, 101, 108, 105, 110, 102, 97, 109,
                      105, 108, 121, 46, 99, 111, 109]
     
-    class KISSMock < KISS
+    class KISSMock < KISSAbstract
         
         def initialize(strip_df_start=true)
             super(strip_df_start)
@@ -66,7 +66,7 @@ module KISS
         end
 
         def test_new_abstract_kiss
-            assert_raise(AbstractClassError) { KISS.new }
+            assert_raise(AbstractClassError) { KISSAbstract.new }
         end
     end
 end

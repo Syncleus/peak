@@ -35,5 +35,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 11.3.0'
   spec.add_development_dependency 'rdoc'
   spec.add_development_dependency 'aruba'
+  spec.add_development_dependency 'serialport'
   spec.add_dependency 'methadone'
 end

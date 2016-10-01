@@ -3,13 +3,12 @@ require 'abstraction'
 require_relative 'constants'
 
 module KISS
-    class KISS
+    class KISSAbstract
         abstract
 
         protected
-        def initialize(strip_df_start=true, exit_kiss=true)
+        def initialize(strip_df_start=true)
             @strip_df_start = strip_df_start
-            @exit_kiss = exit_kiss
             @frame_buffer = []
             @lock = Mutex.new
         end
@@ -25,7 +24,7 @@ module KISS
             while frame[-1]&.chr == ' '
                 frame.pop
             end
-            return frame
+            frame
         end
 
         private
@@ -40,7 +39,7 @@ module KISS
                     encoded_bytes += [raw_code_byte]
                 end
             end
-            return encoded_bytes
+            encoded_bytes
         end
 
         private
@@ -50,12 +49,12 @@ module KISS
             elsif command_code > 127 or command_code < 0
                 raise 'command_Code out of range'
             end
-            return (port << 4) & command_code
+            (port << 4) & command_code
         end
 
         protected
         def write_setting(command, value)
-            return self.write_interface(
+            write_interface(
                 [FEND] +
                 [command] +
                 escape_special_codes(value) +
@@ -114,7 +113,7 @@ module KISS
             new_frames.each do |new_frame|
                 if new_frame.length > 0 and new_frame[0] == 0
                     if @strip_df_start
-                        new_frame = KISS.strip_df_start(new_frame)
+                        new_frame = KISSAbstract.strip_df_start(new_frame)
                     end
                     @frame_buffer << new_frame
                 end
@@ -127,9 +126,6 @@ module KISS
 
         public
         def close
-            if @exit_kiss
-                write_interface(MODE_END)
-            end
         end
 
         public
@@ -152,10 +148,10 @@ module KISS
         public
         def write(frame_bytes, port=0)
             @lock.synchronize do
-                kiss_packet = [FEND] + [KISS.command_byte_combine(port, DATA_FRAME)] +
-                    KISS.escape_special_codes(frame_bytes) + [FEND]
+                kiss_packet = [FEND] + [KISSAbstract.command_byte_combine(port, DATA_FRAME)] +
+                    KISSAbstract.escape_special_codes(frame_bytes) + [FEND]
 
-                return write_interface(kiss_packet)
+                write_interface(kiss_packet)
             end
         end
     end
