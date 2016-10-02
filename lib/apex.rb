@@ -4,7 +4,7 @@ require 'aprs/aprs_kiss'
 require 'apex/app_info'
 
 module Apex
-    def self.echo_color_frame(frame, direction_in)
+    def self.echo_color_frame(frame, port_name, direction_in)
         formatted_aprs = [frame[:source].colorize(:green), frame[:destination].colorize(:blue)].join('>')
         paths = []
         frame[:path].each do |path|
@@ -34,7 +34,7 @@ module Apex
         while true
             frame = aprs_kiss.read
             if frame
-                echo_color_frame(frame, true)
+                echo_color_frame(frame, 'TNC',  true)
             else
                 sleep(1)
             end
