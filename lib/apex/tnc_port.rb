@@ -9,7 +9,7 @@ module Apex
             @name = name
             @identifier = identifier
             @net = net
-            @ech_frames = echo_frames
+            @echo_frames = echo_frames
         end
 
         public
