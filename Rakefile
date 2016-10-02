@@ -26,7 +26,7 @@ end
 
 gem 'json', '~> 1.8.3'
 
-gem 'bundler', '~> 1.13'
+gem 'bundler', '~> 1.7'
 require 'bundler'
 
 gem 'rake', '~> 11.3.0'
