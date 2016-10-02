@@ -1,4 +1,5 @@
 require 'yaml'
+require 'apex/tnc_port'
 
 module Apex
     def self.find_config(verbose, config_paths=[])
