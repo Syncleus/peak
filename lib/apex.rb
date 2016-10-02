@@ -29,6 +29,13 @@ module Apex
         aprs_kiss = Aprs::AprsKiss.new(kiss)
         aprs_kiss.connect(Kiss::MODE_INIT_KENWOOD_D710)
 
+        beacon_frame = {:source => 'WI2ARD-2',
+                        :destination => 'APRS',
+                        :path => ['WIDE1-1', 'WIDE2-2'],
+                        :text => '!/:=i@;N.G& --PHG5790/G/D R-I-R H24 C30'}
+        aprs_kiss.write(beacon_frame)
+        echo_color_frame(beacon_frame, 'TNC', false)
+
         while true
             frame = aprs_kiss.read
             if frame
