@@ -29,6 +29,7 @@ module Apex
         aprs_kiss = Aprs::AprsKiss.new(kiss)
         aprs_kiss.connect(Kiss::MODE_INIT_KENWOOD_D710)
 
+        # Transmit a beacon when we first start
         beacon_frame = {:source => 'WI2ARD-2',
                         :destination => 'APRS',
                         :path => ['WIDE1-1', 'WIDE2-2'],
@@ -36,6 +37,7 @@ module Apex
         aprs_kiss.write(beacon_frame)
         echo_color_frame(beacon_frame, 'TNC', false)
 
+        # Display any packets we read in.
         while true
             frame = aprs_kiss.read
             if frame
