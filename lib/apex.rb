@@ -1,4 +1,7 @@
 require 'colorize'
+require 'dir'
+require 'path'
+require 'yaml'
 require 'kiss/kiss_serial'
 require 'aprs/aprs_kiss'
 require 'apex/app_info'
@@ -14,6 +17,31 @@ module Apex
         plugins.each do |plugin|
             require plugin
         end
+    end
+    def self.file_exists(file_name)
+        path = Path.new(file_name)
+        return path.exist?
+    end
+
+    def find_config(verbose, config_paths=[])
+        config_file = 'apex.conf'
+        rc_file = '.apexrc'
+        cur_path = config_file
+        home_path = File.join(Dir.home, rc_file)
+        etc_path = File.join('', 'etc', config_file)
+        config_paths = [cur_path, home_path, etc_path] + config_paths
+
+        if verbose
+            puts 'Searching for configuration file in the following locations: ' + config_paths
+        end
+
+        config_paths.each do |config_path|
+            if file_exists(config_path)
+                return YAML::load_file(config_path)
+            end
+        end
+
+        return nil
     end
 
     def self.echo_color_frame(frame, port_name, direction_in)
@@ -36,7 +64,18 @@ module Apex
         end
     end
 
+    def self.echo_colorized_error(text)
+        puts 'Error: '.colorize(:color => :red, :mode => [:bold, :blink]) + text.colorize(:bold)
+    end
+
+    def self.echo_colorized_warning(text)
+        puts 'Warning: '.colorize(:color => :yellow) + text
+    end
+
     def self.main
+        config = find_config(true)
+        p config
+        
         kiss = Kiss::KissSerial.new('/dev/ttyUSB1', 9600)
         aprs_kiss = Aprs::AprsKiss.new(kiss)
         aprs_kiss.connect(Kiss::MODE_INIT_KENWOOD_D710)
