@@ -3,18 +3,21 @@ require 'yaml'
 require 'kiss/kiss_serial'
 require 'aprs/aprs_kiss'
 require 'apex/app_info'
+require 'apex/plugins/plugin_factory'
 
 module Apex
-    plugin_modules = %w(apex/plugins/apexparadigm apex/plugins/beacon apex/plugins/id apex/plugins/status)
+    # BUILTIN_PLUGINS = %w(apex/plugins/apexparadigm apex/plugins/beacon apex/plugins/id apex/plugins/status)
+    BUILTIN_PLUGINS = %w(apex/plugins/beacon)
 
     def self.all_plugins(extra_plugins=[])
-        return plugin_modules + extra_plugins
+        return BUILTIN_PLUGINS + extra_plugins
     end
 
-    def self.load_plutins(plugins)
+    def self.load_plugins(plugins=BUILTIN_PLUGINS)
         plugins.each do |plugin|
             require plugin
         end
+        return Plugins::PluginFactory.get_registered_plugins
     end
 
     def self.find_config(verbose, config_paths=[])
@@ -69,6 +72,14 @@ module Apex
     def self.main
         config = find_config(true)
         p config
+        
+        activated_plugins = []
+        plugins = load_plugins
+        plugins.each do |plugin|
+            activated_plugin = plugin.new(nil, nil, nil)
+            activated_plugins << activated_plugin
+            activated_plugin.run
+        end
 
         kiss = Kiss::KissSerial.new('/dev/ttyUSB1', 9600)
         aprs_kiss = Aprs::AprsKiss.new(kiss)
