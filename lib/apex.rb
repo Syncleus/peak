@@ -1,6 +1,4 @@
 require 'colorize'
-require 'dir'
-require 'path'
 require 'yaml'
 require 'kiss/kiss_serial'
 require 'aprs/aprs_kiss'
@@ -18,12 +16,8 @@ module Apex
             require plugin
         end
     end
-    def self.file_exists(file_name)
-        path = Path.new(file_name)
-        return path.exist?
-    end
 
-    def find_config(verbose, config_paths=[])
+    def self.find_config(verbose, config_paths=[])
         config_file = 'apex.conf'
         rc_file = '.apexrc'
         cur_path = config_file
@@ -32,11 +26,11 @@ module Apex
         config_paths = [cur_path, home_path, etc_path] + config_paths
 
         if verbose
-            puts 'Searching for configuration file in the following locations: ' + config_paths
+            puts 'Searching for configuration file in the following locations: ' + config_paths.inspect
         end
 
         config_paths.each do |config_path|
-            if file_exists(config_path)
+            if File.file?(config_path)
                 return YAML::load_file(config_path)
             end
         end
@@ -75,7 +69,7 @@ module Apex
     def self.main
         config = find_config(true)
         p config
-        
+
         kiss = Kiss::KissSerial.new('/dev/ttyUSB1', 9600)
         aprs_kiss = Aprs::AprsKiss.new(kiss)
         aprs_kiss.connect(Kiss::MODE_INIT_KENWOOD_D710)

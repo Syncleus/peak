@@ -22,9 +22,9 @@ PORT KENWOOD-1:
   tnc_port: 0
   beacon_path: [WIDE1-1, WIDE2-2]
   status_path: [WIDE1-1, WIDE2-2]
-  beacon_text: !/:=i@;N.G& --PHG5790/G/D R-I-R H24 C30
-  status_text: >Listening on 146.52Mhz http://JeffreyFreeman.me
-  id_text: WI2ARD/30M1 GATE/2M1 WI2ARD-1/2M1 WIDEN-n IGATE
+  beacon_text: '!/:=i@;N.G& --PHG5790/G/D R-I-R H24 C30'
+  status_text: '>Listening on 146.52Mhz http://JeffreyFreeman.me'
+  id_text: 'WI2ARD/30M1 GATE/2M1 WI2ARD-1/2M1 WIDEN-n IGATE'
   id_path: [WIDE1-1, WIDE2-2]
 
 PORT RPR-1:
@@ -33,9 +33,9 @@ PORT RPR-1:
   tnc_port: 0
   beacon_path: [WIDE1-1]
   status_path: [WIDE1-1]
-  beacon_text: !/:=i@;N.G& --PHG5210/G/D R-I-R H24 C1
-  status_text: >Robust Packet Radio http://JeffreyFreeman.me
-  id_text: WI2ARD/30M1 GATE/2M1 WI2ARD-1/2M1 WIDEN-n IGATE
+  beacon_text: '!/:=i@;N.G& --PHG5210/G/D R-I-R H24 C1'
+  status_text: '>Robust Packet Radio http://JeffreyFreeman.me'
+  id_text: 'WI2ARD/30M1 GATE/2M1 WI2ARD-1/2M1 WIDEN-n IGATE'
   id_path: [WIDE1-1]
 
 IGATE:
