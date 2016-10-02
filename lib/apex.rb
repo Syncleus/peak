@@ -4,6 +4,18 @@ require 'aprs/aprs_kiss'
 require 'apex/app_info'
 
 module Apex
+    plugin_modules = %w(apex/plugins/apexparadigm apex/plugins/beacon apex/plugins/id apex/plugins/status)
+
+    def self.all_plugins(extra_plugins=[])
+        return plugin_modules + extra_plugins
+    end
+
+    def self.load_plutins(plugins)
+        plugins.each do |plugin|
+            require plugin
+        end
+    end
+
     def self.echo_color_frame(frame, port_name, direction_in)
         formatted_aprs = [frame[:source].colorize(:green), frame[:destination].colorize(:blue)].join('>')
         paths = []
