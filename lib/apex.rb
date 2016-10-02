@@ -20,10 +20,8 @@ module Apex
             puts (port_name + ' << ').colorize(:magenta) + formatted_aprs
         else
             # TODO : make this bold and/or blink
-            puts (port_name + ' >> ').colorize(:magenta) + formatted_aprs
+            puts (port_name + ' >> ').colorize(:magenta).bold.blink + formatted_aprs
         end
-        puts String.modes
-        puts String.colors
     end
 
     def self.main
