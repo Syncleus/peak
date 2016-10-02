@@ -32,8 +32,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rdoc'
   spec.add_development_dependency 'aruba'
-  spec.add_dependency 'abstraction', '~> 0.0.4'
-  spec.add_dependency 'json', '~> 1.8.3'
+  spec.add_dependency 'abstraction'
+  spec.add_dependency 'json'
   spec.add_dependency 'serialport'
   spec.add_dependency 'methadone'
 end
