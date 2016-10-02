@@ -10,17 +10,20 @@ module Apex
         frame[:path].each do |path|
             paths << path.colorize(:cyan)
         end
-        paths = ','.join(paths)
-        if frame['path']
-            formatted_aprs = ','.join([formatted_aprs, paths])
+        paths = paths.join(',')
+        if frame[:path] and frame[:path].length > 0
+            formatted_aprs = [formatted_aprs, paths].join(',')
         end
         formatted_aprs += ':'
-        formatted_aprs += frame['text']
+        formatted_aprs += frame[:text]
         if direction_in
-            click.echo(click.style(port_name + ' << ', fg='magenta') + formatted_aprs)
+            puts (port_name + ' << ').colorize(:magenta) + formatted_aprs
         else
-            click.echo(click.style(port_name + ' >> ', fg='magenta', bold=True, blink=True) + formatted_aprs)
+            # TODO : make this bold and/or blink
+            puts (port_name + ' >> ').colorize(:magenta) + formatted_aprs
         end
+        puts String.modes
+        puts String.colors
     end
 
     def self.main
@@ -31,7 +34,7 @@ module Apex
         while true
             frame = aprs_kiss.read
             if frame
-                echo_color_frame(frame)
+                echo_color_frame(frame, true)
             else
                 sleep(1)
             end
