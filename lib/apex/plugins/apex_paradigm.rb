@@ -1,27 +1,27 @@
 module Apex
     module Plugins
-        class Beacon
+        class ApexParadigm
             protected
             def initialize(config, port_map, aprsis)
-                puts 'beacon inited'
+                puts 'ApexParadigm inited'
             end
             
             public
             def run
-                puts 'beacon ran'
+                puts 'ApexParadigm ran'
             end
             
             public
             def stop
-                puts 'beacon stop'
+                puts 'ApexParadigm stop'
             end
             
             public
             def handle_packet(frame, recv_port, recv_port_name)
-                puts 'Beacon handled packet'
+                puts 'ApexParadigm handled packet'
             end
         end
 
-        PluginFactory.register_plugin(Beacon)
+        PluginFactory.register_plugin(ApexParadigm)
     end
 end

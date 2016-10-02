@@ -6,8 +6,7 @@ require 'apex/app_info'
 require 'apex/plugins/plugin_factory'
 
 module Apex
-    # BUILTIN_PLUGINS = %w(apex/plugins/apexparadigm apex/plugins/beacon apex/plugins/id apex/plugins/status)
-    BUILTIN_PLUGINS = %w(apex/plugins/beacon)
+    BUILTIN_PLUGINS = %w(apex/plugins/apex_paradigm apex/plugins/beacon apex/plugins/id apex/plugins/status)
 
     def self.all_plugins(extra_plugins=[])
         return BUILTIN_PLUGINS + extra_plugins

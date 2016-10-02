@@ -1,27 +1,27 @@
 module Apex
     module Plugins
-        class Beacon
+        class Status
             protected
             def initialize(config, port_map, aprsis)
-                puts 'beacon inited'
+                puts 'Status inited'
             end
             
             public
             def run
-                puts 'beacon ran'
+                puts 'Status ran'
             end
             
             public
             def stop
-                puts 'beacon stop'
+                puts 'Status stop'
             end
             
             public
             def handle_packet(frame, recv_port, recv_port_name)
-                puts 'Beacon handled packet'
+                puts 'Status handled packet'
             end
         end
 
-        PluginFactory.register_plugin(Beacon)
+        PluginFactory.register_plugin(Status)
     end
 end
