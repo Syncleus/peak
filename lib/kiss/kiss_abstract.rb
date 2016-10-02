@@ -1,6 +1,6 @@
 require 'thread'
 require 'abstraction'
-require_relative 'constants'
+require 'kiss/constants'
 
 module Kiss
     class KissAbstract

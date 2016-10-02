@@ -1,5 +1,5 @@
 require 'serialport'
-require_relative 'kiss_abstract'
+require 'kiss/kiss_abstract'
 
 module Kiss
     class KissSerial < KissAbstract

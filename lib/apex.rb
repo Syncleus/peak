@@ -1,5 +1,5 @@
-require_relative 'kiss/kiss_serial'
-require_relative 'aprs/aprs_kiss'
+require 'kiss/kiss_serial'
+require 'aprs/aprs_kiss'
 
 module Apex
     VERSION = "0.0.1"

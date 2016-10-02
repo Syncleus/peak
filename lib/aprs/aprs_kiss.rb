@@ -1,4 +1,4 @@
-require_relative '../kiss/constants'
+require 'kiss/constants'
 
 module Aprs
     class AprsKiss
