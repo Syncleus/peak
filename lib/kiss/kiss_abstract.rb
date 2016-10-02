@@ -54,12 +54,7 @@ module Kiss
 
         protected
         def write_setting(command, value)
-            write_interface(
-                [FEND] +
-                [command] +
-                escape_special_codes(value) +
-                [FEND]
-            )
+            write_interface([FEND] + [command] + escape_special_codes(value) + [FEND])
         end
 
         private
@@ -81,19 +76,19 @@ module Kiss
                 # No FEND in frame
                 if len_fend == 1
                     read_buffer += split_data[0]
-                # Single FEND in frame
+                    # Single FEND in frame
                 elsif len_fend == 2
                     # Closing FEND found
                     if split_data[0]
                         # Partial frame continued, otherwise drop
                         new_frames << read_buffer + split_data[0]
                         read_buffer = []
-                    # Opening FEND found
+                        # Opening FEND found
                     else
                         new_frames << read_buffer
                         read_buffer = split_data[1]
                     end
-                # At least one complete frame received
+                    # At least one complete frame received
                 elsif len_fend >= 3
                     (0...len_fend - 1).each do |i|
                         read_buffer_tmp = read_buffer + split_data[i]
@@ -109,7 +104,7 @@ module Kiss
                 # Get anymore data that is waiting
                 read_data = read_interface
             end
-            
+
             new_frames.each do |new_frame|
                 if new_frame.length > 0 and new_frame[0] == 0
                     if @strip_df_start

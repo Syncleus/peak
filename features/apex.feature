@@ -9,10 +9,10 @@ Feature: My bootstrapped app kinda works
     And the banner should be present
     And the banner should document that this app takes options
     And the following options should be documented:
-      |--version|
-      |--[no]-switch|
-      |--flag|
+      | --version     |
+      | --[no]-switch |
+      | --flag        |
     And the banner should document that this app's arguments are:
-      |needed|which is required|
-      |maybe|which is optional|
+      | needed | which is required |
+      | maybe  | which is optional |
     And there should be a one line summary of what the app does

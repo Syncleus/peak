@@ -110,7 +110,7 @@ module Aprs
             enc_ssid = (callsign[:ssid] << 1) | 0x60
 
             if call_sign.include? '*'
-                call_sign.gsub!(/\*/,'')
+                call_sign.gsub!(/\*/, '')
                 enc_ssid |= 0x80
             end
 
