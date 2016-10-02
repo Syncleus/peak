@@ -10,7 +10,14 @@ module Apex
 
     def self.main
         config = find_config(true)
+        puts 'config:'
         p config
+        puts
+        
+        puts 'port_map:'
+        port_map = init_port_map(config)
+        p port_map
+        puts
         
         activated_plugins = []
         plugins = load_plugins
