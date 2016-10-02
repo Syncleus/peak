@@ -25,7 +25,7 @@ module Apex
         public
         def read(*args, **kwargs)
             read_frame = @data_stream.read(*args, **kwargs)
-            if @echo_frames
+            if @echo_frames and read_frame
                 Apex::echo_color_frame(read_frame, @name, true)
             end
             return read_frame
@@ -34,7 +34,7 @@ module Apex
         public
         def write(frame, *args, **kwargs)
             @data_stream.write(frame, @port, *args, **kwargs)
-            if @echo_frames
+            if @echo_frames and frame
                 Apex::echo_color_frame(frame, @name, false)
             end
         end
