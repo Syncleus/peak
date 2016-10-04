@@ -18,7 +18,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install apex
+    $ gem install peak
 
 ## Usage
 
@@ -32,5 +32,5 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/Syncleus/apex-ruby.
+Bug reports and pull requests are welcome on GitHub at https://github.com/Syncleus/peak.
 
