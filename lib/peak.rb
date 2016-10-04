@@ -1,12 +1,12 @@
 require 'kiss/kiss_serial'
 require 'aprs/aprs_kiss'
-require 'apex/app_info'
-require 'apex/plugins/plugin_factory'
-require 'apex/echo'
-require 'apex/config_loader'
-require 'apex/plugin_loader'
+require 'peak/app_info'
+require 'peak/plugins/plugin_factory'
+require 'peak/echo'
+require 'peak/config_loader'
+require 'peak/plugin_loader'
 
-module Apex
+module Peak
 
     def self.main
         config = find_config(true)

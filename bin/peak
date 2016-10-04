@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'methadone'
+require 'peak'
+
+class App
+    include Methadone::Main
+    include Methadone::CLILogging
+
+    main do |command, subcommand|
+        puts options[:switch]
+        puts options[:flag]
+        Peak::main
+    end
+
+    description 'Peak: a reference implementation for the APEX protocol.'
+    version Peak::VERSION
+
+    # Proxy to an OptionParser instance's on method
+    on('--[no]-switch', 'Toggles the switch')
+    on('--flag VALUE', 'Sets the flag.')
+
+    arg :command
+    arg :subcommand, :optional
+
+    defaults_from_env_var 'PEAK_CFG'
+    defaults_from_config_file '.peak.rc'
+
+    use_log_level_option :toggle_debug_on_signal => 'USR1'
+
+    go!
+end

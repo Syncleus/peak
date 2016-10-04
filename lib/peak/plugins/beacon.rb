@@ -1,27 +1,27 @@
-module Apex
+module Peak
     module Plugins
-        class Id
+        class Beacon
             protected
             def initialize(config, port_map, aprsis)
-                puts 'Id inited'
+                puts 'beacon inited'
             end
             
             public
             def run
-                puts 'Id ran'
+                puts 'beacon ran'
             end
             
             public
             def stop
-                puts 'Id stop'
+                puts 'beacon stop'
             end
             
             public
             def handle_packet(frame, recv_port, recv_port_name)
-                puts 'Id handled packet'
+                puts 'Beacon handled packet'
             end
         end
 
-        PluginFactory.register_plugin(Id)
+        PluginFactory.register_plugin(Beacon)
     end
 end

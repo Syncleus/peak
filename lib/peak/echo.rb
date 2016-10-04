@@ -1,6 +1,6 @@
 require 'colorize'
 
-module Apex
+module Peak
     def self.echo_color_frame(frame, port_name, direction_in)
         formatted_aprs = [frame[:source].colorize(:green), frame[:destination].colorize(:blue)].join('>')
         paths = []

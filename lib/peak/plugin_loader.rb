@@ -1,7 +1,7 @@
-require 'apex/plugins/plugin_factory'
+require 'peak/plugins/plugin_factory'
 
-module Apex
-    BUILTIN_PLUGINS = %w(apex/plugins/apex_paradigm apex/plugins/beacon apex/plugins/id apex/plugins/status)
+module Peak
+    BUILTIN_PLUGINS = %w(peak/plugins/apex_paradigm peak/plugins/beacon peak/plugins/id peak/plugins/status)
     
     def self.all_plugins(extra_plugins=[])
         return BUILTIN_PLUGINS + extra_plugins

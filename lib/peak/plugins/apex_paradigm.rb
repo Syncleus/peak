@@ -1,27 +1,27 @@
-module Apex
+module Peak
     module Plugins
-        class Status
+        class PeakParadigm
             protected
             def initialize(config, port_map, aprsis)
-                puts 'Status inited'
+                puts 'PeakParadigm inited'
             end
             
             public
             def run
-                puts 'Status ran'
+                puts 'PeakParadigm ran'
             end
             
             public
             def stop
-                puts 'Status stop'
+                puts 'PeakParadigm stop'
             end
             
             public
             def handle_packet(frame, recv_port, recv_port_name)
-                puts 'Status handled packet'
+                puts 'PeakParadigm handled packet'
             end
         end
 
-        PluginFactory.register_plugin(Status)
+        PluginFactory.register_plugin(PeakParadigm)
     end
 end

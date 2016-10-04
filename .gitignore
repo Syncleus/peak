@@ -5,4 +5,4 @@ html
 Gemfile.lock
 .idea/
 *.gem
-apex.conf
+peak.conf

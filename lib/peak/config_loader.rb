@@ -1,10 +1,10 @@
 require 'yaml'
-require 'apex/tnc_port'
+require 'peak/tnc_port'
 
-module Apex
+module Peak
     def self.find_config(verbose, config_paths=[])
-        config_file = 'apex.conf'
-        rc_file = '.apexrc'
+        config_file = 'peak.conf'
+        rc_file = '.peakrc'
         cur_path = config_file
         home_path = File.join(Dir.home, rc_file)
         etc_path = File.join('', 'etc', config_file)

@@ -1,4 +1,4 @@
-module Apex
+module Peak
     module Plugins
         class PluginFactory
             @@plugins = []

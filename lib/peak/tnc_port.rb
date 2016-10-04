@@ -1,6 +1,6 @@
-require 'apex/echo'
+require 'peak/echo'
 
-module Apex
+module Peak
     class TncPort
         protected
         def initialize(data_stream, name, identifier, net, echo_frames=false, port=0)
@@ -35,7 +35,7 @@ module Apex
         def write(frame, *args, **kwargs)
             @data_stream.write(frame, @port, *args, **kwargs)
             if @echo_frames and frame
-                Apex::echo_color_frame(frame, @name, false)
+                Peak::echo_color_frame(frame, @name, false)
             end
         end
 

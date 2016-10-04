@@ -1,17 +1,17 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'apex/app_info'
+require 'peak/app_info'
 
 Gem::Specification.new do |spec|
-    spec.name = 'apex'
-    spec.version = Apex::VERSION
+    spec.name = 'peak'
+    spec.version = Peak::VERSION
     spec.licenses = ['Apache-2.0']
     spec.authors = ['Jeffrey Phillips Freeman']
     spec.email = ['jeffrey.freeman@syncleus.com']
 
-    spec.summary = %q{Reference implementation for the APEX Radio protocol.}
-    spec.description = %q{Reference implementation for the APEX Radio protocol.}
+    spec.summary = %q{Reference implementation for the APEX Radio protocol, an extension to APRS.}
+    spec.description = %q{Reference implementation for the APEX Radio protocol, which is iteself an extension to the APRS protocol.}
     spec.homepage = 'http://apexprotocol.com'
 
     # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
 
     spec.add_dependency 'colorize', '~> 0.8'
     spec.add_dependency 'methadone', '~> 1.9'
-    spec.add_dependency 'aprs', '~> 1.0'
+    spec.add_dependency 'apex-aprs', '~> 1.0'
     spec.add_development_dependency 'bundler', '~> 1.7'
     spec.add_development_dependency 'rake', '~> 11.3'
     spec.add_development_dependency 'rdoc', '~> 4.2'
