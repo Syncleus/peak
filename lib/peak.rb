@@ -18,7 +18,7 @@ module Peak
             active_plugins[active_plugin] =active_plugin_thread
         end
 
-        # Display any packets we read in.
+        # Handle any packets we read in.
         while true
             port_map.values.each do |tnc_port|
                 frame = tnc_port.read

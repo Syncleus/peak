@@ -43,7 +43,7 @@ module Peak
                 while self.running
                     if now - last_trigger >= 600
                         last_trigger = now
-                        @port_configs.each do |port_name, port_config|
+                        @port_configs.each_value do |port_config|
                             port = port_config[:port]
         
                             frame = {:source => port.identifier,
