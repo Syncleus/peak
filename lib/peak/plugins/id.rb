@@ -17,7 +17,7 @@ module Peak
             end
             
             public
-            def handle_packet(frame, recv_port, recv_port_name)
+            def handle_packet(frame, recv_port)
                 puts 'Id handled packet'
             end
         end

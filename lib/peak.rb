@@ -8,12 +8,14 @@ module Peak
         config = find_config(true)
         port_map = init_port_map(config)
         
-        activated_plugins = []
+        active_plugins = {}
         plugins = load_plugins
         plugins.each do |plugin|
-            activated_plugin = plugin.new(nil, nil, nil)
-            activated_plugins << activated_plugin
-            activated_plugin.run
+            active_plugin = plugin.new(config, port_map, nil)
+            active_plugin_thread = Thread.new {
+                active_plugin.run
+            }
+            active_plugins[active_plugin] =active_plugin_thread
         end
 
         # Transmit a beacon when we first start
@@ -29,7 +31,11 @@ module Peak
         while true
             port_map.values.each do |tnc_port|
                 frame = tnc_port.read
-                unless frame
+                if frame
+                    active_plugins.each_key do |plugin|
+                        plugin.handle_packet(frame, tnc_port)
+                    end
+                else
                     sleep(1)
                 end
             end
