@@ -1,5 +1,5 @@
 require 'kiss/kiss_serial'
-require 'aprs/aprs_kiss'
+require 'apex/aprs_kiss'
 require 'peak/app_info'
 require 'peak/plugins/plugin_factory'
 require 'peak/echo'
