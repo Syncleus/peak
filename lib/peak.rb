@@ -15,20 +15,23 @@ module Peak
             active_plugin_thread = Thread.new {
                 active_plugin.run
             }
-            active_plugins[active_plugin] =active_plugin_thread
+            active_plugins[active_plugin] = active_plugin_thread
         end
 
         # Handle any packets we read in.
         while true
+            something_read = false
             port_map.values.each do |tnc_port|
                 frame = tnc_port.read
                 if frame
+                    something_read = true
                     active_plugins.each_key do |plugin|
                         plugin.handle_packet(frame, tnc_port)
                     end
-                else
-                    sleep(1)
                 end
+            end
+            unless something_read
+                sleep(1)
             end
         end
     end
