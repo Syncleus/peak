@@ -14,9 +14,8 @@ module Peak
                             port_name = tnc_name + '-' + port_id.to_s
                             port = port_map[port_name]
                             port_section = 'PORT ' + port_name
-                            @port_configs[port_name] = {:port => port,
-                                                        :status_text => config[port_section]['status_text'],
-                                                        :status_path => config[port_section]['status_path']
+                            @port_configs[port] = {:status_text => config[port_section]['status_text'],
+                                                   :status_path => config[port_section]['status_path']
                             }
                         end
                     end
@@ -43,9 +42,7 @@ module Peak
                 while @running
                     if Status::now - last_trigger >= 600
                         last_trigger = Status::now
-                        @port_configs.values.each do |port_config|
-                            port = port_config[:port]
-                    
+                        @port_configs.each do |port, port_config|
                             frame = {:source => port.identifier,
                                      :destination => 'APRS',
                                      :path => port_config[:status_path],
