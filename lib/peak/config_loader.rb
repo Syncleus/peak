@@ -1,5 +1,7 @@
 require 'yaml'
 require 'peak/tnc_port'
+require 'apex/aprs_kiss'
+require 'kiss/constants'
 
 module Peak
     def self.find_config(verbose, config_paths=[])
