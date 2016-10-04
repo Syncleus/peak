@@ -46,7 +46,7 @@ module Peak
                 if config_lookup_enforce(section_content, 'com_port') and config_lookup_enforce(section_content, 'baud')
                     com_port = section_content['com_port']
                     baud = section_content['baud']
-                    kiss_tnc = Aprs::AprsKiss.new(Kiss::KissSerial.new(com_port, baud))
+                    kiss_tnc = Apex::AprsKiss.new(Kiss::KissSerial.new(com_port, baud))
                 else
                     return false
                 end
