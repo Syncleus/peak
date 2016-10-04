@@ -33,16 +33,16 @@ module Peak
                 @running = true
         
                 # Don't do anything in the first 90 seconds
-                last_trigger = now
-                while @running and now - last_trigger < 90
+                last_trigger = Status::now
+                while @running and Status::now - last_trigger < 90
                     sleep(1)
                 end
         
                 # run every 600 second
-                last_trigger = now
+                last_trigger = Status::now
                 while @running
-                    if now - last_trigger >= 600
-                        last_trigger = now
+                    if Status::now - last_trigger >= 600
+                        last_trigger = Status::now
                         @port_configs.values.each do |port_config|
                             port = port_config[:port]
                     

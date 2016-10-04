@@ -33,16 +33,16 @@ module Peak
                 @running = true
         
                 # Don't do anything in the first 30 seconds
-                last_trigger = now
-                while @running and now - last_trigger < 30
+                last_trigger = Beacon::now
+                while @running and Beacon::now - last_trigger < 30
                     sleep(1)
                 end
         
                 # run every 600 second
-                last_trigger = now
+                last_trigger = Beacon::now
                 while @running
-                    if now - last_trigger >= 600
-                        last_trigger = now
+                    if Beacon::now - last_trigger >= 600
+                        last_trigger = Beacon::now
                         @port_configs.values.each do |port_config|
                             port = port_config[:port]
         
