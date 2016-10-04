@@ -40,7 +40,7 @@ module Peak
         
                 # run every 600 second
                 last_trigger = now
-                while self.running
+                while @running
                     if now - last_trigger >= 600
                         last_trigger = now
                         @port_configs.each_value do |port_config|
