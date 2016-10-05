@@ -1,19 +1,47 @@
-= peak - DESCRIBE YOUR GEM
+= Peak - Reference implementation for the APEX Radio protocol, an extension to APRS.
 
-Author::  YOUR NAME (YOUR EMAIL)
-Copyright:: Copyright (c) 2016 YOUR NAME
+{<img src="https://badge.fury.io/rb/peak.svg" alt="Gem Version" />}[https://badge.fury.io/rb/peak]
 
+Author::  Jeffrey Phillips Freeman, WI2ARD (freemo@gmail.com)
+Copyright:: Copyright (c) 2016 Syncleus, Inc.
 
-DESCRIBE YOUR GEM HERE
+Peak is a full suite APRS client and reference implementation for the APEX protocol. APEX is a next generation APRS
+based protocol. This repository represents the official application implementing APEX. It is a full-feature application
+for digipeating, compatible with most AX.25 KISS TNC devices, and utilizing the full APEX stack.
+
+For more information on the project please check out {the project's home page}[http://apexprotocol.com/].
+
+Peak is Free and Open-source software under Apache Software License v2
+
+== Installation
+
+Install the application using gem.
+
+    gem install peak
+
+== Running the app
+
+Once installed copy the peak.conf.example file over to peak.conf in the /etc directory, then edit the file and replace
+it with your details. Next just run the application with the following command.
+
+    peak run
+
+There isn't much to the application right now, the application is still pre-release so more features and configuration
+options should be added soon. For now the application will display all packets read in and send out a status, id, and
+beacon packet every 10 minutes.
+
+This is Free software: Apache License v2
+
+== Development
+
+After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive
+prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the
+version number in `app_info.rb`, and then run `bundle exec rake release`, which will create a git tag for the version,
+push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 == Links
 
-* {Source on Github}[LINK TO GITHUB]
-* RDoc[LINK TO RDOC.INFO]
-
-== Install
-
-== Examples
-
-== Contributing
+* {Source on Github}[https://github.com/Syncleus/peak]
 
