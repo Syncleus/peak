@@ -62,6 +62,7 @@ module Peak
         port_map.values.each do |port|
             port.close
         end
+        
         puts 'Peak successfully shutdown.'
     end
 end
