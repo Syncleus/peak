@@ -6,7 +6,16 @@ module Peak
 
     def self.main
         config = find_config(true)
+        unless config
+            echo_colorized_error('Could not find a valid configuration file in any of the default locations')
+            return
+        end
+
         port_map = init_port_map(config)
+        unless port_map
+            echo_colorized_error('Configuration could not be loaded,  format was invalid.')
+            return
+        end
         
         active_plugins = {}
         plugins = load_plugins

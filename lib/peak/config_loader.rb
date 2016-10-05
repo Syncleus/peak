@@ -41,7 +41,7 @@ module Peak
                 tnc_name = section_name.strip.split(' ')[1].strip
                 if tnc_name == 'IGATE'
                     echo_colorized_error('IGATE was used as the name for a TNC in the configuration, this name is reserved')
-                    return false
+                    return nil
                 end
             
                 kiss_tnc = nil
@@ -50,7 +50,7 @@ module Peak
                     baud = section_content['baud']
                     kiss_tnc = Apex::AprsKiss.new(Kiss::KissSerial.new(com_port, baud))
                 else
-                    return false
+                    return nil
                 end
                 
                 if section_content.key?('kiss_init')
@@ -63,14 +63,14 @@ module Peak
                         kiss_tnc.connect
                     else
                         echo_colorized_error('Invalid configuration, value assigned to kiss_init was not recognized: ' + kiss_init_string)
-                        return false
+                        return nil
                     end
                 else
                     kiss_tnc.connect
                 end
     
                 unless config_lookup_enforce(section_content, 'port_count')
-                    return false
+                    return nil
                 end
                 
                 port_count = section_content['port_count']
@@ -80,22 +80,22 @@ module Peak
                     port_section_name = 'PORT ' + port_name
                     
                     unless config_lookup_enforce(config, port_section_name)
-                        return false
+                        return nil
                     end
                     port_section = config[port_section_name]
                     
                     unless config_lookup_enforce(port_section, 'identifier')
-                        return false
+                        return nil
                     end
                     port_identifier = port_section['identifier']
 
                     unless config_lookup_enforce(port_section, 'net')
-                        return false
+                        return nil
                     end
                     port_net = port_section['net']
 
                     unless config_lookup_enforce(port_section, 'tnc_port')
-                        return false
+                        return nil
                     end
                     tnc_port = port_section['tnc_port']
                     
