@@ -14,7 +14,7 @@ class App
         Peak::main
     end
 
-    description 'Peak: a reference implementation for the APEX protocol.'
+    description 'Peak is a reference implementation for the APEX protocol which is itself based on the APRS protocol.'
     version Peak::VERSION
 
     # Proxy to an OptionParser instance's on method
