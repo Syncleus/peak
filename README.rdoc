@@ -1,6 +1,7 @@
 = Peak
 
 {<img src="https://badge.fury.io/rb/peak.svg" alt="Gem Version" />}[https://badge.fury.io/rb/peak]
+{<img src="http://img.shields.io/badge/yard-docs-blue.svg" />}[http://www.rubydoc.info/github/Syncleus/peak/master]
 
 Author::  Jeffrey Phillips Freeman, WI2ARD (freemo@gmail.com)
 Copyright:: Copyright (c) 2016 Syncleus, Inc.
