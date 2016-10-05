@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2
+
+
+
 ## 1.0.1
 
 * Added beacon plugin to transmit beacon every 10 minutes.
