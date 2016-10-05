@@ -2,7 +2,8 @@
 
 ## 1.0.2
 
-
+* Added proper cleanup before exiting when a sigterm or sigint is received. This allows serial connections to be
+  shutdown and KISS mode on the TNC to be exited.
 
 ## 1.0.1
 
