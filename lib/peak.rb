@@ -16,6 +16,9 @@ module Peak
             echo_colorized_error('Configuration could not be loaded,  format was invalid.')
             return
         end
+
+        Signal.trap('INT') { throw :sig }
+        Signal.trap('TERM') { throw :sig }
         
         active_plugins = {}
         plugins = load_plugins
@@ -28,20 +31,37 @@ module Peak
         end
 
         # Handle any packets we read in.
-        while true
-            something_read = false
-            port_map.values.each do |tnc_port|
-                frame = tnc_port.read
-                if frame
-                    something_read = true
-                    active_plugins.each_key do |plugin|
-                        plugin.handle_packet(frame, tnc_port)
+        catch (:sig) do
+            while true
+                something_read = false
+                port_map.values.each do |tnc_port|
+                    frame = tnc_port.read
+                    if frame
+                        something_read = true
+                        active_plugins.each_key do |plugin|
+                            plugin.handle_packet(frame, tnc_port)
+                        end
                     end
                 end
-            end
-            unless something_read
-                sleep(1)
+                unless something_read
+                    sleep(1)
+                end
             end
         end
+
+        puts
+        puts 'Shutdown signal caught, shutting down...'
+
+        # Let's cleanup some stuff before exiting.
+        active_plugins.keys.each do |plugin|
+            plugin.stop
+        end
+        active_plugins.values.each do |plugin_thread|
+            plugin_thread.join
+        end
+        port_map.values.each do |port|
+            port.close
+        end
+        puts 'Peak successfully shutdown.'
     end
 end
