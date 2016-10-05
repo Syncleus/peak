@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
     spec.email = ['jeffrey.freeman@syncleus.com']
 
     spec.summary = %q{Reference implementation for the APEX Radio protocol, an extension to APRS.}
-    spec.description = %q{Reference implementation for the APEX Radio protocol, which is iteself an extension to the APRS protocol.}
+    spec.description = %q{Reference implementation for the APEX Radio protocol, which is itself an extension to the APRS protocol.}
     spec.homepage = 'http://apexprotocol.com'
 
     # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
