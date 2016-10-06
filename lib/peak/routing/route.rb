@@ -144,16 +144,16 @@ module Peak
 
         # ==== This is the part the user will implement ======
 
-        Routing.inbound_chain {
+        Route.inbound_chain {
             filter destination_me?, :pass, :forward
             filter :input # if this werent here packet would be dropped
         }
 
-        Routing.outbound_chain {
+        Route.outbound_chain {
             filter :output # if this werent here packet would be dropped
         }
 
-        Routing.side_chain(:forward, :output) {
+        Route.side_chain(:forward, :output) {
             filter seen?, :drop
             consume_next_hop
             filter :drop
