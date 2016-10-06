@@ -120,11 +120,11 @@ module Peak
 
         Routing.inbound_chain {
             filter destination_me?, :pass, :forward
-            filter :input # not needed, showing input chain always terminates in recv
+            filter :input # if this werent here packet would be dropped
         }
 
         Routing.outbound_chain {
-            filter :output #not needed, showing send target is the end of the output target
+            filter :output # if this werent here packet would be dropped
         }
 
         Routing.side_chain(:forward, :output) {
@@ -139,13 +139,15 @@ module Peak
             public
             def self.handle_frame(frame, config, is_inbound=true)
                 rules = Rules.new(frame, config, is_inbound ? :inbound : :outbound)
-                while rules.next_target != :input and rules.next_target != :output and rules.next_target != :drop
+                more = true
+                while more and rules.next_target != :input and rules.next_target != :output and rules.next_target != :drop
                     catch(:new_target) do
                         rules.instance_eval &@@chains[rules.next_target][:block]
+                        more = false
                     end
                 end
 
-                if rules.next_target == :drop
+                if rules.next_target == :drop or !more
                     return nil
                 end
 
