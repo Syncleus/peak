@@ -4,7 +4,7 @@
 {<img src="http://img.shields.io/badge/yard-docs-blue.svg" />}[http://www.rubydoc.info/github/Syncleus/peak/master]
 
 Author::  Jeffrey Phillips Freeman, WI2ARD (freemo@gmail.com)
-Copyright:: Copyright (c) 2016 Syncleus, Inc.
+Copyright:: Copyright (c) 2016 - present Syncleus, Inc.
 
 Peak is a full suite APRS client and reference implementation for the APEX protocol. APEX is a next generation APRS
 based protocol. This repository represents the official application implementing APEX. It is a full-feature application
