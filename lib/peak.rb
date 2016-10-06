@@ -1,6 +1,7 @@
 require 'peak/echo'
 require 'peak/config_loader'
 require 'peak/plugin_loader'
+require 'peak/routing/route'
 
 module Peak
 
@@ -38,8 +39,17 @@ module Peak
                     frame = tnc_port.read
                     if frame
                         something_read = true
-                        active_plugins.each_key do |plugin|
-                            plugin.handle_packet(frame, tnc_port)
+                        routed_frames = Routing::Route.handle_frame(frame, config, true, tnc_port.name)
+                        if routed_frames && routed_frames.length > 0
+                            routed_frames.each do |routed_frame|
+                                if routed_frame[:output_target]
+                                    port_map[routed_frame[:output_target]].write(routed_frame[:frame])
+                                else
+                                    active_plugins.each_key do |plugin|
+                                        plugin.handle_packet(routed_frame[:frame], tnc_port)
+                                    end
+                                end
+                            end
                         end
                     end
                 end

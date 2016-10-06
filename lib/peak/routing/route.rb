@@ -2,10 +2,11 @@ module Peak
     module Routing
         class Rules
             protected
-            def initialize(frame, config, next_target=nil)
+            def initialize(frame, config, frame_port, next_target=nil)
                 @frame = frame
                 @next_target = next_target
                 @config = config
+                @frame_port = frame_port
 
                 @port_info = {}
                 config.each do |section_name, section_content|
@@ -22,8 +23,8 @@ module Peak
                                 port_net = port_section['net']
                                 tnc_port = port_section['tnc_port']
                 
-                                @port_info[port_identifier] = {
-                                    :port_name => port_name,
+                                @port_info[port_name] = {
+                                    :port_identifier => port_identifier,
                                     :port_net => port_net,
                                     :tnc_port => tnc_port
                                 }
@@ -92,7 +93,8 @@ module Peak
             
             protected
             def seen?
-                if @port_info.key? @frame[:source]
+                identifiers = @port_info.values.map { |info| info[:port_identifier] }
+                if identifiers.include? @frame[:source]
                     return true
                 end
                 
@@ -101,7 +103,7 @@ module Peak
                         return false
                     end
                     
-                    if @port_info.key? hop.chomp('*')
+                    if identifiers.include? hop.chomp('*')
                         return true
                     end
                 end
@@ -111,7 +113,8 @@ module Peak
 
             protected
             def destination_me?
-                if @port_info.key? @frame[:destination]
+                identifiers = @port_info.values.map { |info| info[:port_identifier] }
+                if identifiers.include? @frame[:destination]
                     return true
                 end
                 false
@@ -120,7 +123,7 @@ module Peak
             attr_reader :next_target, :frame
         end
 
-        class Routing
+        class Route
             @@chains = {}
 
             public
@@ -153,20 +156,20 @@ module Peak
         Routing.side_chain(:forward, :output) {
             filter seen?, :drop
             consume_next_hop
-            filter :foo
+            filter :drop
         }
 
         # ==== Exiting custom code ========
 
-        class Routing
+        class Route
             public
-            def self.handle_frame(frame, config, is_inbound=true)
+            def self.handle_frame(frame, config, is_inbound, name)
                 initial_chain = is_inbound ? :inbound : :outbound
                 unless @@chains.key? initial_chain
                     return nil
                 end
                 
-                rules = Rules.new(frame, config, initial_chain)
+                rules = Rules.new(frame, config, name, initial_chain)
                 more = true
                 while more and rules.next_target != :input and rules.next_target != :output and rules.next_target != :drop
                     catch(:new_target) do
@@ -179,10 +182,10 @@ module Peak
                     return nil
                 end
 
-                {
-                    :target => rules.next_target,
+                [{
+                    :output_target => rules.next_target == :output ? name : nil,
                     :frame => rules.frame
-                }
+                }]
             end
         end
     end
