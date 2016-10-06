@@ -36,7 +36,7 @@ module Peak
 
             private
             def self.args_parser(*args)
-                if !args&.length or args.length <= 0
+                if !args or !args.length or args.length <= 0
                     return nil
                 end
 
