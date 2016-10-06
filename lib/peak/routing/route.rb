@@ -61,7 +61,7 @@ module Peak
             end
 
             private
-            def self.do_next_target(next_target)
+            def do_next_target(next_target)
                 if next_target != :pass
                     @next_target = next_target
                     throw :new_target
@@ -120,6 +120,7 @@ module Peak
                 false
             end
 
+            public
             attr_reader :next_target, :frame
         end
 
