@@ -73,6 +73,22 @@ module Peak
                 args = Rules.args_parser(*args)
                 Rules.do_next_target(args[:next_target])
             end
+
+            protected
+            def consume_next_hop(*args)
+                args = Rules.args_parser(*args)
+
+                catch(:done) do
+                    @frame[:path].each do |hop|
+                        unless hop.end_with? '*'
+                            hop << '*'
+                            throw :done
+                        end
+                    end
+                end
+                
+                Rules.do_next_target(args[:next_target])
+            end
             
             protected
             def seen?
@@ -92,7 +108,14 @@ module Peak
                 
                 false
             end
-            
+
+            protected
+            def destination_me?
+                if @port_info.key? @frame[:destination]
+                    return true
+                end
+                false
+            end
 
             attr_reader :next_target, :frame
         end
@@ -128,7 +151,7 @@ module Peak
         }
 
         Routing.side_chain(:forward, :output) {
-            filter seen?, :drop, :pass
+            filter seen?, :drop
             consume_next_hop
             filter :foo
         }
