@@ -2,10 +2,35 @@ module Peak
     module Routing
         class Rules
             protected
-            def initialize(frame, chains, next_target)
+            def initialize(frame, config, next_target=nil)
                 @frame = frame
-                @chains = chains
                 @next_target = next_target
+                @config = config
+
+                @port_info = {}
+                config.each do |section_name, section_content|
+                    if section_name.start_with?('TNC ')
+                        tnc_name = section_name.strip.split(' ')[1].strip
+                        if tnc_name != 'IGATE'
+                            port_count = section_content['port_count']
+            
+                            (1..port_count).each do |port|
+                                port_name = tnc_name + '-' + port.to_s
+                                port_section_name = 'PORT ' + port_name
+                                port_section = config[port_section_name]
+                                port_identifier = port_section['identifier']
+                                port_net = port_section['net']
+                                tnc_port = port_section['tnc_port']
+                
+                                @port_info[port_identifier] = {
+                                    :port_name => port_name,
+                                    :port_net => port_net,
+                                    :tnc_port => tnc_port
+                                }
+                            end
+                        end
+                    end
+                end
             end
 
             private
@@ -48,43 +73,61 @@ module Peak
                 args = Rules.args_parser(*args)
                 Rules.do_next_target(args[:next_target])
             end
+            
+            protected
+            def seen?
+                if @port_info.key? @frame[:source]
+                    return true
+                end
+                
+                @frame[:path].each do |hop|
+                    unless hop.end_with? '*'
+                        return false
+                    end
+                    
+                    if @port_info.key? hop.chomp('*')
+                        return true
+                    end
+                end
+                
+                false
+            end
+            
 
             attr_reader :next_target, :frame
         end
 
         class Routing
-            @chains = {}
+            @@chains = {}
 
             public
-            def inbound_chain(&block)
-                @chains[:inbound] = {:target => :input, :block => block}
+            def self.inbound_chain(&block)
+                @@chains[:inbound] = {:target => :input, :block => block}
             end
 
             public
-            def outbound_chain(&block)
-                @chains[:outbound] = {:target => :output, :block => block}
+            def self.outbound_chain(&block)
+                @@chains[:outbound] = {:target => :output, :block => block}
             end
 
             public
-            def side_chain(name, target, &block)
-                @chains[name] = {:target => target, :block => block}
+            def self.side_chain(name, target, &block)
+                @@chains[name] = {:target => target, :block => block}
             end
         end
 
-        route = Routing.new
-
         # ==== This is the part the user will implement ======
 
-        route.inbound_chain {
+        Routing.inbound_chain {
             filter destination_me?, :pass, :forward
             filter :input # not needed, showing input chain always terminates in recv
         }
 
-        route.outbound_chain {
+        Routing.outbound_chain {
             filter :output #not needed, showing send target is the end of the output target
         }
 
-        route.side_chain(:forward, :output) {
+        Routing.side_chain(:forward, :output) {
             filter seen?, :drop, :pass
             consume_next_hop
             filter :foo
@@ -94,11 +137,11 @@ module Peak
 
         class Routing
             public
-            def handle_frame(frame,is_inbound=true)
-                rules = Rules.new(frame, @chains, is_inbound ? :inbound : :outbound)
+            def self.handle_frame(frame, config, is_inbound=true)
+                rules = Rules.new(frame, config, is_inbound ? :inbound : :outbound)
                 while rules.next_target != :input and rules.next_target != :output and rules.next_target != :drop
                     catch(:new_target) do
-                        rules.instance_eval &chains[rules.next_target][:block]
+                        rules.instance_eval &@@chains[rules.next_target][:block]
                     end
                 end
 
