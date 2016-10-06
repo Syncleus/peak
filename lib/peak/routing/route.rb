@@ -138,7 +138,12 @@ module Peak
         class Routing
             public
             def self.handle_frame(frame, config, is_inbound=true)
-                rules = Rules.new(frame, config, is_inbound ? :inbound : :outbound)
+                initial_chain = is_inbound ? :inbound : :outbound
+                unless @@chains.key? initial_chain
+                    return nil
+                end
+                
+                rules = Rules.new(frame, config, initial_chain)
                 more = true
                 while more and rules.next_target != :input and rules.next_target != :output and rules.next_target != :drop
                     catch(:new_target) do
