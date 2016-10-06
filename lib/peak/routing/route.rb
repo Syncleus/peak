@@ -37,10 +37,10 @@ module Peak
             private
             def self.args_parser(*args)
                 if !args or !args.length or args.length <= 0
-                    return nil
-                end
-
-                if !!args[0] == args[0] # if the first argument is a boolean
+                    condition = args[0]
+                    true_target = :pass
+                    false_target = :pass
+                elsif !!args[0] == args[0] # if the first argument is a boolean
                     condition = args[0]
                     true_target = args.length >= 2 ? args[1] : :pass
                     false_target = args.length >= 3 ? args[2] : :pass
@@ -72,7 +72,7 @@ module Peak
             protected
             def filter(*args)
                 args = Rules.args_parser(*args)
-                Rules.do_next_target(args[:next_target])
+                do_next_target(args[:next_target])
             end
 
             protected
@@ -88,7 +88,7 @@ module Peak
                     end
                 end
                 
-                Rules.do_next_target(args[:next_target])
+                do_next_target(args[:next_target])
             end
             
             protected
