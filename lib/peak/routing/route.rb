@@ -120,6 +120,26 @@ module Peak
                 false
             end
 
+            protected
+            def next_hop_identifier_me?
+                identifiers = @port_info.values.map { |info| info[:port_identifier] }
+                if (identifiers & @frame[:path]).empty?
+                    return false
+                else
+                    return true
+                end
+            end
+
+            protected
+            def next_hop_net_me?
+                identifiers = @port_info.values.map { |info| info[:port_net] }
+                if (identifiers & @frame[:path]).empty?
+                    return false
+                else
+                    return true
+                end
+            end
+
             public
             attr_reader :next_target, :frame
         end
@@ -140,6 +160,11 @@ module Peak
             public
             def self.side_chain(name, target, &block)
                 @@chains[name] = {:target => target, :block => block}
+            end
+
+            public
+            def self.reset
+                @@chains.clear
             end
         end
 
@@ -183,10 +208,10 @@ module Peak
                     return nil
                 end
 
-                [{
+                {
                     :output_target => rules.next_target == :output ? name : nil,
                     :frame => rules.frame
-                }]
+                }
             end
         end
     end

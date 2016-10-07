@@ -39,15 +39,13 @@ module Peak
                     frame = tnc_port.read
                     if frame
                         something_read = true
-                        routed_frames = Routing::Route.handle_frame(frame, config, true, tnc_port.name)
-                        if routed_frames && routed_frames.length > 0
-                            routed_frames.each do |routed_frame|
-                                if routed_frame[:output_target]
-                                    port_map[routed_frame[:output_target]].write(routed_frame[:frame])
-                                else
-                                    active_plugins.each_key do |plugin|
-                                        plugin.handle_packet(routed_frame[:frame], tnc_port)
-                                    end
+                        routed_frame = Routing::Route.handle_frame(frame, config, true, tnc_port.name)
+                        if routed_frame
+                            if routed_frame[:output_target]
+                                port_map[routed_frame[:output_target]].write(routed_frame[:frame])
+                            else
+                                active_plugins.each_key do |plugin|
+                                    plugin.handle_packet(routed_frame[:frame], tnc_port)
                                 end
                             end
                         end
