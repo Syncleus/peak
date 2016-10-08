@@ -69,6 +69,49 @@ module Peak
                 return
             end
 
+            private
+            def select_next_hop(hops)
+                select_future_hops(hops)[0]
+            end
+
+            private
+            def select_future_hops(hops)
+                hops.select { |hop| !hop.end_with? '*'  }
+            end
+
+            private
+            def select_net_band_hops(hops)
+                hops.select { |hop| hop =~ /\d{1,4}M$/i  }
+            end
+
+            private
+            def select_net_freq_hops(hops)
+                hops.select { |hop| hop =~ /\d{1,4}M\d{1,3}$/i  }
+            end
+
+            private
+            def select_net_hops(hops)
+                hops.select { |hop| hop =~ /\d{1,4}M\d{0,3}$/i  }
+            end
+
+            private
+            def net_freg_to_band_hops(hops)
+                select_net_hops(hops).map { |hop| hop.gsub(/M\d{0,3}$/i, 'M')  }
+            end
+
+            private
+            def all_my_names
+                names = @port_info.values.map { |info| info[:port_identifier].upcase }
+                names += net_freg_to_band_hops(@port_info.values.map {|info| info[:port_net].upcase })
+                names += select_net_freq_hops(@port_info.values.map {|info| info[:port_net].upcase })
+                names.uniq
+            end
+
+            private
+            def array_upcase(things)
+                things.map {|s| s.upcase }
+            end
+
             protected
             def filter(*args)
                 args = Rules.args_parser(*args)
@@ -79,22 +122,45 @@ module Peak
             def consume_next_hop(*args)
                 args = Rules.args_parser(*args)
 
-                catch(:done) do
-                    @frame[:path].each do |hop|
-                        unless hop.end_with? '*'
-                            hop << '*'
-                            throw :done
+                if has_next_hop? and args[:condition]
+                    catch(:done) do
+                        @frame[:path].each do |hop|
+                            unless hop.end_with? '*'
+                                hop << '*'
+                                throw :done
+                            end
                         end
                     end
                 end
                 
                 do_next_target(args[:next_target])
             end
+
+            protected
+            def consume_my_future_hops(*args)
+                args = Rules.args_parser(*args)
+
+                if has_next_hop? and args[:condition]
+                    future_hops = select_future_hops(@frame[:path])
+                    detected = false
+
+                    future_hops.reverse.each do |hop|
+                        if detected
+                            hop << '*'
+                        elsif all_my_names.include? hop.upcase
+                            hop << '*'
+                            detected = true
+                        end
+                    end
+                end
+
+                do_next_target(args[:next_target])
+            end
             
             protected
             def seen?
-                identifiers = @port_info.values.map { |info| info[:port_identifier] }
-                if identifiers.include? @frame[:source]
+                identifiers = @port_info.values.map { |info| info[:port_identifier].upcase }
+                if identifiers.include? @frame[:source].upcase
                     return true
                 end
                 
@@ -103,7 +169,7 @@ module Peak
                         return false
                     end
                     
-                    if identifiers.include? hop.chomp('*')
+                    if identifiers.include? hop.upcase.chomp('*')
                         return true
                     end
                 end
@@ -113,30 +179,187 @@ module Peak
 
             protected
             def destination_me?
-                identifiers = @port_info.values.map { |info| info[:port_identifier] }
-                if identifiers.include? @frame[:destination]
-                    return true
+                identifiers = @port_info.values.map { |info| info[:port_identifier].upcase }
+                if identifiers.include? @frame[:destination].upcase
+                    true
+                else
+                    false
                 end
-                false
+            end
+
+            protected
+            def has_next_hop?
+                @frame[:path].each do |hop|
+                    unless hop.end_with? '*'
+                        return true
+                    end
+                end
+                return false
             end
 
             protected
             def next_hop_identifier_me?
-                identifiers = @port_info.values.map { |info| info[:port_identifier] }
-                if (identifiers & @frame[:path]).empty?
+                unless has_next_hop?
                     return false
+                end
+
+                identifiers = @port_info.values.map { |info| info[:port_identifier].upcase }
+                if identifiers.include? select_next_hop(@frame[:path]).upcase
+                    true
                 else
-                    return true
+                    false
+                end
+            end
+
+            protected
+            def future_hop_identifier_me?
+                unless has_next_hop?
+                    return false
+                end
+
+                identifiers = @port_info.values.map { |info| info[:port_identifier].upcase }
+                if (identifiers & select_future_hops(array_upcase(@frame[:path]))).empty?
+                    false
+                else
+                    true
+                end
+            end
+
+            protected
+            def next_hop_net_band_me?
+                unless has_next_hop?
+                    return false
+                end
+
+                net_bands = net_freg_to_band_hops(@port_info.values.map {|info| info[:port_net].upcase })
+                next_bands = select_net_band_hops([select_next_hop(@frame[:path]).upcase])
+
+                if next_bands.length <= 0 or net_bands.length <= 0
+                    return false
+                end
+
+                next_band = next_bands[0]
+
+                if net_bands.include? next_band
+                    false
+                else
+                    true
+                end
+            end
+
+            protected
+            def future_hop_net_band_me?
+                unless has_next_hop?
+                    return false
+                end
+
+                net_bands = net_freg_to_band_hops(@port_info.values.map {|info| info[:port_net].upcase })
+                next_bands = array_upcase(select_net_band_hops(@frame[:path]))
+
+                if next_bands.length <= 0 or net_bands.length <= 0
+                    return false
+                end
+
+                if (net_bands & next_bands).empty?
+                    true
+                else
+                    false
+                end
+            end
+
+            protected
+            def next_hop_net_freq_me?
+                unless has_next_hop?
+                    return false
+                end
+
+                net_freqs = select_net_freq_hops(@port_info.values.map {|info| info[:port_net].upcase })
+                next_freqs= select_net_freq_hops([select_next_hop(@frame[:path]).upcase])
+
+                if next_bands.length <= 0 or net_bands.length <= 0
+                    return false
+                end
+
+                next_band = next_bands[0]
+
+                if net_bands.include? next_band
+                    false
+                else
+                    true
+                end
+            end
+
+            protected
+            def future_hop_net_freq_me?
+                unless has_next_hop?
+                    return false
+                end
+
+                net_bands = select_net_freq_hops(@port_info.values.map {|info| info[:port_net].upcase })
+                next_bands = select_net_freq_hops(array_upcase(@frame[:path]))
+
+                if next_bands.length <= 0 or net_bands.length <= 0
+                    return false
+                end
+
+                if (net_bands & next_bands).empty?
+                    true
+                else
+                    false
                 end
             end
 
             protected
             def next_hop_net_me?
-                identifiers = @port_info.values.map { |info| info[:port_net] }
-                if (identifiers & @frame[:path]).empty?
-                    return false
+                if next_hop_net_band_me? or next_hop_net_freq_me?
+                    true
                 else
-                    return true
+                    false
+                end
+            end
+
+            protected
+            def future_hop_net_me?
+                if future_hop_net_band_me? or future_hop_net_freq_me?
+                    true
+                else
+                    false
+                end
+            end
+
+            protected
+            def next_hop_me?
+                if next_hop_net_me? or next_hop_identifier_me?
+                    true
+                else
+                    false
+                end
+            end
+
+            protected
+            def future_hop_me?
+                if future_hop_net_me? or future_hop_identifier_me?
+                    true
+                else
+                    false
+                end
+            end
+
+            protected
+            def next_me?
+                if next_hop_me? or destination_me?
+                    true
+                else
+                    false
+                end
+            end
+
+            protected
+            def mine?
+                if future_hop_net_me? or future_hop_identifier_me? or destination_me?
+                    true
+                else
+                    false
                 end
             end
 
@@ -181,8 +404,8 @@ module Peak
 
         Route.side_chain(:forward, :output) {
             filter seen?, :drop
-            consume_next_hop
-            filter :drop
+            consume_my_future_hops future_hop_me?, :pass, :drop
+            filter :output
         }
 
         # ==== Exiting custom code ========
