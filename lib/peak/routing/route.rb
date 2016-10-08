@@ -319,6 +319,145 @@ module Peak
             end
 
             protected
+            def next_hop_old_paradigm?
+                unless has_next_hop?
+                    return false
+                end
+
+                port_name = @frame_port.name
+                port_info = @port_info[port_name]
+
+                if !port_info.key? :old_paradigm or port_info[:old_paradigm].length <= 0
+                    return false
+                end
+
+                old_paradigm = array_upcase(port_info[:old_paradigm])
+                next_hop = select_next_hop(@frame[:path]).upcase
+
+                old_paradigm.each do |target|
+                    if target.is_a? Regexp
+                        if next_hop =~ target
+                            return true
+                        end
+                    elsif next_hop == target
+                        return true
+                    end
+                end
+
+                false
+            end
+
+            protected
+            def future_hop_old_paradigm?
+                unless has_next_hop?
+                    return false
+                end
+
+                port_name = @frame_port.name
+                port_info = @port_info[port_name]
+
+                if !port_info.key? :old_paradigm or port_info[:old_paradigm].length <= 0
+                    return false
+                end
+
+                old_paradigm = array_upcase(port_info[:old_paradigm])
+                future_hops = select_future_hops(@frame[:path]).map { |s| s.upcase }
+
+                old_paradigm.each do |target|
+                    if target.is_a? Regexp
+                        future_hops.each do |hop|
+                            if hop =~ target
+                                return true
+                            end
+                        end
+                    elsif future_hops.include? target
+                        return true
+                    end
+                end
+
+                false
+            end
+
+            protected
+            def next_hop_new_paradigm?
+                unless has_next_hop?
+                    return false
+                end
+
+                port_name = @frame_port.name
+                port_info = @port_info[port_name]
+
+                if !port_info.key? :new_paradigm or port_info[:new_paradigm].length <= 0
+                    return false
+                end
+
+                new_paradigm_all = array_upcase(port_info[:new_paradigm])
+                next_hop = select_next_hop(@frame[:path]).upcase
+                if !next_hop.include? '-'
+                    return false
+                end
+                next_hop_split = next_hop.split('-')
+                if !next_hop_split or next_hop_split.length != 2
+                    return false
+                end
+                next_hop_target = next_hop_split[0]
+                next_hop_hops = next_hop_split[1].to_i
+                if next_hop_hops <= 0
+                    return false
+                end
+
+                new_paradigm_all.each do |new_paradigm|
+                    if new_paradigm[:target].is_a? Regexp
+                        if next_hop_target =~ new_paradigm[:target]
+                            return true
+                        end
+                    elsif next_hop_target == new_paradigm[:target]
+                        return true
+                    end
+                end
+
+                false
+            end
+
+            protected
+            def future_hop_new_paradigm?
+                unless has_next_hop?
+                    return false
+                end
+
+                port_name = @frame_port.name
+                port_info = @port_info[port_name]
+
+                if !port_info.key? :new_paradigm or port_info[:new_paradigm].length <= 0
+                    return false
+                end
+
+                new_paradigm_all = array_upcase(port_info[:new_paradigm])
+                future_hops = select_future_hops(@frame[:path]).map { |s| s.upcase }
+
+                new_paradigm_all.each do |new_paradigm|
+                    if new_paradigm[:target].is_a? Regexp
+                        future_hops.each do |hop|
+                            unless hop.include? '-'
+                                hop_split = hop.split('-')
+                                if hop_split and hop_split.length == 2
+                                    hop_target = next_hop_split[0]
+                                    hop_hops = next_hop_split[1].to_i
+                                    if hop_hops > 0 and hop_target =~ new_paradigm[:target]
+                                        return true
+                                    end
+                                end
+                            end
+                        end
+                    elsif future_hops.include? new_paradigm[:target]
+                        return true
+                    end
+                end
+
+                false
+            end
+
+            protected
             def next_hop_net_me?
                 if next_hop_net_band_me? or next_hop_net_freq_me?
                     true
@@ -337,8 +476,26 @@ module Peak
             end
 
             protected
+            def next_hop_paradigm?
+                if next_hop_new_paradigm? or next_hop_old_paradigm?
+                    true
+                else
+                    false
+                end
+            end
+
+            protected
+            def future_hop_paradigm?
+                if future_hop_new_paradigm? or future_hop_old_paradigm?
+                    true
+                else
+                    false
+                end
+            end
+
+            protected
             def next_hop_me?
-                if next_hop_net_me? or next_hop_identifier_me?
+                if next_hop_net_me? or next_hop_identifier_me? or next_hop_paradigm?
                     true
                 else
                     false
@@ -347,16 +504,7 @@ module Peak
 
             protected
             def future_hop_me?
-                if future_hop_net_me? or future_hop_identifier_me?
-                    true
-                else
-                    false
-                end
-            end
-
-            protected
-            def next_me?
-                if next_hop_me? or destination_me?
+                if future_hop_net_me? or future_hop_identifier_me? or future_hop_paradigm?
                     true
                 else
                     false
@@ -365,7 +513,7 @@ module Peak
 
             protected
             def mine?
-                if future_hop_net_me? or future_hop_identifier_me? or destination_me?
+                if future_hop_me? or destination_me?
                     true
                 else
                     false
