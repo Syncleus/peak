@@ -22,12 +22,18 @@ module Peak
                                 port_identifier = port_section['identifier']
                                 port_net = port_section['net']
                                 tnc_port = port_section['tnc_port']
-                                old_paradigm = port_section['old_paradigm']
-                                new_paradigm_all = port_section['new_paradigm']
 
+                                old_paradigm = port_section['old_paradigm']
+                                unless old_paradigm
+                                    old_paradigm = []
+                                end
+
+                                new_paradigm_all = port_section['new_paradigm']
                                 new_paradigm = []
-                                new_paradigm_all.each do |new_paradigm|
-                                    new_paradigm << {:target => new_paradigm['target'], :max_hops => new_paradigm['max_hops']}
+                                if new_paradigm_all and new_paradigm_all.length > 0
+                                    new_paradigm_all.each do |new_paradigm_one|
+                                        new_paradigm << {:target => new_paradigm_one['target'], :max_hops => new_paradigm_one['max_hops']}
+                                    end
                                 end
                 
                                 @port_info[port_name] = {
@@ -121,6 +127,61 @@ module Peak
                 things.map {|s| s.upcase }
             end
 
+            private
+            def self.is_hop_old_paradigm?(hop, old_paradigm)
+                if old_paradigm.length <= 0
+                    return false
+                end
+
+                old_paradigm = array_upcase(old_paradigm)
+                hop = hop.upcase
+
+                old_paradigm.each do |target|
+                    if target.is_a? Regexp
+                        if hop =~ target
+                            return true
+                        end
+                    elsif hop == target
+                        return true
+                    end
+                end
+
+                false
+            end
+
+            private
+            def self.is_hop_new_paradigm?(hop, new_paradigm_all)
+                if new_paradigm_all.length <= 0
+                    return false
+                end
+
+                hop = hop.upcase
+                unless hop =~ /[A-Z]*-\d{1,2}/
+                    return false
+                end
+                hop_split = hop.split('-')
+                if !hop_split or hop_split.length != 2
+                    return false
+                end
+                hop_target = hop_split[0]
+                hop_hops = hop_split[1].to_i
+                if hop_hops <= 0
+                    return false
+                end
+
+                new_paradigm_all.each do |new_paradigm|
+                    if new_paradigm[:target].is_a? Regexp
+                        if hop_target =~ new_paradigm[:target]
+                            return true
+                        end
+                    elsif hop_target == new_paradigm[:target].upcase
+                        return true
+                    end
+                end
+
+                false
+            end
+
             protected
             def filter(*args)
                 args = Rules.args_parser(*args)
@@ -145,6 +206,19 @@ module Peak
                 do_next_target(args[:next_target])
             end
 
+            private
+            def self.consume_new_paradigm(hop)
+                hop_split = hop.split('-')
+                target = hop_split[0]
+                hops = hop_split[1].to_i
+                hops -= 1
+                if hops > 0
+                    hops.replace( target + '-' + hops.to_s )
+                else
+                    hops.replace(target + '*')
+                end
+            end
+
             protected
             def consume_my_future_hops(*args)
                 args = Rules.args_parser(*args)
@@ -153,11 +227,26 @@ module Peak
                     future_hops = select_future_hops(@frame[:path])
                     detected = false
 
+                    port_name = @frame_port
+                    port_info = @port_info[port_name]
+                    old_paradigm = nil
+                    if port_info.key? :old_paradigm and port_info[:old_paradigm].length > 0
+                        old_paradigm = array_upcase(port_info[:old_paradigm])
+                    end
+
+                    new_paradigm = nil
+                    if port_info.key? :new_paradigm and port_info[:new_paradigm].length > 0
+                        new_paradigm_all = port_info[:new_paradigm]
+                    end
+
                     future_hops.reverse.each do |hop|
                         if detected
                             hop << '*'
-                        elsif all_my_names.include? hop.upcase
+                        elsif all_my_names.include? hop.upcase or Route.is_hop_old_paradigm?(hop, old_paradigm)
                             hop << '*'
+                            detected = true
+                        elsif Route.is_hop_new_paradigm?(hop, new_paradigm)
+                            Route.consume_new_paradigm(hop)
                             detected = true
                         end
                     end
@@ -324,7 +413,7 @@ module Peak
                     return false
                 end
 
-                port_name = @frame_port.name
+                port_name = @frame_port
                 port_info = @port_info[port_name]
 
                 if !port_info.key? :old_paradigm or port_info[:old_paradigm].length <= 0
@@ -334,17 +423,7 @@ module Peak
                 old_paradigm = array_upcase(port_info[:old_paradigm])
                 next_hop = select_next_hop(@frame[:path]).upcase
 
-                old_paradigm.each do |target|
-                    if target.is_a? Regexp
-                        if next_hop =~ target
-                            return true
-                        end
-                    elsif next_hop == target
-                        return true
-                    end
-                end
-
-                false
+                Route.is_hop_old_paradigm?(next_hop, old_paradigm)
             end
 
             protected
@@ -353,7 +432,7 @@ module Peak
                     return false
                 end
 
-                port_name = @frame_port.name
+                port_name = @frame_port
                 port_info = @port_info[port_name]
 
                 if !port_info.key? :old_paradigm or port_info[:old_paradigm].length <= 0
@@ -384,39 +463,17 @@ module Peak
                     return false
                 end
 
-                port_name = @frame_port.name
+                port_name = @frame_port
                 port_info = @port_info[port_name]
 
                 if !port_info.key? :new_paradigm or port_info[:new_paradigm].length <= 0
                     return false
                 end
 
-                new_paradigm_all = array_upcase(port_info[:new_paradigm])
+                new_paradigm_all = port_info[:new_paradigm]
                 next_hop = select_next_hop(@frame[:path]).upcase
-                if !next_hop.include? '-'
-                    return false
-                end
-                next_hop_split = next_hop.split('-')
-                if !next_hop_split or next_hop_split.length != 2
-                    return false
-                end
-                next_hop_target = next_hop_split[0]
-                next_hop_hops = next_hop_split[1].to_i
-                if next_hop_hops <= 0
-                    return false
-                end
 
-                new_paradigm_all.each do |new_paradigm|
-                    if new_paradigm[:target].is_a? Regexp
-                        if next_hop_target =~ new_paradigm[:target]
-                            return true
-                        end
-                    elsif next_hop_target == new_paradigm[:target]
-                        return true
-                    end
-                end
-
-                false
+                is_hop_new_paradigm?(next_hop, new_paradigm_all)
             end
 
             protected
@@ -425,14 +482,14 @@ module Peak
                     return false
                 end
 
-                port_name = @frame_port.name
+                port_name = @frame_port
                 port_info = @port_info[port_name]
 
                 if !port_info.key? :new_paradigm or port_info[:new_paradigm].length <= 0
                     return false
                 end
 
-                new_paradigm_all = array_upcase(port_info[:new_paradigm])
+                new_paradigm_all = port_info[:new_paradigm]
                 future_hops = select_future_hops(@frame[:path]).map { |s| s.upcase }
 
                 new_paradigm_all.each do |new_paradigm|
@@ -441,15 +498,15 @@ module Peak
                             unless hop.include? '-'
                                 hop_split = hop.split('-')
                                 if hop_split and hop_split.length == 2
-                                    hop_target = next_hop_split[0]
-                                    hop_hops = next_hop_split[1].to_i
+                                    hop_target = hop_split[0]
+                                    hop_hops = hop_split[1].to_i
                                     if hop_hops > 0 and hop_target =~ new_paradigm[:target]
                                         return true
                                     end
                                 end
                             end
                         end
-                    elsif future_hops.include? new_paradigm[:target]
+                    elsif future_hops.include? new_paradigm[:target].upcase
                         return true
                     end
                 end
@@ -561,8 +618,8 @@ module Peak
 
         Route.side_chain(:forward, :output) {
             filter seen?, :drop
-            consume_my_future_hops future_hop_me?, :pass, :drop
-            filter :output
+            filter future_hop_me?, :pass, :drop
+            consume_my_future_hops :output, :drop
         }
 
         # ==== Exiting custom code ========

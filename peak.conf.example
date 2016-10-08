@@ -28,9 +28,9 @@ PORT KENWOOD-1:
   id_path: ['WIDE1-1', 'WIDE2-2']
   old_paradigm: ['ECHO', 'PA']
   new_paradigm:
-  - target: !ruby/regexp '/^WIDE\[1-2]{1}$/i'
+  - target: !ruby/regexp '/^WIDE[1-2]{1}$/i'
     max_hops: 2
-  - target: !ruby/regexp '/^PA\[1-5]{1}$/i'
+  - target: !ruby/regexp '/^PA[1-5]{1}$/i'
     max_hops: 5
 
 PORT RPR-1:
@@ -45,9 +45,9 @@ PORT RPR-1:
   id_path: [WIDE1-1]
   old_paradigm: ['ECHO', 'PA']
   new_paradigm:
-  - target: !ruby/regexp '/^WIDE\[1-2]{1}$/i'
+  - target: !ruby/regexp '/^WIDE[1-2]{1}$/i'
     max_hops: 2
-  - target: !ruby/regexp '/^PA\[1-5]{1}$/i'
+  - target: !ruby/regexp '/^PA[1-5]{1}$/i'
     max_hops: 5
 
 IGATE:
