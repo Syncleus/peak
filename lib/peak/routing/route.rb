@@ -123,8 +123,14 @@ module Peak
             end
 
             private
-            def array_upcase(things)
-                things.map {|s| s.upcase }
+            def self.array_upcase(things)
+                things.map {|s|
+                    if !s.is_a? Regexp
+                        s.upcase
+                    else
+                        s
+                    end
+                }
             end
 
             private
@@ -133,7 +139,7 @@ module Peak
                     return false
                 end
 
-                old_paradigm = array_upcase(old_paradigm)
+                old_paradigm = Rules.array_upcase(old_paradigm)
                 hop = hop.upcase
 
                 old_paradigm.each do |target|
@@ -210,12 +216,12 @@ module Peak
             def self.consume_new_paradigm(hop)
                 hop_split = hop.split('-')
                 target = hop_split[0]
-                hops = hop_split[1].to_i
-                hops -= 1
-                if hops > 0
-                    hops.replace( target + '-' + hops.to_s )
+                hop_count = hop_split[1].to_i
+                hop_count -= 1
+                if hop_count > 0
+                    hop.replace( target + '-' + hop_count.to_s )
                 else
-                    hops.replace(target + '*')
+                    hop.replace(target + '*')
                 end
             end
 
@@ -231,22 +237,22 @@ module Peak
                     port_info = @port_info[port_name]
                     old_paradigm = nil
                     if port_info.key? :old_paradigm and port_info[:old_paradigm].length > 0
-                        old_paradigm = array_upcase(port_info[:old_paradigm])
+                        old_paradigm = Rules.array_upcase(port_info[:old_paradigm])
                     end
 
                     new_paradigm = nil
                     if port_info.key? :new_paradigm and port_info[:new_paradigm].length > 0
-                        new_paradigm_all = port_info[:new_paradigm]
+                        new_paradigm = port_info[:new_paradigm]
                     end
 
                     future_hops.reverse.each do |hop|
                         if detected
                             hop << '*'
-                        elsif all_my_names.include? hop.upcase or Route.is_hop_old_paradigm?(hop, old_paradigm)
+                        elsif all_my_names.include? hop.upcase or Rules.is_hop_old_paradigm?(hop, old_paradigm)
                             hop << '*'
                             detected = true
-                        elsif Route.is_hop_new_paradigm?(hop, new_paradigm)
-                            Route.consume_new_paradigm(hop)
+                        elsif Rules.is_hop_new_paradigm?(hop, new_paradigm)
+                            Rules.consume_new_paradigm(hop)
                             detected = true
                         end
                     end
@@ -316,7 +322,7 @@ module Peak
                 end
 
                 identifiers = @port_info.values.map { |info| info[:port_identifier].upcase }
-                if (identifiers & select_future_hops(array_upcase(@frame[:path]))).empty?
+                if (identifiers & select_future_hops(Rules.array_upcase(@frame[:path]))).empty?
                     false
                 else
                     true
@@ -352,7 +358,7 @@ module Peak
                 end
 
                 net_bands = net_freg_to_band_hops(@port_info.values.map {|info| info[:port_net].upcase })
-                next_bands = array_upcase(select_net_band_hops(@frame[:path]))
+                next_bands = Rules.array_upcase(select_net_band_hops(@frame[:path]))
 
                 if next_bands.length <= 0 or net_bands.length <= 0
                     return false
@@ -394,7 +400,7 @@ module Peak
                 end
 
                 net_freqs = select_net_freq_hops(@port_info.values.map {|info| info[:port_net].upcase })
-                next_freqs = select_net_freq_hops(array_upcase(@frame[:path]))
+                next_freqs = select_net_freq_hops(select_future_hops(Rules.array_upcase(@frame[:path])))
 
                 if next_freqs.length <= 0 or net_freqs.length <= 0
                     return false
@@ -420,10 +426,10 @@ module Peak
                     return false
                 end
 
-                old_paradigm = array_upcase(port_info[:old_paradigm])
+                old_paradigm = Rules.array_upcase(port_info[:old_paradigm])
                 next_hop = select_next_hop(@frame[:path]).upcase
 
-                Route.is_hop_old_paradigm?(next_hop, old_paradigm)
+                Rules.is_hop_old_paradigm?(next_hop, old_paradigm)
             end
 
             protected
@@ -439,7 +445,7 @@ module Peak
                     return false
                 end
 
-                old_paradigm = array_upcase(port_info[:old_paradigm])
+                old_paradigm = Rules.array_upcase(port_info[:old_paradigm])
                 future_hops = select_future_hops(@frame[:path]).map { |s| s.upcase }
 
                 old_paradigm.each do |target|
@@ -473,7 +479,7 @@ module Peak
                 new_paradigm_all = port_info[:new_paradigm]
                 next_hop = select_next_hop(@frame[:path]).upcase
 
-                is_hop_new_paradigm?(next_hop, new_paradigm_all)
+                Rules.is_hop_new_paradigm?(next_hop, new_paradigm_all)
             end
 
             protected
@@ -491,11 +497,12 @@ module Peak
 
                 new_paradigm_all = port_info[:new_paradigm]
                 future_hops = select_future_hops(@frame[:path]).map { |s| s.upcase }
+                
 
                 new_paradigm_all.each do |new_paradigm|
                     if new_paradigm[:target].is_a? Regexp
                         future_hops.each do |hop|
-                            unless hop.include? '-'
+                            if hop.include? '-'
                                 hop_split = hop.split('-')
                                 if hop_split and hop_split.length == 2
                                     hop_target = hop_split[0]
@@ -619,7 +626,7 @@ module Peak
         Route.side_chain(:forward, :output) {
             filter seen?, :drop
             filter future_hop_me?, :pass, :drop
-            consume_my_future_hops :output, :drop
+            consume_my_future_hops :output
         }
 
         # ==== Exiting custom code ========
