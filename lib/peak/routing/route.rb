@@ -22,11 +22,20 @@ module Peak
                                 port_identifier = port_section['identifier']
                                 port_net = port_section['net']
                                 tnc_port = port_section['tnc_port']
+                                old_paradigm = port_section['old_paradigm']
+                                new_paradigm_all = port_section['new_paradigm']
+
+                                new_paradigm = []
+                                new_paradigm_all.each do |new_paradigm|
+                                    new_paradigm << {:target => new_paradigm['target'], :max_hops => new_paradigm['max_hops']}
+                                end
                 
                                 @port_info[port_name] = {
                                     :port_identifier => port_identifier,
                                     :port_net => port_net,
-                                    :tnc_port => tnc_port
+                                    :tnc_port => tnc_port,
+                                    :old_paradigm => old_paradigm,
+                                    :new_paradigm => new_paradigm,
                                 }
                             end
                         end
@@ -276,7 +285,7 @@ module Peak
                 net_freqs = select_net_freq_hops(@port_info.values.map {|info| info[:port_net].upcase })
                 next_freqs= select_net_freq_hops([select_next_hop(@frame[:path]).upcase])
 
-                if next_bands.length <= 0 or net_bands.length <= 0
+                if next_freqs.length <= 0 or net_freqs.length <= 0
                     return false
                 end
 
@@ -295,14 +304,14 @@ module Peak
                     return false
                 end
 
-                net_bands = select_net_freq_hops(@port_info.values.map {|info| info[:port_net].upcase })
-                next_bands = select_net_freq_hops(array_upcase(@frame[:path]))
+                net_freqs = select_net_freq_hops(@port_info.values.map {|info| info[:port_net].upcase })
+                next_freqs = select_net_freq_hops(array_upcase(@frame[:path]))
 
-                if next_bands.length <= 0 or net_bands.length <= 0
+                if next_freqs.length <= 0 or net_freqs.length <= 0
                     return false
                 end
 
-                if (net_bands & next_bands).empty?
+                if (net_freqs & next_freqs).empty?
                     true
                 else
                     false

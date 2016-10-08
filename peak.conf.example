@@ -20,12 +20,18 @@ PORT KENWOOD-1:
   identifier: WI2ARD-1
   net: 2M1
   tnc_port: 0
-  beacon_path: [WIDE1-1, WIDE2-2]
-  status_path: [WIDE1-1, WIDE2-2]
+  beacon_path: ['WIDE1-1', 'WIDE2-2']
+  status_path: ['WIDE1-1', 'WIDE2-2']
   beacon_text: '!/:=i@;N.G& --PHG5790/G/D R-I-R H24 C30'
   status_text: '>Listening on 146.52Mhz http://JeffreyFreeman.me'
   id_text: 'WI2ARD/30M1 GATE/2M1 WI2ARD-1/2M1 WIDEN-n IGATE'
-  id_path: [WIDE1-1, WIDE2-2]
+  id_path: ['WIDE1-1', 'WIDE2-2']
+  old_paradigm: ['ECHO', 'PA']
+  new_paradigm:
+  - target: !ruby/regexp '/^WIDE\[1-2]{1}$/i'
+    max_hops: 2
+  - target: !ruby/regexp '/^PA\[1-5]{1}$/i'
+    max_hops: 5
 
 PORT RPR-1:
   identifier: WI2ARD
@@ -37,6 +43,12 @@ PORT RPR-1:
   status_text: '>Robust Packet Radio http://JeffreyFreeman.me'
   id_text: 'WI2ARD/30M1 GATE/2M1 WI2ARD-1/2M1 WIDEN-n IGATE'
   id_path: [WIDE1-1]
+  old_paradigm: ['ECHO', 'PA']
+  new_paradigm:
+  - target: !ruby/regexp '/^WIDE\[1-2]{1}$/i'
+    max_hops: 2
+  - target: !ruby/regexp '/^PA\[1-5]{1}$/i'
+    max_hops: 5
 
 IGATE:
   callsign: WI2ARD
