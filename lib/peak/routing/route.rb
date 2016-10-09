@@ -7,6 +7,7 @@ module Peak
                 @next_target = next_target
                 @config = config
                 @frame_port = frame_port
+                @destination_port = name
 
                 @port_info = {}
                 config.each do |section_name, section_content|
@@ -248,10 +249,13 @@ module Peak
                     end
 
 
+                    target = nil
                     next_hop = select_next_hop(@frame[:path])
                     if all_my_names.include? next_hop.upcase or Rules.is_hop_old_paradigm?(next_hop, old_paradigm)
+                        target = next_hop.dup
                         next_hop << '*'
                     elsif Rules.is_hop_new_paradigm?(next_hop, new_paradigm)
+                        target = next_hop.dup
                         Rules.consume_new_paradigm(next_hop)
                     end
 
@@ -262,8 +266,21 @@ module Peak
                             if detected
                                 hop << '*'
                             elsif identifiers.include? hop.upcase
+                                target = hop.dup
                                 hop << '*'
                                 detected = true
+                            end
+                        end
+                    end
+
+                    if target
+                        @port_info.each do |name, info|
+                            identifier = info[:port_identifier].upcase
+                            net_freq = info[:port_net]
+                            net_band = net_freq.dup.gsub(/M\d{0,3}$/i, 'M')
+
+                            if target == identifier or target == net_freq or target == net_band
+                                @destination_port = name
                             end
                         end
                     end
@@ -592,7 +609,7 @@ module Peak
             end
 
             public
-            attr_reader :next_target, :frame
+            attr_reader :next_target, :frame, :destination_port
         end
 
         class Route
@@ -660,7 +677,7 @@ module Peak
                 end
 
                 {
-                    :output_target => rules.next_target == :output ? name : nil,
+                    :output_target => rules.next_target == :output ? rules.destination_port : nil,
                     :frame => rules.frame
                 }
             end
