@@ -2,7 +2,7 @@
 
 ## 1.0.3
 
-
+* Fixed a bug where crossband digipeating would send the packet out on the same TNC rather than the intended TNC.
 
 ## 1.0.2
 
