@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+
+
 ## 1.0.2
 
 * Added proper cleanup before exiting when a sigterm or sigint is received. This allows serial connections to be
