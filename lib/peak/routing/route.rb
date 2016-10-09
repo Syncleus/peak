@@ -252,8 +252,15 @@ module Peak
                     target = nil
                     next_hop = select_next_hop(@frame[:path])
                     if all_my_names.include? next_hop.upcase or Rules.is_hop_old_paradigm?(next_hop, old_paradigm)
+                        puts 'next hop is old'
+                        p next_hop
+                        p @frame[:path]
+                        puts 'consuming...'
                         target = next_hop.dup
                         next_hop << '*'
+                        puts 'next hop modified'
+                        p next_hop
+                        p @frame[:path]
                     elsif Rules.is_hop_new_paradigm?(next_hop, new_paradigm)
                         target = next_hop.dup
                         Rules.consume_new_paradigm(next_hop)
