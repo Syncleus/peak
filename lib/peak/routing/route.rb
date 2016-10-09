@@ -617,17 +617,17 @@ module Peak
 
             public
             def self.inbound_chain(&block)
-                @@chains[:inbound] = {:target => :input, :block => block}
+                @@chains[:inbound] = block
             end
 
             public
             def self.outbound_chain(&block)
-                @@chains[:outbound] = {:target => :output, :block => block}
+                @@chains[:outbound] = block
             end
 
             public
-            def self.side_chain(name, target, &block)
-                @@chains[name] = {:target => target, :block => block}
+            def self.side_chain(name, &block)
+                @@chains[name] = block
             end
 
             public
@@ -647,10 +647,9 @@ module Peak
             filter :output # if this werent here packet would be dropped
         }
 
-        Route.side_chain(:forward, :output) {
+        Route.side_chain(:forward) {
             filter seen?, :drop
-            filter future_hop_me?, :pass, :drop
-            route :output
+            route future_hop_me?, :output, :drop
         }
 
         # ==== Exiting custom code ========
@@ -667,7 +666,7 @@ module Peak
                 more = true
                 while more and rules.next_target != :input and rules.next_target != :output and rules.next_target != :drop
                     catch(:new_target) do
-                        rules.instance_eval &@@chains[rules.next_target][:block]
+                        rules.instance_eval &@@chains[rules.next_target]
                         more = false
                     end
                 end
