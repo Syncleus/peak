@@ -200,30 +200,6 @@ module Peak
                 end
             end
 
-            protected
-            def filter(*args)
-                args = Rules.args_parser(*args)
-                do_next_target(args[:next_target])
-            end
-
-            protected
-            def consume_next_hop(*args)
-                args = Rules.args_parser(*args)
-
-                if has_next_hop? and args[:condition]
-                    catch(:done) do
-                        @frame[:path].each do |hop|
-                            unless hop.end_with? '*'
-                                hop << '*'
-                                throw :done
-                            end
-                        end
-                    end
-                end
-                
-                do_next_target(args[:next_target])
-            end
-
             private
             def self.consume_new_paradigm(hop)
                 hop_split = hop.split('-')
@@ -235,6 +211,12 @@ module Peak
                 else
                     hop.replace(target + '*')
                 end
+            end
+
+            protected
+            def filter(*args)
+                args = Rules.args_parser(*args)
+                do_next_target(args[:next_target])
             end
 
             protected
