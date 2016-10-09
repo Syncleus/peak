@@ -35,6 +35,8 @@ module Peak
                                         new_paradigm << {:target => new_paradigm_one['target'], :max_hops => new_paradigm_one['max_hops']}
                                     end
                                 end
+
+                                preemptive = port_section['preemptive']
                 
                                 @port_info[port_name] = {
                                     :port_identifier => port_identifier,
@@ -42,6 +44,7 @@ module Peak
                                     :tnc_port => tnc_port,
                                     :old_paradigm => old_paradigm,
                                     :new_paradigm => new_paradigm,
+                                    :preemptive => preemptive
                                 }
                             end
                         end
@@ -188,6 +191,15 @@ module Peak
                 false
             end
 
+            private
+            def self.is_hop_identifier_me(hop, identifiers)
+                if identifiers.include? hop.upcase
+                    true
+                else
+                    false
+                end
+            end
+
             protected
             def filter(*args)
                 args = Rules.args_parser(*args)
@@ -226,34 +238,51 @@ module Peak
             end
 
             protected
-            def consume_my_future_hops(*args)
+            def route(*args, preemptive: nil)
                 args = Rules.args_parser(*args)
 
                 if has_next_hop? and args[:condition]
-                    future_hops = select_future_hops(@frame[:path])
                     detected = false
 
                     port_name = @frame_port
                     port_info = @port_info[port_name]
+
+                    if preemptive == nil
+                        preemptive = port_info[:preemptive]
+                        if preemptive == nil
+                            preemptive = true
+                        end
+                    end
+
                     old_paradigm = nil
                     if port_info.key? :old_paradigm and port_info[:old_paradigm].length > 0
                         old_paradigm = Rules.array_upcase(port_info[:old_paradigm])
                     end
+
 
                     new_paradigm = nil
                     if port_info.key? :new_paradigm and port_info[:new_paradigm].length > 0
                         new_paradigm = port_info[:new_paradigm]
                     end
 
-                    future_hops.reverse.each do |hop|
-                        if detected
-                            hop << '*'
-                        elsif all_my_names.include? hop.upcase or Rules.is_hop_old_paradigm?(hop, old_paradigm)
-                            hop << '*'
-                            detected = true
-                        elsif Rules.is_hop_new_paradigm?(hop, new_paradigm)
-                            Rules.consume_new_paradigm(hop)
-                            detected = true
+
+                    next_hop = select_next_hop(@frame[:path])
+                    if all_my_names.include? next_hop.upcase or Rules.is_hop_old_paradigm?(next_hop, old_paradigm)
+                        next_hop << '*'
+                    elsif Rules.is_hop_new_paradigm?(next_hop, new_paradigm)
+                        Rules.consume_new_paradigm(next_hop)
+                    end
+
+                    if preemptive
+                        future_hops = select_future_hops(@frame[:path])
+                        identifiers = @port_info.values.map { |info| info[:port_identifier].upcase }
+                        future_hops.reverse.each do |hop|
+                            if detected
+                                hop << '*'
+                            elsif identifiers.include? hop.upcase
+                                hop << '*'
+                                detected = true
+                            end
                         end
                     end
                 end
@@ -308,11 +337,7 @@ module Peak
                 end
 
                 identifiers = @port_info.values.map { |info| info[:port_identifier].upcase }
-                if identifiers.include? select_next_hop(@frame[:path]).upcase
-                    true
-                else
-                    false
-                end
+                Rules.is_hop_identifier_me(select_next_hop(@frame[:path]), identifiers)
             end
 
             protected
@@ -626,7 +651,7 @@ module Peak
         Route.side_chain(:forward, :output) {
             filter seen?, :drop
             filter future_hop_me?, :pass, :drop
-            consume_my_future_hops :output
+            route :output
         }
 
         # ==== Exiting custom code ========

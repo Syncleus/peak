@@ -26,6 +26,7 @@ PORT KENWOOD-1:
   status_text: '>Listening on 146.52Mhz http://JeffreyFreeman.me'
   id_text: 'WI2ARD/30M1 GATE/2M1 WI2ARD-1/2M1 WIDEN-n IGATE'
   id_path: ['WIDE1-1', 'WIDE2-2']
+  preemptive: true
   old_paradigm: ['ECHO', 'PA']
   new_paradigm:
   - target: !ruby/regexp '/^WIDE[1-2]{1}$/i'
@@ -43,6 +44,7 @@ PORT RPR-1:
   status_text: '>Robust Packet Radio http://JeffreyFreeman.me'
   id_text: 'WI2ARD/30M1 GATE/2M1 WI2ARD-1/2M1 WIDEN-n IGATE'
   id_path: [WIDE1-1]
+  preemptive: true
   old_paradigm: ['ECHO', 'PA']
   new_paradigm:
   - target: !ruby/regexp '/^WIDE[1-2]{1}$/i'

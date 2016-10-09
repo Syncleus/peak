@@ -4,6 +4,8 @@
 
 * Added proper cleanup before exiting when a sigterm or sigint is received. This allows serial connections to be
   shutdown and KISS mode on the TNC to be exited.
+* Added a Domain-specific Language for the routing and mangling of frames.
+* By default frames are now preemptively digipeated.
 
 ## 1.0.1
 
