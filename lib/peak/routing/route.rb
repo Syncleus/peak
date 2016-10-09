@@ -7,7 +7,7 @@ module Peak
                 @next_target = next_target
                 @config = config
                 @frame_port = frame_port
-                @destination_port = name
+                @destination_port = frame_port
 
                 @port_info = {}
                 config.each do |section_name, section_content|
@@ -280,7 +280,7 @@ module Peak
                             net_band = net_freq.dup.gsub(/M\d{0,3}$/i, 'M')
 
                             if target == identifier or target == net_freq or target == net_band
-                                @destination_port = name
+                                @destination_port = @frame_port
                             end
                         end
                     end
