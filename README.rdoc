@@ -7,7 +7,7 @@ Author::  Jeffrey Phillips Freeman, WI2ARD (freemo@gmail.com)
 Copyright:: Copyright (c) 2016 - present Syncleus, Inc.
 
 Peak is a full suite APRS client and reference implementation for the APEX protocol. APEX is a next generation APRS
-based protocol. This repository represents the official application implementing APEX. It is a full-feature application
+based protocol. It is a full-feature application
 for digipeating, compatible with most AX.25 KISS TNC devices, and utilizing the full APEX stack.
 
 For more information on the project please check out {the project's home page}[http://apexprotocol.com/].
